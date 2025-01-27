@@ -199,6 +199,7 @@ const NewSignupForm = () => {
       timestamp: serverTimestamp(),
       reportsTo: claims.reportsTo,
       custId: id,
+      
     }
 
     const stats = {
@@ -214,6 +215,7 @@ const NewSignupForm = () => {
       // timestamp: serverTimestamp(),
       signUpagent: loggedInUser.displayName,
       agentUid: loggedInUser.uid,
+      
     }
 
     await setDoc(doc(db, 'customers', id), userData)

@@ -1,11 +1,16 @@
 import { getAllOrdersStructured } from './crm context/CrmAction'
 
-export function getCustomerRating(amountSpent, rating) {
-  while (amountSpent > 0) {
-    if (amountSpent >= 100) {
+// used in add product to databse
+//  set for every £100
+// not in use keep for reference
+export function getCustomerRating(amountSpentInPence) {
+  // counter
+  let rating = 0
+  while (amountSpentInPence > 0) {
+    if (amountSpentInPence >= 10000) {
+      // Check for 10000 pence (£100)
       rating++
-      amountSpent -= 100
-
+      amountSpentInPence -= 10000 // Subtract 10000 pence (£100)
       if (rating >= 5) {
         rating = 5
       }
@@ -16,11 +21,13 @@ export function getCustomerRating(amountSpent, rating) {
   return rating
 }
 
-export function getPointsEarned(amountSpent, points) {
-  while (amountSpent > 0) {
-    if (amountSpent >= 100) {
+// un-capped points
+export function getPointsEarned(amountSpentInPence, points) {
+  while (amountSpentInPence > 0) {
+    if (amountSpentInPence >= 10000) {
+      // Check for 10000 pence (£100)
       points += 10
-      amountSpent -= 100
+      amountSpentInPence -= 10000 // Subtract 10000 pence (£100)
     } else {
       break
     }
@@ -28,26 +35,61 @@ export function getPointsEarned(amountSpent, points) {
   return points
 }
 
-export function getPointsEarned1(amountSpent) {
-  const pointsPerHundred = 1 // Assuming 1 point for every $100 spent
-  return Math.floor(amountSpent / 100) * pointsPerHundred
+// used wnen we update the stats object and calculate
+// deletion of points
+// in display orders
+export function getPointsEarned1(amountSpentInPence) {
+  const pointsPerHundred = 1 // 1 point for every £100 spent
+  // Convert pence to hundreds of pounds (10000 pence = £100)
+  return Math.floor(amountSpentInPence / 10000) * pointsPerHundred
 }
 
-export function getRating(amountSpent) {
-  const ratingPerTwelveHundred = 1 // 1 rating point for every $500 spent
-  return Math.floor(amountSpent / 500) * ratingPerTwelveHundred
+// used wnen we update the stats object
+// in display orders
+// export function getRating(amountSpentInPence) {
+//   const ratingPerFiveHundred = 1 // 1 rating point for every £500 (50000 pence) spent
+//   return Math.floor(amountSpentInPence / 50000) * ratingPerFiveHundred
+// }
+
+export function getRating(amountSpentInPence) {
+  const ratingPerFiveHundred = 1 // 1 rating point for every £500 (50000 pence) spent
+
+  // First calculate the raw rating based on spending
+  const calculatedRating = Math.floor(amountSpentInPence / 50000) * ratingPerFiveHundred
+
+  console.log(calculatedRating)
+  // Then use Math.min to ensure the rating doesn't exceed 5
+  return Math.min(calculatedRating, 5)
 }
 
-export const formatPrice = (price) => {
-  // Handle null, undefined, or invalid inputs
-  if (!price && price !== 0) return '-'
+//  ***** old funciton keep for referenct *****
+// export function getRating(amountSpent) {
+//   const ratingPerTwelveHundred = 1 // 1 rating point for every $500 spent
+//   return Math.floor(amountSpent / 500) * ratingPerTwelveHundred
+// }
 
-  return new Intl.NumberFormat('en-US', {
+// export const formatPrice = (price) => {
+//   // Handle null, undefined, or invalid inputs
+//   if (!price && price !== 0) return '-'
+
+//   return new Intl.NumberFormat('en-US', {
+//     style: 'currency',
+//     currency: 'GBP',
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   }).format(price)
+// }
+
+export const formatPrice = (pence) => {
+  const poundsDecimal = pence / 100
+
+  // Now we use Intl.NumberFormat to format the pounds value with proper currency symbol
+  return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(price)
+  }).format(poundsDecimal)
 }
 
 // aggregate up to a year + down to a week
@@ -66,6 +108,7 @@ export const aggeregatedData = async () => {
   const weekhData = data?.weekOrders
   const todayData = data?.todayOrders
   const hourData = data?.hourOrders
+  console.log(hourData)
 
   const getMonthly = monthData.reduce(
     (acc, item) => {
@@ -170,6 +213,22 @@ export const aggeregatedData = async () => {
     }, defaultValues) // Use defaultValues as initial accumulator
   }
 
+  // // Starting with prices [10, 25, 15]:
+  // First iteration
+  // acc.max = 0
+  // item.price = 10
+  // Math.max(0, 10) → 10
+
+  // // Second iteration
+  // acc.max = 10
+  // item.price = 25
+  // Math.max(10, 25) → 25
+
+  // // Third iteration
+  // acc.max = 25
+  // item.price = 15
+  // Math.max(25, 15) → 25
+
   // TRACK BY POPULAR PRODUCT
   //  ADD IN A SELECT BOX IN THE ADD ORDER BAR
 
@@ -201,6 +260,7 @@ export const aggeregatedData = async () => {
         count: (acc.count || 0) + 1,
         total: (acc.total || 0) + item.price,
         min: acc.min === 0 ? item.price : Math.min(acc.min, item.price),
+        max: acc.max === 0 ? item.price : Math.min(acc.max, item.price),
         // medianPrice
       }
     }, defaultValues)
@@ -212,7 +272,7 @@ export const aggeregatedData = async () => {
   // array with two objects, each represents
   // half hour
   const data1 = getByHour()
-  // console.log(data1)
+  console.log(data1)
 
   return {
     monthData: getMonthly,
@@ -231,4 +291,3 @@ export const aggeregatedData = async () => {
 // console.log(getToday)
 // what are the benifits of
 // 1: Using Map and Set
-

@@ -10,6 +10,7 @@ import { ReactComponent as EditIcon } from '../icons/edit-icon.svg'
 import { toast } from 'react-toastify'
 import { newNoteEntry, getCollectionNotes } from '../crm context/CrmAction'
 import DataSvgIcon from './DataSvgIcon'
+import Loader from '../assets/Loader'
 
 function DisplayNotes() {
   const { dispatch, editNote, notesData } = useContext(CrmContext)
@@ -122,7 +123,7 @@ function DisplayNotes() {
   }
 
   if (!notesData) {
-    return <h1>Loading ... </h1>
+    return <Loader />
   }
 
   return (
@@ -138,13 +139,15 @@ function DisplayNotes() {
             value={noteText}
           ></textarea>
 
-          <button className="booking-button" type="submit">
-            Enter Note
-          </button>
+          <div className="page-btn-container">
+            <button className="booking-button" type="submit">
+              Enter Note
+            </button>
+          </div>
         </form>
       </div>
 
-      <div className="order-display-div">
+      <div className="notes-display-div">
         {/* prettier-ignore */}
         <ul>
           {notesData &&

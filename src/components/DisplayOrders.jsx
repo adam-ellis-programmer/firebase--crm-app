@@ -26,6 +26,8 @@ import { getAuth } from 'firebase/auth'
 import { toast } from 'react-toastify'
 import DataSvgIcon from './DataSvgIcon'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
+import Loader from '../assets/Loader'
+import OrderCard from '../cards/OrderCard'
 // import { products } from '../utils'
 
 // for testing
@@ -43,22 +45,23 @@ function DisplayOrders() {
   //  *** leave for testing *** //
 
   const [searchParams, setSearchParams] = useSearchParams()
-
+  const [isDeleting, setIsDeleting] = useState(false)
   const { dispatch, totalAmountSpent, editPurchase, ordersData } = useContext(CrmContext)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [isSelectOpen, setIsSelectOpen] = useState(false)
 
   const [initCustId, setInitCustId] = useState('')
   const [products, setProducts] = useState(null)
   const [formData, setFormData] = useState({
-    item: '',
-    price: '',
+    price: 0,
     selectItem: '',
+    productId: '',
   })
 
   const params = useParams()
 
-  const { price, item, selectItem } = formData
+  const { price, productId, selectItem } = formData
 
   useEffect(() => {
     const getData = async () => {
@@ -92,69 +95,74 @@ function DisplayOrders() {
     }
   }, [initCustId])
 
+  useEffect(() => {
+    document.addEventListener('click', () => {
+      console.log('clicked: add class to chekc list')
+    })
+    return () => {}
+  }, [])
+
   // 1: make request for the updated array and ID
   // 2: make new stats object
   // 3: make request to update araay using the ID frompm previous request
   // 4: on delete and on edit make reqest to update
+
   const onDelete = async (id) => {
+    // Prevent multiple simultaneous deletions
+    if (isDeleting) {
+      return
+    }
+
     try {
+      setIsDeleting(true)
+
       // Filter out the order to be deleted for dom
       const updatedData = ordersData.filter((item) => item.id !== id)
-      // get item to be deleted for the price info
       const deletedItem = ordersData.find((item) => item.id === id)
-      // Get the price of the deleted order
       const deletedPrice = deletedItem.data.price
 
-      // Dispatch to update the UI
-      dispatch({ type: 'ORDERS', payload: updatedData })
+      // First, delete from Firebase to ensure database consistency
+      await deleteDoc(doc(db, 'orders', id))
 
-      // Update the total amount spent using filtered item
-      const newTotalAmountSpent = updatedData.reduce((value, item) => {
-        return value + parseInt(item.data.price)
-      }, 0)
-
-      let goldCustomer
-
-      if (newTotalAmountSpent <= 1000) {
-        goldCustomer = false
-      }
-
-      // Dispatch to update the total amount spent and the number of orders for dom
-      dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: newTotalAmountSpent })
-      dispatch({ type: 'ORDERS_LENGTH', payload: updatedData.length })
-
-      // Get the current stats object
+      // Get fresh stats after deletion
       const statsOBJ = await getDocument(initCustId, 'stats')
 
-      // Calculate the new total points after deleting the order
-      const newPointsForOrder = getPointsEarned1(statsOBJ.amountSpent - deletedPrice)
-      const currentPointsForOrder = getPointsEarned1(statsOBJ.amountSpent)
+      // Calculate new total from remaining orders
+      const newTotalAmountSpent = updatedData.reduce((value, item) => {
+        return value + item.data.price
+      }, 0)
 
-      const rating = getRating(statsOBJ.amountSpent - deletedPrice)
+      // Update goldCustomer status based on new total (now in pence)
+      const goldCustomer = newTotalAmountSpent >= 50000 // £500 in pence
 
-      // Update the stats object
+      // Calculate points and rating with fresh data
+      const newPointsForOrder = getPointsEarned1(newTotalAmountSpent)
+      const rating = getRating(newTotalAmountSpent)
+
       const updatedStats = {
         ...statsOBJ,
-        amountSpent: statsOBJ.amountSpent - deletedPrice,
-        points: statsOBJ.points - (currentPointsForOrder - newPointsForOrder),
-        numberOfOrders: statsOBJ.numberOfOrders - 1,
+        amountSpent: newTotalAmountSpent,
+        points: newPointsForOrder,
+        numberOfOrders: updatedData.length,
         rating,
         goldCustomer,
       }
 
-      // Update the stats object in the database
+      // Update stats in database
       await updateCustomerStats('stats', initCustId, updatedStats)
 
-      // Delete the actual order document from the database
-      await deleteDoc(doc(db, 'orders', id))
-
-      // update the state
+      // Only update UI after database operations complete
+      dispatch({ type: 'ORDERS', payload: updatedData })
+      dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: newTotalAmountSpent })
+      dispatch({ type: 'ORDERS_LENGTH', payload: updatedData.length })
       dispatch({ type: 'SET_STATS', payload: updatedStats })
 
       toast.success('Order deleted successfully')
     } catch (error) {
       console.error('Error deleting order: ', error)
       toast.error('Failed to delete order')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -165,7 +173,10 @@ function DisplayOrders() {
   }
 
   const onEdit = (id) => {
+    console.log(id)
+    // return
     openModal()
+    // return
     setSearchParams((prev) => {
       prev.set('editItemId', id)
       return prev
@@ -182,87 +193,85 @@ function DisplayOrders() {
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    if (selectItem === '' || price === '') {
-      toast.error('please enter a item and price!')
+    if (isSubmitting) return
+
+    if (selectItem === '' || price === 0) {
+      toast.error('Please select an item and ensure it has a valid price')
       return
     }
 
     try {
+      setIsSubmitting(true)
+
       const newOrder = {
         ...formData,
-        price: parseInt(price), //+= on to obj stats
+        price,
         customerUid: params.uid,
+        agentId: params.agentUid,
+        productId,
         timestamp: serverTimestamp(),
         edited: false,
-        agentId: params.agentUid,
         agentName: loggedInUser?.displayName?.split(' ')[0],
         dateOfOrder: new Date().toLocaleString('en-GB'),
         customerName: params.name,
         customerEmail: searchParams.get('email'),
-        pointsForOrder: getPointsEarned1(parseInt(price), 0),
+        pointsForOrder: getPointsEarned1(price),
       }
 
-      // console.log(newOrder)
-
+      // Create new order in database
       const data = await newDataBaseEntry('orders', newOrder, params.uid)
 
+      // Get updated orders list
       const fetchOrdersWithNewOrder = await getCollection('orders', params.uid)
-      // this getStatsObj to get the  UID index to update the document with
-      const getStatsObj = await getStatsObjToEdit('stats', initCustId)
 
+      // Get stats object for updating
+      const getStatsObj = await getStatsObjToEdit('stats', initCustId)
       const statsID = getStatsObj[0].id
 
-      let sum = totalAmountSpent + parseInt(price)
+      // Calculate new total (in pence)
+      const newTotal = totalAmountSpent + price
 
-      let points = 0
-      let goldCustomer = false
-      let rating = 0
-
-      if (sum >= 1000) {
-        goldCustomer = true
-      }
-
-      // console.log(goldCustomer)
-      const totalPoints = getPointsEarned1(sum, points)
-      const ratingAmount = getCustomerRating(sum, rating)
+      // Update customer status and calculate rewards
+      const goldCustomer = newTotal >= 50000 // £500 in pence
+      const totalPoints = getPointsEarned1(newTotal)
+      const ratingAmount = getRating(newTotal)
 
       const updatedStats = {
         ...getStatsObj[0].data,
         numberOfOrders: fetchOrdersWithNewOrder.length,
-        amountSpent: totalAmountSpent + parseInt(price),
+        amountSpent: newTotal,
         points: totalPoints,
         goldCustomer,
         rating: ratingAmount,
       }
 
-      // sum up batch updates for dom
-      dispatch({ type: 'ORDERS', payload: data })
-      dispatch({
-        type: 'SET_TOTAL_AMOUNT_SPENT',
-        payload: totalAmountSpent + parseInt(formData.price),
-      })
-      dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
-
+      // Update database first
       await updateCustomerStats('stats', statsID, updatedStats)
 
-      const getUpdStatsObj = await getStatsObjToEdit('stats', initCustId)
+      // Then update UI
+      dispatch({ type: 'ORDERS', payload: data })
+      dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: newTotal })
+      dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
+      dispatch({ type: 'SET_STATS', payload: updatedStats })
 
-      // update the dom
-      dispatch({ type: 'SET_STATS', payload: getUpdStatsObj[0].data })
-
-      // reset form data
+      // Reset form
       setFormData({
         item: '',
-        price: '',
+        price: 0,
         selectItem: 'please select',
       })
+
+      toast.success('Order added successfully')
     } catch (error) {
-      console.log(error)
+      console.error('Error submitting order:', error)
+      toast.error('Failed to submit order')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   if (!ordersData) {
-    return <h1>Loading ... </h1>
+    return <Loader />
   }
 
   const handleSelect = (data) => {
@@ -273,38 +282,17 @@ function DisplayOrders() {
       ...prev,
       selectItem: data.name,
       price: data.price,
+      productId: data.id,
     }))
-
-    // const selectedId =
-    //   event.target.options[event.target.selectedIndex].getAttribute('data-id')
-    // const selectedProduct = products.find((product) => product.id === selectedId)
-    // console.log(selectedId)
-
-    // console.log(event.target)
-
-    // Get the data-id from the selected option
-    // const test = event.target.selectedIndex
-    // const selectedDataId = event.target.selectedOptions[0].dataset.id
-
-    // console.log(test)
-    // Or from the select element itself
-    // const selectElement = event.target
-
-    // console.log('Selected option data-id:', selectedDataId)
-    // console.log('Select element:', selectElement)
-
-    // set price here
-    // enter qty
   }
 
-  // if add new and there
-  // amount += 1
-  // else add new item if() else 
+  console.log(products)
 
   return (
     <div>
       <div className="form-container">
         <form onSubmit={onSubmit} className="">
+          {/* custom select  */}
           <div className="custom-select-div">
             <button
               onClick={() => setIsSelectOpen((prev) => !prev)}
@@ -336,9 +324,11 @@ function DisplayOrders() {
             </div>
           </div>
 
-          <button className="booking-button" type="submit">
-            Place Order
-          </button>
+          <div className="page-btn-container">
+            <button className="booking-button" type="submit">
+              {isSubmitting ? 'making order' : 'place order'}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -347,26 +337,15 @@ function DisplayOrders() {
           {ordersData &&
             ordersData.map((item) => {
               return (
-                <li key={item.id} className="order-item">
-                  <div className="order-item-top">
-                    <div className="order-item-div"> {item.data.selectItem}</div>
-                    <div className="order-item-div"> {formatPrice(item.data.price)}</div>
-                    <div className="order-item-div order-item-booked-by">
-                      {' '}
-                      <span>{auth.currentUser.displayName}</span>{' '}
-                      <span> {item.data.dateOfOrder}</span>
-                    </div>
-                  </div>
-
-                  <div className="order-btn-container">
-                    <button onClick={() => onEdit(item.id)}>
-                      <EditIcon className="order-edit" />
-                    </button>
-                    <button onClick={() => onDelete(item.id)} className="order-delete">
-                      X
-                    </button>
-                  </div>
-                </li>
+                <OrderCard
+                  key={item.id}
+                  item={item}
+                  auth={auth}
+                  onEdit={onEdit}
+                  EditIcon={EditIcon}
+                  isDeleting={isDeleting}
+                  onDelete={onDelete}
+                />
               )
             })}
         </ul>

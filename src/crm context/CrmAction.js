@@ -179,6 +179,7 @@ export async function getSingleDoc(collectionName, orderId) {
 export async function submitUpdatedDocument(collectionName, orderId, formData) {
   const docRef = doc(db, collectionName, orderId)
   const data = await updateDoc(docRef, formData)
+  return data
 }
 
 export async function newDataBaseEntry(collectionName, newEntryObj, paramsUid) {
@@ -871,4 +872,17 @@ export async function getProducts(params) {
   })
 
   return data
+}
+
+//
+export async function updateOrder(orderId, formData) {
+  const docRef = doc(db, 'orders', orderId)
+  try {
+    await updateDoc(docRef, formData)
+    const updatedDoc = await getDoc(docRef)
+    return updatedDoc.data()
+  } catch (error) {
+    console.error('Error updating order:', error)
+    throw error // Propagate error to caller
+  }
 }

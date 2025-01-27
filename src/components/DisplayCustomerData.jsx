@@ -7,11 +7,16 @@ import { onSubmit } from '../crm context/CrmAction'
 import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
 
 import ProfileControlButtons from './ProfileControlButtons'
+import Loader from '../assets/Loader'
 
 function DisplayCustomerData({ customer }) {
   const { changeDetails } = useContext(CrmContext)
 
+  // leave for reference
   const location = useLocation()
+  const navigate = useNavigate()
+  const auth = getAuth()
+  // leave for reference
 
   const [data, setData] = useState({
     name: customer.name,
@@ -22,8 +27,6 @@ function DisplayCustomerData({ customer }) {
   const { name, phone } = data
 
   const params = useParams()
-  const navigate = useNavigate()
-  const auth = getAuth()
 
   const onChange = (e) => {
     setData((prevState) => ({
@@ -39,9 +42,10 @@ function DisplayCustomerData({ customer }) {
     console.log(error)
   }
 
-  if (!customer) {
-    return <h1>Loading ... </h1>
-  }
+  // data passed down so no loader needed
+  // if (!customer) {
+  //   return <Loader />
+  // }
 
   return (
     <div>

@@ -25,7 +25,6 @@ export const CrmDataContextProvider = ({ children }) => {
     customerStats: null,
     profileChartType: 'lineChart',
 
-
     nameAndPhoneNumber: {
       name: '',
       phome: '',
