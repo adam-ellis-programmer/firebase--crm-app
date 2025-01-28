@@ -8,7 +8,7 @@ function Footer() {
       <div className="footer-div"></div>
       <div className="footer-div">
         <div className="footer-date-div">
-          <p>©{date}</p>
+          <p className='footer-date' >©{date}</p>
           <Link className="footer-link" to="/terms">
             {' '}
             terms and conditions

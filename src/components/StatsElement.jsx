@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getAndOrderStatsForStatsPage } from '../crm context/CrmAction'
 import Loader from '../assets/Loader'
+import { formatPrice } from '../CrmFunctions'
 
 function StatsElement() {
   const [statsData, setStatsData] = useState(null)
@@ -111,7 +112,6 @@ function StatsElement() {
       </div>
       <div className="table-container">
         <table>
-          {/* <caption>Council budget (in £) 2018</caption> */}
           <thead>
             <tr className="table-row">
               <th className="table-span-med">id</th>
@@ -141,7 +141,7 @@ function StatsElement() {
                   <td><div className="table-span">{data.goldCustomer === false ? 'no' : 'yes'}</div></td>
                   <td><div className="table-span num-of-orders">{data.numberOfOrders}</div></td>
                   <td><div className="table-span stats-rating">{data.rating}</div></td>
-                  <td><div className="table-span amount-spent">{data.amountSpent}</div></td>
+                  <td><div className="table-span amount-spent">{formatPrice(data.amountSpent)}</div></td>
                   <td><div className="table-span sign-up-agent">{data.signUpagent}</div></td>
                 </tr>
               ))}

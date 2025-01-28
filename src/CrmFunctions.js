@@ -2,7 +2,7 @@ import { getAllOrdersStructured } from './crm context/CrmAction'
 
 // used in add product to databse
 //  set for every £100
-// not in use keep for reference
+// not in use keep for refer
 export function getCustomerRating(amountSpentInPence) {
   // counter
   let rating = 0

@@ -19,7 +19,6 @@ const getOrderAge = (dateString) => {
   if (diffDays === 2) return 'two-days'
   if (diffDays >= 3 && diffDays < 7) return 'three-seven-days'
 
-  // return obj for pill
   return 'over-seven-days'
 }
 
