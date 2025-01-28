@@ -23,6 +23,7 @@ import { useEffect } from 'react'
 import DataAll from './pages/DataAll'
 import NotFound from './pages/NotFound'
 import ChartDash from './pages/ChartDash'
+import Terms from './pages/Terms'
 
 // PROTECT THE ROUTES
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/agent-sign-in" element={<AgentSignIn />} />
               <Route path="/sign-up" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/terms" element={<Terms />} />
 
               {/* protected routes */}
               <Route element={<PrivateRoute />}>
@@ -61,10 +63,10 @@ function App() {
               {/* catch all route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <ToastContainer />
           </div>
+          <Footer />
         </Router>
-        <Footer />
-        <ToastContainer />
       </div>
     </CrmDataContextProvider>
   )

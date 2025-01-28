@@ -182,6 +182,7 @@ export async function submitUpdatedDocument(collectionName, orderId, formData) {
   return data
 }
 
+// add a doc and get the updated array back 
 export async function newDataBaseEntry(collectionName, newEntryObj, paramsUid) {
   const docRef = await addDoc(collection(db, collectionName), newEntryObj)
   const userReference = collection(db, collectionName)

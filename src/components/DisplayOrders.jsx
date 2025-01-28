@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from 'react'
 import { useSearchParams, useHistory } from 'react-router-dom'
-import { ReactComponent as EditIcon } from '../icons/edit-icon.svg'
 
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import CrmContext from '../crm context/CrmContext'
@@ -79,15 +78,21 @@ function DisplayOrders() {
     getData()
   }, [])
 
-  // get orders
+  // get orders on page load
   useEffect(() => {
     try {
       const getDbData = async () => {
-        const data = await getCollection('orders', params.uid)
+        const ordersData = await getCollection('orders', params.uid)
+
+        // Create a new copy of the array
+        const sortedOrders = [...ordersData].sort(
+          (a, b) => b.data.timestamp.seconds - a.data.timestamp.seconds
+        )
+
         const productsData = await getProducts()
         setProducts(productsData)
-        dispatch({ type: 'ORDERS', payload: data })
-        dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
+        dispatch({ type: 'ORDERS', payload: sortedOrders })
+        dispatch({ type: 'ORDERS_LENGTH', payload: ordersData.length })
       }
       getDbData()
     } catch (error) {
@@ -221,6 +226,11 @@ function DisplayOrders() {
       // Create new order in database
       const data = await newDataBaseEntry('orders', newOrder, params.uid)
 
+      // sort newest first
+      const sortedOrders = [...data].sort(
+        (a, b) => b.data.timestamp.seconds - a.data.timestamp.seconds
+      )
+
       // Get updated orders list
       const fetchOrdersWithNewOrder = await getCollection('orders', params.uid)
 
@@ -249,7 +259,7 @@ function DisplayOrders() {
       await updateCustomerStats('stats', statsID, updatedStats)
 
       // Then update UI
-      dispatch({ type: 'ORDERS', payload: data })
+      dispatch({ type: 'ORDERS', payload: sortedOrders })
       dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: newTotal })
       dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
       dispatch({ type: 'SET_STATS', payload: updatedStats })
@@ -285,8 +295,6 @@ function DisplayOrders() {
       productId: data.id,
     }))
   }
-
-  console.log(products)
 
   return (
     <div>
@@ -342,7 +350,6 @@ function DisplayOrders() {
                   item={item}
                   auth={auth}
                   onEdit={onEdit}
-                  EditIcon={EditIcon}
                   isDeleting={isDeleting}
                   onDelete={onDelete}
                 />
