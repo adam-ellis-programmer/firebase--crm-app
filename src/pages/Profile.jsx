@@ -115,7 +115,7 @@ function Profile() {
   if (loading) {
     return <Loader />
   }
-
+console.log(orders)
   return (
     <div className="page-container">
       <DashboardHeader />
@@ -206,7 +206,7 @@ function Profile() {
               {orders &&
                 orders.map(({ id, data }) => (
                   <li key={id} className="most-recent-customers-items">
-                    <span className="most-recent-email-info">{data.item}</span>
+                    <span className="most-recent-email-info">{data.selectItem}</span>
                     <span className="most-recent-email-info">{data.price}</span>
                     <span className="most-recent-email-info">{data.customerName}</span>
                     <span className="most-recent-email-info">{data.customerEmail}</span>
@@ -225,7 +225,6 @@ function Profile() {
                   <span className="most-recent-text">customer</span>
                   <span className="most-recent-text">email</span>
                   <span className="most-recent-text">note</span>
-                  <span className="most-recent-text">Email</span>
                   <span className="most-recent-text">Date</span>
                 </div>
               </>
@@ -276,6 +275,7 @@ function Profile() {
             <DisplayCompanySumUp />
             <ChartButtons />
 
+            {/* *** leave for reference *** */}
             {/* {(() => {
               switch (profileChartType) {
                 case 'lineChart':
@@ -288,6 +288,7 @@ function Profile() {
                   return null
               }
             })()} */}
+            {/* *** leave for reference *** */}
 
             {profileChartType === 'lineChart' ? (
               <LineChartJS />
@@ -296,8 +297,6 @@ function Profile() {
             ) : profileChartType === 'barChart' ? (
               <Chart />
             ) : null}
-
-            
           </div>
         </div>
       </main>

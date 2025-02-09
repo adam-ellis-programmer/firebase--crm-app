@@ -19,9 +19,7 @@ import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
 import Loader from '../assets/Loader'
 
-
 function SingleCustomer() {
-
   const { deleteBtn, editPurchase, editNote, toggleEmail, ordersLength, notesLength } =
     useContext(CrmContext)
 
@@ -89,7 +87,6 @@ function SingleCustomer() {
               <img
                 className="profile-pic"
                 // src="https://i.pravatar.cc/300"
-                // .? optinal chaining
                 src={customer && customer?.urlData.url}
                 alt=""
               />

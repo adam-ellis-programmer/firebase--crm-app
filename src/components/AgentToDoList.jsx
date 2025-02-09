@@ -13,14 +13,13 @@ import {
   getTaskToToggleCompleted,
   updateTaskToCompleted,
   getAgentToDisplayChangeUpdateTaskLengthData,
-  submitUpdatedTaskLength,
 } from '../crm context/CrmAction'
 import Loader from '../assets/Loader'
-import Spinner from './Spinner'
 
 function AgentToDoList() {
   const auth = getAuth()
 
+  const [markingDone, setMarkingDone] = useState(false)
   const [loading, setLoading] = useState(true)
   const chars = 300
   const [tasksLength, setTasksLength] = useState(0)
@@ -32,13 +31,10 @@ function AgentToDoList() {
   useEffect(() => {
     const getTaskListItems = async () => {
       const data = await getTasksToDisplayInAgentProfile('tasks', params.uid)
-      const agentData = await getAgentToDisplayChangeUpdateTaskLengthData(
-        'users',
-        params.uid
-      )
+
       setTasks(data)
       setLoading(false)
-      setTasksLength(agentData[0]?.data?.taskLength || 0)
+      setTasksLength(data?.length || 0)
     }
     getTaskListItems()
 
@@ -106,14 +102,15 @@ function AgentToDoList() {
     }
 
     // -1 to get the right month as 0 based
+    // add formatted date to obj
     months.forEach((monthName, index) => {
       if (index === month - 1) {
-        return (newData.formatedDate = `${day}-${monthName}-20${year}`)
+        return (newData.formattedDate = `${day}-${monthName}-20${year}`)
       }
     })
 
     try {
-      const data = await addTaskToDatabase('tasks', newData)
+      await addTaskToDatabase('tasks', newData)
       const updatedData = await getTasksToDisplayInAgentProfile('tasks', params.uid)
 
       const agentProfileData = await getAgentToDisplayChangeUpdateTaskLengthData(
@@ -126,15 +123,7 @@ function AgentToDoList() {
         taskLength: updatedData.length,
       }
 
-      // keep for testing
-      const updatedLengthData = submitUpdatedTaskLength(
-        'users',
-        params.uid,
-        updatedTaskLength
-      )
-
       setTasksLength(updatedTaskLength.taskLength)
-
       setTasks(updatedData)
     } catch (error) {
       console.log(error)
@@ -142,21 +131,27 @@ function AgentToDoList() {
   }
 
   const toggleCompleted = async (id) => {
-    const data = await getTaskToToggleCompleted(id, 'tasks')
-    await updateTaskToCompleted(id, data.completed === false ? true : false)
-    const dataUpdate = await getTaskToToggleCompleted(id, 'tasks')
-    const newData = await getTasksToDisplayInAgentProfile('tasks', params.uid)
-    console.log(newData)
+    setMarkingDone(true)
+    try {
+      const data = await getTaskToToggleCompleted(id, 'tasks')
+      await updateTaskToCompleted(id, data.completed === false ? true : false)
+      await getTaskToToggleCompleted(id, 'tasks')
 
-    const filteredData = newData.filter((item) => item.data.completed === false)
-    console.log(filteredData.length)
+      const newData = await getTasksToDisplayInAgentProfile('tasks', params.uid)
+      console.log(newData)
 
-    setTasks(newData)
-    // console.log(chars - taskLength) // e.target.value.slice
+      const filteredData = newData.filter((item) => item.data.completed === false)
+      console.log(filteredData.length)
+
+      setTasks(newData)
+      setMarkingDone(false)
+      // console.log(chars - taskLength) // e.target.value.slice
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleTaskDelete = async (id) => {
-    console.log(id)
     // return
     await deleteDoc(doc(db, 'tasks', id))
     const updatedData = tasks.filter((item) => item.id !== id)
@@ -173,12 +168,6 @@ function AgentToDoList() {
         taskLength: updatedData.length,
       }
 
-      // keep for testing
-      const updatAgentProfile = submitUpdatedTaskLength(
-        'users',
-        params.uid,
-        updateUserProfileTaskLength
-      )
       setTasksLength(updateUserProfileTaskLength.taskLength)
     } catch (error) {
       console.log(error)
@@ -266,7 +255,7 @@ function AgentToDoList() {
                 <div className="task-date-container">
                   <p>
                     {' '}
-                    <span>completed by: </span> {data.formatedDate}
+                    <span>completed by: </span> {data.formattedDate}
                   </p>
                 </div>
                 <div className="task-text">
@@ -277,8 +266,13 @@ function AgentToDoList() {
                   <button
                     onClick={() => toggleCompleted(id)}
                     className={data.completed ? 'task-button-completed' : 'task-button'}
+                    disabled={markingDone}
                   >
-                    {data.completed ? 'completed' : 'mark as done'}
+                    {markingDone
+                      ? 'Updating...'
+                      : data.completed
+                      ? 'Completed'
+                      : 'Mark as done'}
                   </button>
                   <button onClick={() => handleTaskDelete(id)} className="task-button">
                     delete

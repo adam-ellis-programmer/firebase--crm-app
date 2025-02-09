@@ -206,9 +206,7 @@ export const aggeregatedData = async () => {
         max: acc.max === 0 ? item.price : Math.max(acc.max, item.price),
         average: ((acc.total || 0) + item.price) / ((acc.count || 0) + 1),
         // look this up
-        medianPrice: (acc.medianPrice = acc.prices.sort((a, b) => a - b)[
-          Math.floor(acc.prices.length / 2)
-        ]),
+        medianPrice: (acc.medianPrice = acc.prices.sort((a, b) => a - b)[Math.floor(acc.prices.length / 2)]),
       }
     }, defaultValues) // Use defaultValues as initial accumulator
   }

@@ -1,8 +1,65 @@
+import { useEffect } from 'react'
+const months = [
+  'January',
+  'Febuary',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+const daysOfWeek = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+]
 const Terms = () => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+    })
+    return () => {}
+  }, [])
+  // Get date from 3 days ago
+  const today = new Date()
+  // look up the today - 3 * 24 * 60 * 60 * 1000
+  const threeDaysAgo = new Date(today - 3 * 24 * 60 * 60 * 1000)
+  console.log(threeDaysAgo.getMonth() + 1)
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  const lastUpdated = (date) => {
+    const day = date.getDate()
+    const month = date.getMonth()
+    const year = date.getFullYear()
+    const dayOfWeek = date.getDay()
+    console.log(dayOfWeek)
+    return `last updated on ${daysOfWeek[dayOfWeek]} ${day} ${months[month]} ${year}`
+  }
+
+  // console.log(lastUpdated(threeDaysAgo))
+  // console.log(formatDate(threeDaysAgo))
+
   const highlightWords = (text, wordList) => {
     const wordsLower = wordList.map((word) => word.toLowerCase())
     return text.split(' ').map((word, index) => {
       const cleanWord = word.replace(/[.,!?;:]$/, '')
+      console.log(cleanWord)
       const punctuation = word.slice(cleanWord.length)
 
       if (wordsLower.includes(cleanWord.toLowerCase())) {
@@ -97,7 +154,7 @@ const Terms = () => {
         ))}
       </ol>
 
-      <div className="mt-8 text-sm text-gray-600">Last updated: January 2025</div>
+      <div className="mt-8 text-sm text-gray-600">{lastUpdated(threeDaysAgo)}</div>
     </div>
   )
 }

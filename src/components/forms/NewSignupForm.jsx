@@ -191,6 +191,7 @@ const NewSignupForm = () => {
       ...formData,
       geoLocation,
       formattedAddress,
+      phone: formattNumber(),
       urlData,
       progress: 0,
       signUpagent: loggedInUser.displayName,
@@ -199,7 +200,6 @@ const NewSignupForm = () => {
       timestamp: serverTimestamp(),
       reportsTo: claims.reportsTo,
       custId: id,
-      
     }
 
     const stats = {
@@ -215,7 +215,6 @@ const NewSignupForm = () => {
       // timestamp: serverTimestamp(),
       signUpagent: loggedInUser.displayName,
       agentUid: loggedInUser.uid,
-      
     }
 
     await setDoc(doc(db, 'customers', id), userData)
@@ -235,6 +234,14 @@ const NewSignupForm = () => {
       address: '',
       image: null,
     }))
+  }
+
+  function formattNumber() {
+    const n = phone
+    // Check if 11 digits and
+    const nRegex = /^(?=\d{11}$)(\d{5})(\d{3})(\d{2})/
+    const formatted = n.replace(nRegex, '($1)-$2-$3')
+    return formatted ?? 'no phone number'
   }
 
   return (

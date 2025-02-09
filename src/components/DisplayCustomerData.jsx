@@ -7,16 +7,15 @@ import { onSubmit } from '../crm context/CrmAction'
 import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
 
 import ProfileControlButtons from './ProfileControlButtons'
-import Loader from '../assets/Loader'
 
 function DisplayCustomerData({ customer }) {
   const { changeDetails } = useContext(CrmContext)
 
-  // leave for reference
+  // *** leave for reference ***
   const location = useLocation()
   const navigate = useNavigate()
   const auth = getAuth()
-  // leave for reference
+  // *** leave for reference ***
 
   const [data, setData] = useState({
     name: customer.name,
@@ -42,10 +41,40 @@ function DisplayCustomerData({ customer }) {
     console.log(error)
   }
 
-  // data passed down so no loader needed
-  // if (!customer) {
-  //   return <Loader />
-  // }
+  // **** leave for reference  ****
+  // const custNum = customer.phone.split('-')
+  // custNum[1] = custNum[1] + ' - '
+  // custNum[0] = custNum[0] + ' - '
+  // **** leave for reference  ****
+
+  const formatPhoneNumber = (phoneNumber) => {
+    if (phoneNumber === '') {
+      return (
+        <div className="profile-extra-info profile-phone-div">
+          <div>phone</div>
+          <p className="no-number">No number To Display</p>
+        </div>
+      )
+    }
+    // Remove any non-digit characters first
+    const cleaned = phoneNumber.replace(/\D/g, '')
+
+    // Split the number into groups
+    const areaCode = cleaned.slice(0, 5)
+    const middle = cleaned.slice(5, 8)
+    const end = cleaned.slice(8)
+
+    return (
+      <div className="profile-extra-info profile-phone-div">
+        <div>{cleaned.startsWith('07') ? 'Mobile' : 'Phone'}</div>
+        <div>
+          <span className="formatted-phone-number">({areaCode})</span>
+          <span className="formatted-phone-number"> - {middle}</span>
+          <span className="formatted-phone-number"> - {end}</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -75,11 +104,26 @@ function DisplayCustomerData({ customer }) {
           <p className="profile-extra-info">
             Cust ID <span>{customer.custId} </span>{' '}
           </p>
+
+          {/* <div className="profile-extra-info profile-phone-div">
+            <div>Phone</div>
+            <div>
+              {custNum?.map((item, i) => {
+                return <span className="formatted-phone-number">{item} </span>
+              })}
+            </div>
+          </div> */}
+
+          {formatPhoneNumber(customer.phone)}
+
           <p className="profile-extra-info">
             Email <span>{customer.email} </span>
           </p>
           <p className="profile-extra-info">
-            Date Of Signup <span>{customer.dateOfSignUp} </span>
+            Date Of Signup <span>{customer.dateOfSignUp.split(',')[0]} </span>
+          </p>
+          <p className="profile-extra-info">
+            Time Of Signup <span>{customer.dateOfSignUp.split(',')[1]} </span>
           </p>
           <p className="profile-extra-info">
             Sign Up Agent
@@ -101,7 +145,7 @@ function DisplayCustomerData({ customer }) {
             <span>ST5 1LT</span>
           </p>
           <p className="profile-extra-info">
-            agent reports to
+            Agent Reports To
             <span>{customer.reportsTo.name}</span>
           </p>
         </div>
