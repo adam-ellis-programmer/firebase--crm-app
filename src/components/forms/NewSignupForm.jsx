@@ -179,7 +179,7 @@ const NewSignupForm = () => {
       setAlertState((prevState) => ({
         ...prevState,
         show: true,
-        text: 'please provide name email & company',
+        text: 'please provide name, email, & company',
       }))
       resetAlert()
       return

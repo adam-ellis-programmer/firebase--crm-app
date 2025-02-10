@@ -48,7 +48,6 @@ function DisplayCustomerData({ customer }) {
   // **** leave for reference  ****
 
   const formatPhoneNumber = (phoneNumber) => {
-    console.log(phoneNumber)
     if (phoneNumber === '') {
       return (
         <div className="profile-extra-info profile-phone-div">
@@ -65,9 +64,13 @@ function DisplayCustomerData({ customer }) {
     const middle = cleaned.slice(5, 8)
     const end = cleaned.slice(8)
 
+    // regex check if UK mobile
+    const mobReg = /^07/
+    const isMobile = mobReg.test(cleaned)
+
     return (
       <div className="profile-extra-info profile-phone-div">
-        <div>{cleaned.startsWith('07') ? 'Mobile' : 'Phone'}</div>
+        <div>{isMobile ? 'Mobile' : 'Phone'}</div>
         <div>
           <span className="formatted-phone-number">({areaCode})</span>
           <span className="formatted-phone-number"> - {middle}</span>
