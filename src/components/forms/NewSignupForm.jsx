@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faImage } from '@fortawesome/free-solid-svg-icons'
+import { faHandsClapping, faImage } from '@fortawesome/free-solid-svg-icons'
 
 import { doc, setDoc, serverTimestamp, FieldPath } from 'firebase/firestore'
 import { db } from '../../firebase.config'
@@ -22,6 +22,11 @@ const NewSignupForm = () => {
     address: '',
     image: null,
   })
+
+  const [alertState, setAlertState] = useState({
+    show: false,
+    text: '',
+  })
   const [isDragging, setIsDragging] = useState(false)
 
   const { name, email, phone, company, address, image } = formData
@@ -30,6 +35,7 @@ const NewSignupForm = () => {
     // Cleanup function to revoke the object URL when the component is unmounted
     return () => {
       if (image) {
+        //  URLs stay in the browser's memory until we explicitly remove them.
         URL.revokeObjectURL(image.preview)
       }
     }
@@ -156,14 +162,50 @@ const NewSignupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    console.log(process.env.REACT_APP_PROFILE_URL)
-
+    // if the agent has not got sales permission
     if (!claims.sales) {
       console.log('you are not authorized to sign up new customers! ')
       return
     }
 
-    // return
+    function checkEmail(email) {
+      // [^\s@] allow any char but space and @ Symbal
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+      const check = regex.test(email)
+      return check
+    }
+
+    if (!email || !name || !company) {
+      setAlertState((prevState) => ({
+        ...prevState,
+        show: true,
+        text: 'please provide name email & company',
+      }))
+      resetAlert()
+      return
+    }
+
+    if (!checkEmail(email)) {
+      setAlertState((prevState) => ({
+        ...prevState,
+        show: true,
+        text: 'email is invalid',
+      }))
+      resetAlert()
+      return
+    }
+
+    if (!address) {
+      setAlertState((prevState) => ({
+        ...prevState,
+        show: true,
+        text: 'please provide an address',
+      }))
+
+      resetAlert()
+      return
+    }
+
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEO_KEY}`
     )
@@ -183,7 +225,8 @@ const NewSignupForm = () => {
 
     // Set the default URL if no image is provided
     urlData.url = process.env.REACT_APP_PROFILE_URL
-    // if user does not enter a profile pic
+
+    // if user uploads img
     if (image?.file) urlData = await uploadImg(id, image?.file)
 
     delete formData.image
@@ -236,12 +279,22 @@ const NewSignupForm = () => {
     }))
   }
 
+  function resetAlert() {
+    setTimeout(() => {
+      setAlertState((prevState) => ({
+        ...prevState,
+        show: false,
+        text: '',
+      }))
+    }, 2000)
+  }
+
   function formattNumber() {
     const n = phone
-    // Check if 11 digits and
+    // Check if 11 digits first
     const nRegex = /^(?=\d{11}$)(\d{5})(\d{3})(\d{2})/
     const formatted = n.replace(nRegex, '($1)-$2-$3')
-    return formatted ?? 'no phone number'
+    return formatted
   }
 
   return (
@@ -289,6 +342,14 @@ const NewSignupForm = () => {
           value={phone}
         />
       </div>
+
+      {/* alert */}
+      {alertState.show && (
+        <div className="new-cusotmer-alert">
+          <p>{alertState.text}</p>
+        </div>
+      )}
+      {/* alert */}
 
       <div className="sign-up-form-group text-area-group">
         <textarea

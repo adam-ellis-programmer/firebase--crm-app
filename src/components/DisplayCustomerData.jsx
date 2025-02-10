@@ -48,6 +48,7 @@ function DisplayCustomerData({ customer }) {
   // **** leave for reference  ****
 
   const formatPhoneNumber = (phoneNumber) => {
+    console.log(phoneNumber)
     if (phoneNumber === '') {
       return (
         <div className="profile-extra-info profile-phone-div">

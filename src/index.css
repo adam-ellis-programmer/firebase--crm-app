@@ -2923,6 +2923,16 @@ td {
   margin-bottom: 4px;
 }
 
+.new-cusotmer-alert {
+  height: 50px;
+  background-color: rgb(201, 33, 33);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 500;
+}
 .signup-input {
   border-radius: 0.4em;
   border: 1px solid;

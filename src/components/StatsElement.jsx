@@ -115,7 +115,7 @@ function StatsElement() {
           <thead>
             <tr className="table-row">
               <th className="table-span-med">id</th>
-              <th className="stats-page-custID">CustId</th>
+              {/* <th className="stats-page-custID">CustId</th> */}
               <th>email</th>
               <th>Name</th>
               <th className="points">Points</th>
@@ -134,7 +134,7 @@ function StatsElement() {
                 <tr key={id}>
                   {getIndex(index)}
                   <td><div className="table-span table-span-med">{index + 1}</div></td>
-                  <td><div className="table-span stats-page-custID">{data.custId}</div></td>
+                  {/* <td><div className="table-span stats-page-custID">{data.custId}</div></td> */}
                   <td><div className="table-span stats-cust-email">{data.email}</div></td>
                   <td><div className="table-span stats-cust-name">{data.name}</div></td>
                   <td><div className="table-span points">{data.points}</div></td>

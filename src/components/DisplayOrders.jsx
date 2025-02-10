@@ -102,7 +102,7 @@ function DisplayOrders() {
 
   useEffect(() => {
     document.addEventListener('click', () => {
-      console.log('clicked: add class to chekc list')
+      console.log('clicked: add class to check list')
     })
     return () => {}
   }, [])

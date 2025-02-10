@@ -34,8 +34,9 @@ const Terms = () => {
   const today = new Date()
   // look up the today - 3 * 24 * 60 * 60 * 1000
   const threeDaysAgo = new Date(today - 3 * 24 * 60 * 60 * 1000)
-  console.log(threeDaysAgo.getMonth() + 1)
+  // console.log(threeDaysAgo.getMonth() + 1)
 
+  // *** leave for reference *** //
   const formatDate = (date) => {
     const day = date.getDate().toString().padStart(2, '0')
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -48,7 +49,7 @@ const Terms = () => {
     const month = date.getMonth()
     const year = date.getFullYear()
     const dayOfWeek = date.getDay()
-    console.log(dayOfWeek)
+    // console.log(dayOfWeek)
     return `last updated on ${daysOfWeek[dayOfWeek]} ${day} ${months[month]} ${year}`
   }
 
@@ -57,10 +58,13 @@ const Terms = () => {
 
   const highlightWords = (text, wordList) => {
     const wordsLower = wordList.map((word) => word.toLowerCase())
+
     return text.split(' ').map((word, index) => {
       const cleanWord = word.replace(/[.,!?;:]$/, '')
-      console.log(cleanWord)
+
       const punctuation = word.slice(cleanWord.length)
+
+      // has index memory
 
       if (wordsLower.includes(cleanWord.toLowerCase())) {
         return (
