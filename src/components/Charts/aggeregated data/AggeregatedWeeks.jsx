@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { aggeregatedData, formatPrice } from '../../../CrmFunctions'
+import { aggregateData, formatPrice } from '../../../CrmFunctions'
 
 const AggeregatedWeeks = () => {
   const [weekData, setweekData] = useState(null)
   useEffect(() => {
     const getAggData = async () => {
-      const data = await (await aggeregatedData()).weekData
+      const data = await (await aggregateData()).weekData
       // console.log(data )
       setweekData(data)
     }

@@ -3,47 +3,58 @@ import { getAllOrders, getAllOrdersStructured } from '../../crm context/CrmActio
 import { aggeregatedData, formatPrice } from '../../CrmFunctions'
 import Loader from '../../assets/Loader'
 
-const OtherData = () => {
+const AtAGlance = () => {
   const [orderData, setOrderData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const date = new Date()
 
   //   prettier-ignore
   const processOrderData = (orders) => {
-    // Use reducer to collect prices and count orders simultaneously
-    const processedData = orders.reduce((acc, item) => {
-        // Add price to prices array
+    const  processData = orders.reduce((acc, item) => {
         acc.prices.push(item.price)
-        // Increment order count
         acc.orderCount += 1
         return acc
-      },{ prices: [], orderCount: 0 })
+      },
+      { prices: [], orderCount: 0 }
+    )
 
-    // Calculate average using our order count
-    // add it all up and divide by length
-    const totalSpend = processedData.prices.reduce((sum, price) => sum + price, 0)
-    const averageSpend = totalSpend / processedData.orderCount
+    // If we have no prices, return 0 for all values
+    if ( processData.prices.length === 0) {
+      return {
+        minPrice: 0,
+        maxPrice: 0,
+        averageSpend: 0,
+        totalOrders: 0,
+      }
+    }
+
+    // **** old way keep for reference ***
+    // Check if we have any prices before calculating min/max
+    // const hasOrders =  processData.prices.length > 0
+    // 
+    // maxPrice: hasOrders ? Math.max(... processData.prices) : 0,
+    // **** old way keep for reference ***
+    
+    // Calculate values using array methods (no initial value needed)
+    const minPrice =  processData.prices.reduce((min, price) => Math.min(min, price))
+    const maxPrice =  processData.prices.reduce((max, price) => Math.max(max, price))
+    const totalSpend =  processData.prices.reduce((sum, price) => sum + price, 0)
+    const averageSpend = totalSpend /  processData.orderCount
 
     return {
-      minPrice: Math.min(...processedData.prices),
-      maxPrice: Math.max(...processedData.prices),
-      averageSpend: averageSpend,
-      totalOrders: processedData.orderCount,
+      minPrice,
+      maxPrice,
+      averageSpend,
+      totalOrders:  processData.orderCount,
     }
   }
-
-  // const newData = Object.values(data)
-  // console.log(newData)
-  //  prettier-ignore
 
   useEffect(() => {
     const getData = async () => {
       try {
         const orders = await getAllOrders()
-        const testD = await getAllOrdersStructured()
-        const data = await aggeregatedData(testD)
-        // console.log(data)
-        const processedData = processOrderData(orders)
-        setOrderData(processedData)
+        const processData = processOrderData(orders)
+        setOrderData(processData)
         setLoading(false)
       } catch (error) {
         console.log(error)
@@ -60,7 +71,9 @@ const OtherData = () => {
   return (
     <>
       <div className="chart-page-sub-header-div">
-        <p>at a glance</p>
+        <p>
+          at a glance <span> for year: {date.getFullYear()}</span>
+        </p>
       </div>
       <div className="other-data-container">
         <div className="other-data-box">
@@ -82,15 +95,15 @@ const OtherData = () => {
         </div>
         <div className="other-data-box">
           <p> month</p>
-          <p>10</p>
+          <p>0</p>
         </div>
         <div className="other-data-box">
           <p> week</p>
-          <p>5</p>
+          <p>0</p>
         </div>
       </div>
     </>
   )
 }
 
-export default OtherData
+export default AtAGlance

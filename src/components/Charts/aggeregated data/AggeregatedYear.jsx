@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { aggeregatedData, formatPrice } from '../../../CrmFunctions'
+import { aggregateData, formatPrice } from '../../../CrmFunctions'
 
 const AggeregatedYear = () => {
   const [yearData, setYearData] = useState(null)
   useEffect(() => {
     const getAggData = async () => {
       // The parentheses tell JavaScript: "Open this box first, then look for yearData inside"
-      const data = await (await aggeregatedData()).yearData
+      const data = await (await aggregateData()).yearData
       setYearData(data)
     }
 

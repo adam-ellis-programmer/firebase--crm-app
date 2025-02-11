@@ -101,138 +101,132 @@ export const formatPrice = (pence) => {
 
 // This is why we made the following modification when switching to 0:
 // aggeregated SPELLING ****
-export const aggeregatedData = async () => {
+// Aggregate
+export const aggregateData = async () => {
   const data = await getAllOrdersStructured()
   const yearOrders = data?.yearOrders
   const monthData = data?.monthOrders
   const weekhData = data?.weekOrders
   const todayData = data?.todayOrders
   const hourData = data?.hourOrders
-  console.log(hourData)
 
-  const getMonthly = monthData.reduce(
-    (acc, item) => {
-      acc.prices.push(item.price)
-      acc.total += item.price
-      acc.count += 1
-      // Update min price - if it's the first item or if current price is lower
-      acc.min = acc.min === undefined ? item.price : Math.min(acc.min, item.price)
-      // Update max price - if it's the first item or if current price is higher
-      acc.max = acc.max === undefined ? item.price : Math.max(acc.max, item.price)
-      // Calculate the running average
-      acc.average = acc.total / acc.count
-      return acc
-    },
-    {
-      prices: [],
-      count: 0,
-      total: 0,
-      min: undefined, // Initialize min as undefined
-      max: undefined, // Initialize max as undefined
-      average: 0,
-    }
-  )
-
-  const getWeekly = weekhData.reduce(
-    (acc, item) => {
-      acc.prices.push(item.price)
-      acc.total += item.price
-      acc.count += 1
-      acc.min = acc.min === undefined ? item.price : Math.min(acc.min, item.price)
-      acc.max = acc.max === undefined ? item.price : Math.max(acc.max, item.price)
-      acc.average = acc.total / acc.count
-
-      return acc
-    },
-    {
-      prices: [],
-      count: 0,
-      total: 0,
-      min: undefined,
-      max: undefined,
-      average: 0,
-    }
-  )
-
-  const getYearly = yearOrders.reduce(
-    (acc, item) => {
-      acc.prices.push(item.price)
-      acc.total += item.price
-      acc.count += 1
-      acc.min = acc.min === undefined ? item.price : Math.min(acc.min, item.price)
-      acc.max = acc.max === undefined ? item.price : Math.max(acc.max, item.price)
-      acc.average = acc.total / acc.count
-      return acc
-    },
-    {
-      prices: [],
-      count: 0,
-      total: 0,
-      min: undefined,
-      max: undefined,
-      average: 0,
-    }
-  )
-
-  // count loop:
-  // Loop 1: (undefined || 0) + 1 = 1
-  // Loop 2: (1 || 0) + 1 = 2
-  const getToday = () => {
-    // Define our default values object
-    const defaultValues = {
-      prices: [],
-      count: 0,
-      total: 0,
-      min: 0,
-      max: 0,
-      average: 0,
-      medianPrice: 0,
+  // First comparison: Math.max(-Infinity, 25)
+  // -Infinity is smaller than 25, so 25 becomes our new max
+  // Math.max(-Infinity, 25) → 25 always bigger then
+  const getMonthly = () => {
+    // First, check if we have any data to process
+    if (!monthData || monthData.length === 0) {
+      // Return an object with all numeric values set to 0
+      return { prices: [], count: 0, total: 0, min: 0, max: 0, average: 0 }
     }
 
-    // If the array is empty, return our default values
-    if (!todayData || todayData.length === 0) {
-      return defaultValues
-    }
-
-    // Otherwise, proceed with the reduction
-    return todayData.reduce((acc, item) => {
-      // console.log(item)
-      return {
-        // First evaluates what's in parentheses
-        prices: [...(acc.prices || []), item.price],
-        count: (acc.count || 0) + 1,
-        total: (acc.total || 0) + item.price,
-        min: acc.min === 0 ? item.price : Math.min(...acc.prices),
-        max: acc.max === 0 ? item.price : Math.max(acc.max, item.price),
-        average: ((acc.total || 0) + item.price) / ((acc.count || 0) + 1),
-        // look this up
-        medianPrice: (acc.medianPrice = acc.prices.sort((a, b) => a - b)[Math.floor(acc.prices.length / 2)]),
+    // If we do have data, proceed with our reduce operation
+    return monthData.reduce(
+      (acc, item) => {
+        acc.prices.push(item.price)
+        acc.total += item.price
+        acc.count += 1
+        acc.min = Math.min(acc.min, item.price)
+        acc.max = Math.max(acc.max, item.price)
+        acc.average = acc.total / acc.count
+        return acc
+      },
+      {
+        prices: [],
+        count: 0,
+        total: 0,
+        min: Infinity,
+        max: -Infinity,
+        average: 0,
       }
-    }, defaultValues) // Use defaultValues as initial accumulator
+    )
   }
 
-  // // Starting with prices [10, 25, 15]:
-  // First iteration
-  // acc.max = 0
-  // item.price = 10
-  // Math.max(0, 10) → 10
+  const getWeekly = () => {
+    // First, check if we have any data to process
+    if (!weekhData || weekhData.length === 0) {
+      // Return an object with all numeric values set to 0
+      return { prices: [], count: 0, total: 0, min: 0, max: 0, average: 0 }
+    }
 
-  // // Second iteration
-  // acc.max = 10
-  // item.price = 25
-  // Math.max(10, 25) → 25
+    // If we do have data, proceed with our reduce operation
+    return weekhData.reduce(
+      (acc, item) => {
+        acc.prices.push(item.price)
+        acc.total += item.price
+        acc.count += 1
+        acc.min = Math.min(acc.min, item.price)
+        acc.max = Math.max(acc.max, item.price)
+        acc.average = acc.total / acc.count
+        return acc
+      },
+      {
+        prices: [],
+        count: 0,
+        total: 0,
+        min: Infinity,
+        max: -Infinity,
+        average: 0,
+      }
+    )
+  }
+  const getYearly = () => {
+    // First, check if we have any data to process
+    if (!yearOrders || yearOrders.length === 0) {
+      // Return an object with all numeric values set to 0
+      return { prices: [], count: 0, total: 0, min: 0, max: 0, average: 0 }
+    }
 
-  // // Third iteration
-  // acc.max = 25
-  // item.price = 15
-  // Math.max(25, 15) → 25
+    // If we do have data, proceed with our reduce operation
+    return yearOrders.reduce(
+      (acc, item) => {
+        acc.prices.push(item.price)
+        acc.total += item.price
+        acc.count += 1
+        acc.min = Math.min(acc.min, item.price)
+        acc.max = Math.max(acc.max, item.price)
+        acc.average = acc.total / acc.count
+        return acc
+      },
+      {
+        prices: [],
+        count: 0,
+        total: 0,
+        min: Infinity,
+        max: -Infinity,
+        average: 0,
+      }
+    )
+  }
 
-  // TRACK BY POPULAR PRODUCT
-  //  ADD IN A SELECT BOX IN THE ADD ORDER BAR
+  const getToday = () => {
+    // First, check if we have any data to process
+    if (!todayData || todayData.length === 0) {
+      // Return an object with all numeric values set to 0
+      return { prices: [], count: 0, total: 0, min: 0, max: 0, average: 0 }
+    }
 
-  const td = getToday()
-  // console.log(td)
-  // MEDIAN
+    // If we do have data, proceed with our reduce operation
+    return todayData.reduce(
+      (acc, item) => {
+        acc.prices.push(item.price)
+        acc.total += item.price
+        acc.count += 1
+        acc.min = Math.min(acc.min, item.price)
+        acc.max = Math.max(acc.max, item.price)
+        acc.average = acc.total / acc.count
+        return acc
+      },
+      {
+        prices: [],
+        count: 0,
+        total: 0,
+        min: Infinity,
+        max: -Infinity,
+        average: 0,
+      }
+    )
+  }
 
   const getByHour = () => {
     const defaultValues = {
@@ -244,15 +238,25 @@ export const aggeregatedData = async () => {
       average: 0,
     }
 
-    // if (!hourData || hourData.length === 0) {
-    //   return defaultValues
-    // }
-
+    if (!hourData || hourData.length === 0) {
+      return defaultValues
+    }
+    //
+    // // First iteration:
+    // acc.prices = undefined
+    // item.price = 10
+    //
+    // [...(undefined || []), 10]
+    // // 1. (undefined || []) evaluates to []
+    // [...([]), 10]
+    // // 2. Spreading an empty array gives us nothing
+    // [10]
+    //
+    // It safely handles the first iteration when the array might not exist yet
+    // It creates a new array each time instead of modifying the existing one
+    // It preserves all previous values while adding the new one
+    //
     return hourData.reduce((acc, item, i, arr) => {
-      // console.log(item)
-      // First evaluates what's in parentheses
-      // If acc.prices exists, use it
-      // Then spreads the result:
       return {
         prices: [...(acc.prices || []), item.price],
         count: (acc.count || 0) + 1,
@@ -269,8 +273,6 @@ export const aggeregatedData = async () => {
   // the half hours
   // array with two objects, each represents
   // half hour
-  const data1 = getByHour()
-  console.log(data1)
 
   return {
     monthData: getMonthly,
@@ -280,12 +282,3 @@ export const aggeregatedData = async () => {
     hourData: getByHour,
   }
 }
-// we aggregate the data once on the server fetch
-// and aggregate again here to provide object data
-//
-
-// dayly data
-
-// console.log(getToday)
-// what are the benifits of
-// 1: Using Map and Set

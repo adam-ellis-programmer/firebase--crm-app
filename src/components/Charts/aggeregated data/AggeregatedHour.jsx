@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { aggeregatedData, formatPrice } from '../../../CrmFunctions'
+import { aggregateData, formatPrice } from '../../../CrmFunctions'
 
 const AggeregatedHour = () => {
   const [todayData, setTodayData] = useState(null)
   useEffect(() => {
     const getAggData = async () => {
-      const data = (await aggeregatedData()).todayData
+      const data = (await aggregateData()).todayData
       setTodayData(data)
     }
 

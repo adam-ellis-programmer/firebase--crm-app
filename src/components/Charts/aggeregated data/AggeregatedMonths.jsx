@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react'
-import { aggeregatedData, formatPrice } from '../../../CrmFunctions'
+import { aggregateData, formatPrice } from '../../../CrmFunctions'
 
 const AggeregatedMonths = () => {
   const [monthData, setMonthData] = useState(null)
   useEffect(() => {
     const getAggData = async () => {
-      const data = await (await aggeregatedData()).monthData
+      const data = await (await aggregateData()).monthData
       setMonthData(data)
     }
 
     getAggData()
     return () => {}
   }, [])
-
+  console.log(monthData?.min)
   return (
     <>
       <div className="chart-page-sub-header-div">
