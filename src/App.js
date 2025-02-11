@@ -1,3 +1,4 @@
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './layout/Navbar'
 import { ToastContainer } from 'react-toastify'

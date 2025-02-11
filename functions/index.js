@@ -184,3 +184,8 @@ exports.listAllUsers = functions.https.onCall((data, context) => {
       throw new functions.https.HttpsError('unknown', 'Failed to list users', error);
     });
 });
+
+
+exports.payPalRoute = functions.https.onCall((data, context) => {
+
+})

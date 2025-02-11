@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { pricingTiers } from './data'
 import { Link } from 'react-router-dom'
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
+import PayPalBtn from './PayPalBtn'
 
 const PaymentPage = () => {
   const { id } = useParams()
@@ -14,9 +16,17 @@ const PaymentPage = () => {
     return <div>No pricing tier found</div>
   }
 
+  const styles = {
+    shape: 'rect',
+    layout: 'vertical',
+    color: 'white',
+    disableMaxWidth: true,
+    label: 'checkout',
+  }
+
   return (
     <div className="page-container payment-page-container">
-      <div>
+      <div className="payment-page-div">
         <div
           className={`pricing-card pay-page-card ${
             selectedTier.recommended ? 'recommended' : ''
@@ -46,6 +56,15 @@ const PaymentPage = () => {
               ))}
             </ul>
           )}
+        </div>
+      </div>
+
+      <div className="payment-page-div">
+        <div className="payment-form-div">
+          {/* <PayPalScriptProvider options={{ clientId: 'test' }}>
+            <PayPalButtons style={styles} />
+          </PayPalScriptProvider> */}
+          <PayPalBtn />
         </div>
       </div>
     </div>
