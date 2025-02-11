@@ -176,7 +176,7 @@ export const aggregateData = async () => {
       // Return an object with all numeric values set to 0
       return { prices: [], count: 0, total: 0, min: 0, max: 0, average: 0 }
     }
-
+    //Aggregate
     // If we do have data, proceed with our reduce operation
     return yearOrders.reduce(
       (acc, item) => {

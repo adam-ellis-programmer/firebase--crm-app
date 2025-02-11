@@ -24,6 +24,8 @@ import DataAll from './pages/DataAll'
 import NotFound from './pages/NotFound'
 import ChartDash from './pages/ChartDash'
 import Terms from './pages/Terms'
+import SignUpAccPage from './pages/SignUpTierPage'
+import PaymentPage from './billing/PaymentPage'
 
 // PROTECT THE ROUTES
 function App() {
@@ -40,6 +42,8 @@ function App() {
               <Route path="/sign-in" element={<Signin />} />
               <Route path="/agent-sign-in" element={<AgentSignIn />} />
               <Route path="/sign-up" element={<Signup />} />
+              <Route path="/sign-up-acc" element={<SignUpAccPage />} />
+              <Route path="/payment-page/:id" element={<PaymentPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/terms" element={<Terms />} />
 

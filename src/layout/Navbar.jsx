@@ -81,12 +81,14 @@ function Navbar({ setToggleNav, toggleNav }) {
   return (
     <nav className="nav-bar">
       <div className="nav-bar-container">
-
         <div className="logo-box testing">
           <Link to="/">
-          <Logo className='logo' />
+            <Logo className="logo" />
           </Link>
         </div>
+        <Link to="/sign-up-acc" className="sign-up-btn">
+          sign up
+        </Link>
         <ul className="nav-ul">
           <NavItem setToggleNav={setToggleNav} toggleNav={toggleNav} />
         </ul>
@@ -95,23 +97,27 @@ function Navbar({ setToggleNav, toggleNav }) {
         <div className="dropdown">
           <div className="profile-info">
             <Profile style={{ width: '60px', height: '60px' }} />
-         <div className="nav-header">
-         <span className="nav-name-span">{loggedInUser}</span>
-            <span onClick={handleSignOut} className="nav-sign-out">sign out</span>
-         </div>
+            <div className="nav-header">
+              <span className="nav-name-span">{loggedInUser}</span>
+              <span onClick={handleSignOut} className="nav-sign-out">
+                sign out
+              </span>
+            </div>
           </div>
           <ul className="toggle-nav-ul">
             {navButtons.map((item) => (
               <Link key={item.id} to={`${item.url}`} className="dropdown-text">
                 {/* {console.log(item)}  // for testing */}
-                <li className="toggle-nav-list" onClick={()=> setToggleNav(false)} >{item.text.toUpperCase()} </li>
+                <li className="toggle-nav-list" onClick={() => setToggleNav(false)}>
+                  {item.text.toUpperCase()}{' '}
+                </li>
               </Link>
             ))}
           </ul>
         </div>
       )}
     </nav>
-  );
+  )
 }
 
 export default Navbar
