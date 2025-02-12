@@ -80,6 +80,17 @@ export function getRating(amountSpentInPence) {
 //   }).format(price)
 // }
 
+// To get a 10-digit number, we need to:
+// 1. Start with a minimum of 1000000000 (to ensure 10 digits)
+// 2. Add a random number up to 8999999999 (to stay under 10 digits)
+
+export const generateTenDigitNumber = () => {
+  // 1000000000 ensures we start with 10 digits
+  // Math.random() * 9000000000 gives us a range of 0 to 8999999999
+  // Adding these together gives us a range of 1000000000 to 9999999999
+  return Math.floor(1000000000 + Math.random() * 9000000000)
+}
+
 export const formatPrice = (pence) => {
   const poundsDecimal = pence / 100
 

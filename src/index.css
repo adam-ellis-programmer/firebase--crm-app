@@ -3789,3 +3789,30 @@ td {
     max-width: 400px;
   }
 }
+
+.test-btn {
+  background-color: rgba(255, 111, 0, 0.923);
+  color: #fff;
+  font-size: 1.2em;
+  padding: 0.3em;
+  border-radius: 4px;
+  margin: 2rem;
+}
+.payment-details-input {
+  border: 1px solid;
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+.form-row input {
+  padding: 0.3rem;
+  cursor: default;
+}
+
+.form-label {
+  margin-bottom: 0.5rem;
+  display: block;
+}

@@ -315,7 +315,8 @@ function AdminPage() {
 
   const handlePopulate = async (e) => {
     e.preventDefault()
-
+    console.log('adminEmail value:', adminEmail) // Add this line
+    // return
     const functions = getFunctions()
     const getUser = httpsCallable(functions, 'getUser')
 
@@ -357,6 +358,7 @@ function AdminPage() {
         collection(db, 'customers'),
         where('reportsTo.id', '==', oldID)
       )
+      
       const customersQuerySnapshot = await getDocs(customersQuery)
 
       // Update the `customers` collection

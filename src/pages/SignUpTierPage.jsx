@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { pricingTiers } from '../billing/data'
-console.log(pricingTiers)
+//
+//
 const SignUpTierPage = () => {
   return (
     <div className="page-container tier-grid">
@@ -14,7 +15,7 @@ const SignUpTierPage = () => {
           <h3 className="pricing-name">{tier.name}</h3>
           <p className="pricing-description">{tier.description}</p>
           <div className="pricing-price">
-            ${tier.price}
+            £{tier.price}
             <span className="pricing-period">/{tier.billingPeriod}</span>
           </div>
 

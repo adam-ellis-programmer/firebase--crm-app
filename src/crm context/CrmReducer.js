@@ -112,6 +112,11 @@ export const CrmReducer = (state, action) => {
         ...state,
         profileChartType: action.payload,
       }
+    case 'SET_SUBSCRIPTION_INFO':
+      return {
+        ...state,
+        subscriptionInfo: action.payload,
+      }
 
     default:
       return state

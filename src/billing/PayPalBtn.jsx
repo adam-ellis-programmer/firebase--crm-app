@@ -1,51 +1,109 @@
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import { useCallback, useState } from 'react'
 
-import React from 'react'
-const styles = {
-  shape: 'rect',
-  layout: 'vertical',
-  color: 'white',
-  disableMaxWidth: true,
-  label: 'checkout',
-}
+const PayPalBtn = ({ price, productId }) => {
+  // Add state to track payment status
+  const [paymentStatus, setPaymentStatus] = useState('')
 
-const PayPalBtn = () => {
   const initialOptions = {
-    clientId: 'YOUR_CLIENT_ID',
+    clientId: process.env.REACT_APP_PAY_PAL_ID,
+    currency: 'GBP',
+    intent: 'capture',
   }
 
-  const createOrder = async () => {
+  // Handle successful payments
+  const handleSuccess = useCallback((data) => {
+    console.log('Payment successful:', data)
+    setPaymentStatus('Payment completed successfully!')
+    // toast.success('Payment completed!') // If using toast notifications
+    // Here you could:
+    // - Update your database
+    // - Redirect to a success page
+    // - Show a success message
+  }, [])
+
+  // Handle payment errors
+  const handleError = useCallback((error) => {
+    console.error('Payment error:', error)
+    setPaymentStatus('Payment failed: ' + error.message)
+    // toast.error('Payment failed!') // If using toast notifications
+    // Here you could:
+    // - Show an error message
+    // - Log the error
+    // - Offer retry options
+  }, [])
+
+  const createOrder = useCallback(async () => {
     try {
-      const response = await fetch('/my-server/create-paypal-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cart: [{ id: 'YOUR_PRODUCT_ID', quantity: 'YOUR_PRODUCT_QUANTITY' }],
-        }),
+      const functions = getFunctions()
+      const createOrder = httpsCallable(functions, 'createPayPalOrder')
+
+      const result = await createOrder({
+        amount: price, // Test amount of $10
+        productId, // Test product ID
       })
 
-      const orderData = await response.json()
-
-      if (!orderData.id) {
-        const errorDetail = orderData.details[0]
-        const errorMessage = errorDetail
-          ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-          : 'Unexpected error occurred, please try again.'
-
-        throw new Error(errorMessage)
+      if (!result.data.id) {
+        throw new Error('Failed to create PayPal order')
       }
 
-      return orderData.id
+      setPaymentStatus('Order created, awaiting payment...')
+      return result.data.id
     } catch (error) {
-      console.error(error)
+      handleError(error)
       throw error
     }
-  }
+  }, [])
+
+  const onApprove = useCallback(
+    async (data, actions) => {
+      try {
+        const functions = getFunctions()
+        const capturePayment = httpsCallable(functions, 'capturePayPalPayment')
+
+        const result = await capturePayment({
+          orderId: data.orderID,
+        })
+
+        if (result.data.status === 'COMPLETED') {
+          handleSuccess(result.data)
+        } else {
+          throw new Error('Payment not completed')
+        }
+      } catch (error) {
+        handleError(error)
+      }
+    },
+    [handleSuccess]
+  )
 
   return (
-    <div>
+    <div className="w-full max-w-md mx-auto">
       <PayPalScriptProvider options={initialOptions}>
-        <PayPalButtons createOrder={createOrder} />
+        {/* Show payment status if any */}
+        {paymentStatus && (
+          <div className="mb-4 text-center">
+            <p
+              className={`text-sm ${
+                paymentStatus.includes('failed') ? 'text-red-600' : 'text-green-600'
+              }`}
+            >
+              {paymentStatus}
+            </p>
+          </div>
+        )}
+
+        <PayPalButtons
+          createOrder={createOrder}
+          onApprove={onApprove}
+          style={{
+            layout: 'vertical',
+            color: 'blue',
+            shape: 'rect',
+            label: 'pay',
+          }}
+        />
       </PayPalScriptProvider>
     </div>
   )

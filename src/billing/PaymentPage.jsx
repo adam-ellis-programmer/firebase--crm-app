@@ -4,6 +4,8 @@ import { pricingTiers } from './data'
 import { Link } from 'react-router-dom'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import PayPalBtn from './PayPalBtn'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import CompanyPaymentForm from './CompanyPaymentForm'
 
 const PaymentPage = () => {
   const { id } = useParams()
@@ -16,14 +18,14 @@ const PaymentPage = () => {
     return <div>No pricing tier found</div>
   }
 
-  const styles = {
-    shape: 'rect',
-    layout: 'vertical',
-    color: 'white',
-    disableMaxWidth: true,
-    label: 'checkout',
-  }
+  // const handleTestBtn = () => {
+  //   console.log('object')
+  //   const functions = getFunctions()
+  //   const addMessage = httpsCallable(functions, 'testFunc')
+  //   addMessage({ text: 'hello from the frontend!' }).then((result) => {})
+  // }
 
+  
   return (
     <div className="page-container payment-page-container">
       <div className="payment-page-div">
@@ -39,7 +41,7 @@ const PaymentPage = () => {
           <h3 className="pricing-name">{selectedTier.name}</h3>
           <p className="pricing-description">{selectedTier.description}</p>
           <div className="pricing-price">
-            ${selectedTier.price}
+            £{selectedTier.price}
             <span className="pricing-period">/{selectedTier.billingPeriod}</span>
           </div>
 
@@ -60,11 +62,12 @@ const PaymentPage = () => {
       </div>
 
       <div className="payment-page-div">
+        {/* <button className="test-btn" onClick={handleTestBtn}>
+          test button
+        </button> */}
         <div className="payment-form-div">
-          {/* <PayPalScriptProvider options={{ clientId: 'test' }}>
-            <PayPalButtons style={styles} />
-          </PayPalScriptProvider> */}
-          <PayPalBtn />
+          <CompanyPaymentForm />
+          <PayPalBtn price={selectedTier.price} productId={selectedTier.id} />
         </div>
       </div>
     </div>
