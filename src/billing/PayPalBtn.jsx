@@ -7,6 +7,7 @@ const PayPalBtn = ({ price, productId }) => {
   const { dispatch, subscriptionInfo } = useContext(CrmContext)
   // Add state to track payment status
   console.log(subscriptionInfo)
+  const [newSubId, setNewSubId] = useState('')
   const [paymentStatus, setPaymentStatus] = useState('')
 
   const initialOptions = {
@@ -22,53 +23,54 @@ const PayPalBtn = ({ price, productId }) => {
   // - Redirect to a success page
   // - Show a success message
   const handleSuccess = useCallback(
-    (data) => {
-      console.log('Payment successful:', data)
-      setPaymentStatus('Payment completed successfully!')
-      console.log('subscription data=>', subscriptionInfo)
-      subscriptionInfo.claims = {}
-      subscriptionInfo.claims.orgOwner = true
-      subscriptionInfo.claims.admin = true
-      subscriptionInfo.claims.superAdmin = true
-      subscriptionInfo.claims.manager = true
-      subscriptionInfo.claims.ceo = true
-      subscriptionInfo.claims.sales = true
-      subscriptionInfo.claims.reportsTo = ''
-      subscriptionInfo.claims.organization = subscriptionInfo.organization
-      subscriptionInfo.claims.organizationId = subscriptionInfo.organizationId
+    async (data) => {
+      try {
+        console.log('Payment successful:', data)
+        setPaymentStatus('Payment completed successfully!')
+        console.log('subscription data=>', subscriptionInfo)
 
-      const functions = getFunctions()
-      const newSubscriber = httpsCallable(functions, 'newSubscriber')
-      const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
+        // Set up claims
+        subscriptionInfo.claims = {
+          orgOwner: true,
+          admin: true,
+          superAdmin: true,
+          manager: true,
+          ceo: true,
+          sales: true,
+          reportsTo: '',
+          organization: subscriptionInfo.organization,
+          organizationId: subscriptionInfo.organizationId,
+        }
 
-      // handle firebase auth
-      // get the user id and stamp
-      // it in that users database file
-      newSubscriber({ ...subscriptionInfo })
-        .then((result) => {
-          const data = result.data
-          // delete data.password
-          console.log(data)
-          console.log('User Record:', result.data.userRecord)
-          console.log('Claims Response:', result.data.claimsResponse)
-          console.log('Original Data:', result.data.data)
-        })
-        .catch((error) => {
-          console.error('Error creating user:', error)
-          // Handle the error appropriately
-        })
+        const functions = getFunctions()
+        const newSubscriber = httpsCallable(functions, 'newSubscriber')
+        const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
 
-      // handle firebase db
-      handleDatabaseSignUp({ ...subscriptionInfo })
-        .then((result) => {
-          const data = result.data
-          delete data.password
-          console.log('User created:', data)
-        })
-        .catch((error) => {
-          console.error('Error creating user:', error)
-          // Handle the error appropriately
-        })
+        // First create the user and get their ID
+        const newUserResult = await newSubscriber({ ...subscriptionInfo })
+        console.log('User Record:', newUserResult.data.userRecord)
+        console.log('Claims Response:', newUserResult.data.claimsResponse)
+        console.log('Original Data:', newUserResult.data.data)
+
+        const userId = newUserResult.data.userRecord.uid
+        setNewSubId(userId) // Set the ID in state for other uses
+
+        // Now create the database entry with the user ID
+        const dbSubscriptionInfo = {
+          ...subscriptionInfo,
+          id: userId, // Use the ID directly instead of from state
+        }
+        console.log(userId)
+        console.log(dbSubscriptionInfo.id)
+
+        delete dbSubscriptionInfo.password
+
+        const dbResult = await handleDatabaseSignUp(dbSubscriptionInfo)
+        console.log('User created:', dbResult.data)
+      } catch (error) {
+        console.error('Error in handleSuccess:', error)
+        // Handle error appropriately
+      }
     },
     [subscriptionInfo]
   )

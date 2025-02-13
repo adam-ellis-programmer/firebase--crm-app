@@ -466,16 +466,22 @@ exports.handleDatabaseSignUp = onCall(async (request) => {
   try {
     const db = getFirestore()
     const userData = request.data
+    const userId = request.data.id
+
+    // get org name and rplace \s with -
+    const identifier = userData.organization
 
     // Create a new document in dbUsers collection
     // Using the email as the document ID (you can modify this if needed)
-    const docRef = db.collection('dbUsers').doc(userData.email)
+    const docRef = db.collection('organizations').doc(userId)
 
     // Add timestamp to the data
     const dataToStore = {
       ...userData,
       createdAt: new Date(),
       updatedAt: new Date(),
+      accUsers: 0,
+      accUsersLimit: 10,
     }
 
     await docRef.set(dataToStore)
