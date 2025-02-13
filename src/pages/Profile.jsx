@@ -18,6 +18,7 @@ import Chart from '../components/Charts/Chart'
 import PieChartJs from '../components/Charts/PieChartJS'
 import LineChartJS from '../components/Charts/LineChartJS'
 import ChartButtons from '../components/Charts/ChartButtons'
+import Claims from '../components/Claims'
 
 function Profile() {
   const [loading, setLoading] = useState(true)
@@ -115,7 +116,7 @@ function Profile() {
   if (loading) {
     return <Loader />
   }
-console.log(orders)
+  console.log(orders)
   return (
     <div className="page-container">
       <DashboardHeader />
@@ -155,6 +156,9 @@ console.log(orders)
                 </form>
               </div>
             </div>
+            {/* display claims data! */}
+            <Claims />
+            
             {emails && emails.length > 0 ? (
               <>
                 <p className="profile-top-five-header profile-emails">

@@ -13,7 +13,7 @@ const NewSignupForm = () => {
 
   const navigate = useNavigate()
   const { loggedIn, checkingStatus, loggedInUser, claims } = useAuthStatusTwo()
-  // console.log(claims)
+  console.log(claims)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -163,7 +163,7 @@ const NewSignupForm = () => {
     e.preventDefault()
 
     // if the agent has not got sales permission
-    if (!claims.sales) {
+    if (!claims.claims.sales) {
       console.log('you are not authorized to sign up new customers! ')
       return
     }
@@ -241,7 +241,7 @@ const NewSignupForm = () => {
       agentUid: loggedInUser.uid,
       dateOfSignUp: new Date().toLocaleString('en-GB'),
       timestamp: serverTimestamp(),
-      reportsTo: claims.reportsTo,
+      reportsTo: claims.claims.reportsTo,
       custId: id,
     }
 

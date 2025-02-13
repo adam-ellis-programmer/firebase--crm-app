@@ -1,5 +1,5 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
-const { admin, db } = require('./firebase.config')
+const { admin, db, getFirestore } = require('./firebase.config')
 
 exports.addAdminRole = onCall((request) => {
   return admin
@@ -7,22 +7,29 @@ exports.addAdminRole = onCall((request) => {
     .getUserByEmail(request.data.email)
     .then((user) => {
       console.log(user)
+      // return user
       return admin.auth().setCustomUserClaims(user.uid, {
-        admin: request.data.admin,
-        manager: request.data.manager,
-        ceo: request.data.ceo,
-        sales: request.data.sales,
-        reportsTo: request.data.reportsTo,
+        claims: {
+          // superAdmin: request.data.admin,
+          admin: request.data.admin,
+          manager: request.data.manager,
+          ceo: request.data.ceo,
+          sales: request.data.sales,
+          reportsTo: request.data.reportsTo,
+          organization: request.data.organization,
+          organization: request.data.organization,
+        },
       })
     })
     .then(() => {
+      // return request.data
       return admin.auth().getUserByEmail(request.data.email)
     })
     .then((updatedUser) => {
       console.log('Updated user custom claims:', updatedUser.customClaims)
       return {
         message: `${request.data.email} has been assigned these roles.`,
-        customClaims: updatedUser.customClaims,
+        customClaims: updatedUser.customClaims.claims,
         user: updatedUser,
         status: 'ok',
       }
@@ -50,9 +57,8 @@ exports.getUser = onCall((request) => {
 })
 
 exports.newSubscriber = onCall((request) => {
-  // if (!request.data.email || !request.data.password || !request.data.name) {
-  //   throw new HttpsError('invalid-argument', 'Missing required fields')
-  // }
+  let userRecordData // Variable to store the userRecord
+
   return admin
     .auth()
     .createUser({
@@ -61,30 +67,38 @@ exports.newSubscriber = onCall((request) => {
       displayName: request.data.firstName,
     })
     .then((userRecord) => {
-      // return { msg: 'signup successfull', userRecord }
+      // Store the userRecord
+      userRecordData = userRecord
+
+      // Set the custom claims
       return admin.auth().setCustomUserClaims(userRecord.uid, {
-        admin: request.data.claims.admin,
-        manager: request.data.claims.manager,
-        ceo: request.data.claims.ceo,
-        sales: request.data.claims.sales,
-        reportsTo: request.data.claims.reportsTo,
-        organization: request.data.claims.organization,
-        organization: request.data.claims.organization,
+        claims: {
+          orgOwner: request.data.claims.orgOwner,
+          superAdmin: request.data.claims.admin,
+          admin: request.data.claims.admin,
+          manager: request.data.claims.manager,
+          ceo: request.data.claims.ceo,
+          sales: request.data.claims.sales,
+          reportsTo: request.data.claims.reportsTo,
+          organization: request.data.claims.organization,
+          organizationId: request.data.claims.organizationId,
+        },
       })
     })
-    .then((res) => {
-      const data = request.data
-      return { res, data }
+    .then((claimsResponse) => {
+      // Return both the userRecord and the claims response
+      return {
+        userRecord: userRecordData,
+        claimsResponse: claimsResponse,
+        data: request.data,
+      }
+    })
+    .catch((error) => {
+      console.error('Error creating new subscriber:', error)
+      throw new Error(error.message)
     })
 })
 
-//
-// make new function that
-// makes new user as superAdmin
-// sets the claims straigh away
-// adds a claims for corporation
-// corp: 'my-comp'
-//
 exports.makeNewUser = onCall((request) => {
   if (!request.data.email || !request.data.password || !request.data.name) {
     throw new HttpsError('invalid-argument', 'Missing required fields')
@@ -449,8 +463,33 @@ exports.handlePayPalWebhook = onCall(async (request) => {
 })
 
 exports.handleDatabaseSignUp = onCall(async (request) => {
-  return request.data
+  try {
+    const db = getFirestore()
+    const userData = request.data
+
+    // Create a new document in dbUsers collection
+    // Using the email as the document ID (you can modify this if needed)
+    const docRef = db.collection('dbUsers').doc(userData.email)
+
+    // Add timestamp to the data
+    const dataToStore = {
+      ...userData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    await docRef.set(dataToStore)
+
+    return {
+      success: true,
+      data: dataToStore,
+    }
+  } catch (error) {
+    console.error('Error in handleDatabaseSignUp:', error)
+    throw new Error('Failed to create database user')
+  }
 })
+
 exports.handleWelcomeEmails = onCall(async (request) => {
   return request.data
 })

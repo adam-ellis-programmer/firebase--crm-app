@@ -6,6 +6,7 @@ import CrmContext from '../crm context/CrmContext'
 const PayPalBtn = ({ price, productId }) => {
   const { dispatch, subscriptionInfo } = useContext(CrmContext)
   // Add state to track payment status
+  console.log(subscriptionInfo)
   const [paymentStatus, setPaymentStatus] = useState('')
 
   const initialOptions = {
@@ -26,23 +27,48 @@ const PayPalBtn = ({ price, productId }) => {
       setPaymentStatus('Payment completed successfully!')
       console.log('subscription data=>', subscriptionInfo)
       subscriptionInfo.claims = {}
+      subscriptionInfo.claims.orgOwner = true
       subscriptionInfo.claims.admin = true
+      subscriptionInfo.claims.superAdmin = true
       subscriptionInfo.claims.manager = true
       subscriptionInfo.claims.ceo = true
       subscriptionInfo.claims.sales = true
-      subscriptionInfo.claims.reportsTo = true
       subscriptionInfo.claims.reportsTo = ''
-      // subscriptionInfo.organization = data.organization
-      // subscriptionInfo.organizationId = data.organizationId
+      subscriptionInfo.claims.organization = subscriptionInfo.organization
+      subscriptionInfo.claims.organizationId = subscriptionInfo.organizationId
 
       const functions = getFunctions()
       const newSubscriber = httpsCallable(functions, 'newSubscriber')
+      const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
 
-      newSubscriber({ ...subscriptionInfo }).then((result) => {
-        const data = result.data
-        delete data.password
-        console.log(data)
-      })
+      // handle firebase auth
+      // get the user id and stamp
+      // it in that users database file
+      newSubscriber({ ...subscriptionInfo })
+        .then((result) => {
+          const data = result.data
+          // delete data.password
+          console.log(data)
+          console.log('User Record:', result.data.userRecord)
+          console.log('Claims Response:', result.data.claimsResponse)
+          console.log('Original Data:', result.data.data)
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error)
+          // Handle the error appropriately
+        })
+
+      // handle firebase db
+      handleDatabaseSignUp({ ...subscriptionInfo })
+        .then((result) => {
+          const data = result.data
+          delete data.password
+          console.log('User created:', data)
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error)
+          // Handle the error appropriately
+        })
     },
     [subscriptionInfo]
   )

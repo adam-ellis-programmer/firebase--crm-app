@@ -106,6 +106,10 @@ function DisplayCustomerData({ customer }) {
       <div className="customer-details">
         <div className="customer-details-container">
           <p className="profile-extra-info">
+            Org Name <span> Tooly's Ltd </span>
+          </p>
+
+          <p className="profile-extra-info">
             Cust ID <span>{customer.custId} </span>{' '}
           </p>
 
@@ -134,7 +138,7 @@ function DisplayCustomerData({ customer }) {
             <span>{customer.signUpagent ? customer.signUpagent : 'System'}</span>
           </p>
           <p className="profile-extra-info">
-            Company
+            Account
             <span>{customer.company}</span>
           </p>
           {/* prettier-ignore */}

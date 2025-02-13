@@ -11,6 +11,7 @@ import { db } from '../../firebase.config'
 import { doc, deleteDoc, writeBatch, getDocs, where } from 'firebase/firestore'
 import Loader from '../../assets/Loader'
 import AdminPageMModal from '../../modals/AdminPageMModal'
+import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 
 function AdminPage() {
   const [managers, setManagers] = useState([])
@@ -21,6 +22,9 @@ function AdminPage() {
     signUp: false,
     delete: false,
   })
+
+  const { claims } = useAuthStatusTwo()
+  console.log(claims.claims)
 
   const [disabledStates, setDisabledStates] = useState({
     populate: true,
@@ -322,7 +326,7 @@ function AdminPage() {
 
     try {
       const res = await getUser({ email: adminEmail })
-      const userClaims = res.data.customClaims
+      const userClaims = res.data.customClaims.claims
 
       setPermissions((prevState) => ({
         ...prevState,
@@ -358,7 +362,7 @@ function AdminPage() {
         collection(db, 'customers'),
         where('reportsTo.id', '==', oldID)
       )
-      
+
       const customersQuerySnapshot = await getDocs(customersQuery)
 
       // Update the `customers` collection
