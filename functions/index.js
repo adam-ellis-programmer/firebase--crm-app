@@ -49,6 +49,42 @@ exports.getUser = onCall((request) => {
     })
 })
 
+exports.newSubscriber = onCall((request) => {
+  // if (!request.data.email || !request.data.password || !request.data.name) {
+  //   throw new HttpsError('invalid-argument', 'Missing required fields')
+  // }
+  return admin
+    .auth()
+    .createUser({
+      email: request.data.email,
+      password: request.data.password,
+      displayName: request.data.firstName,
+    })
+    .then((userRecord) => {
+      // return { msg: 'signup successfull', userRecord }
+      return admin.auth().setCustomUserClaims(userRecord.uid, {
+        admin: request.data.claims.admin,
+        manager: request.data.claims.manager,
+        ceo: request.data.claims.ceo,
+        sales: request.data.claims.sales,
+        reportsTo: request.data.claims.reportsTo,
+        organization: request.data.claims.organization,
+        organization: request.data.claims.organization,
+      })
+    })
+    .then((res) => {
+      const data = request.data
+      return { res, data }
+    })
+})
+
+//
+// make new function that
+// makes new user as superAdmin
+// sets the claims straigh away
+// adds a claims for corporation
+// corp: 'my-comp'
+//
 exports.makeNewUser = onCall((request) => {
   if (!request.data.email || !request.data.password || !request.data.name) {
     throw new HttpsError('invalid-argument', 'Missing required fields')
@@ -410,4 +446,11 @@ exports.handlePayPalWebhook = onCall(async (request) => {
     console.error('Error processing PayPal webhook:', error)
     throw new Error(`Failed to process PayPal webhook: ${error.message}`)
   }
+})
+
+exports.handleDatabaseSignUp = onCall(async (request) => {
+  return request.data
+})
+exports.handleWelcomeEmails = onCall(async (request) => {
+  return request.data
 })

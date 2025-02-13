@@ -1,8 +1,10 @@
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { getFunctions, httpsCallable } from 'firebase/functions'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useContext } from 'react'
+import CrmContext from '../crm context/CrmContext'
 
 const PayPalBtn = ({ price, productId }) => {
+  const { dispatch, subscriptionInfo } = useContext(CrmContext)
   // Add state to track payment status
   const [paymentStatus, setPaymentStatus] = useState('')
 
@@ -13,15 +15,38 @@ const PayPalBtn = ({ price, productId }) => {
   }
 
   // Handle successful payments
-  const handleSuccess = useCallback((data) => {
-    console.log('Payment successful:', data)
-    setPaymentStatus('Payment completed successfully!')
-    // toast.success('Payment completed!') // If using toast notifications
-    // Here you could:
-    // - Update your database
-    // - Redirect to a success page
-    // - Show a success message
-  }, [])
+  // toast.success('Payment completed!') // If using toast notifications
+  // Here you could:
+  // - Update your database
+  // - Redirect to a success page
+  // - Show a success message
+  const handleSuccess = useCallback(
+    (data) => {
+      console.log('Payment successful:', data)
+      setPaymentStatus('Payment completed successfully!')
+      console.log('subscription data=>', subscriptionInfo)
+      subscriptionInfo.claims = {}
+      subscriptionInfo.claims.admin = true
+      subscriptionInfo.claims.manager = true
+      subscriptionInfo.claims.ceo = true
+      subscriptionInfo.claims.sales = true
+      subscriptionInfo.claims.reportsTo = true
+      subscriptionInfo.claims.reportsTo = ''
+      // subscriptionInfo.organization = data.organization
+      // subscriptionInfo.organizationId = data.organizationId
+
+      const functions = getFunctions()
+      const newSubscriber = httpsCallable(functions, 'newSubscriber')
+
+      newSubscriber({ ...subscriptionInfo }).then((result) => {
+        const data = result.data
+        delete data.password
+        console.log(data)
+      })
+    },
+    [subscriptionInfo]
+  )
+  // Add subscriptionInfo to the dependencies
 
   // Handle payment errors
   const handleError = useCallback((error) => {

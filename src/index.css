@@ -46,26 +46,26 @@ body {
 code {
 }
 /* Ensure the background is always white */
-input[type='checkbox'] {
+/* input[type='checkbox'] {
   background-color: white;
-  border: 2px solid #ccc; /* Optional: to make the border visible */
-  width: 20px; /* Customize size */
+  border: 2px solid #ccc;
+  width: 20px;
   height: 20px;
-  appearance: none; /* Remove default styling */
+  appearance: none;
   cursor: pointer;
-}
+} */
 
 /* Checked state */
-input[type='checkbox']:checked {
-  background-color: white; /* Force white background */
+/* input[type='checkbox']:checked {
+  background-color: white;
   background-color: #fff;
-  background-color: #4caf50; /* Optional: green border for checked state */
-}
+  background-color: #4caf50;
+} */
 
 /* Add hover effect */
-input[type='checkbox']:hover {
+/* input[type='checkbox']:hover {
   border-color: #4caf50;
-}
+} */
 
 textarea,
 select,
@@ -2897,15 +2897,11 @@ td {
 
 .admin-x,
 .admin-check {
-  font-size: 1.2rem;
+  /* font-size: 1.2rem; */
 }
 
 .admin-x {
   color: red;
-}
-
-.admin-check {
-  color: #00cc66;
 }
 
 .new-sign-up-page-container {

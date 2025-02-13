@@ -7,7 +7,8 @@ console.log(calculateFutureDates().oneYear.milliseconds)
 const CompanyPaymentForm = () => {
   const { dispatch, subscriptionInfo } = useContext(CrmContext)
   console.log(subscriptionInfo)
-  // Initialize all form fields in state
+
+  // Initialize form data when component mounts
 
   const generateOrgId = (orgName) => {
     return orgName.slice(0, 3).toUpperCase() + '--' + generateTenDigitNumber()
@@ -16,18 +17,43 @@ const CompanyPaymentForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    // Instead of using local state, dispatch to context
+
+    // Create new payload
+    const newPayload = {
+      ...subscriptionInfo,
+      [name]: value,
+      signUpDate: calculateFutureDates().current.milliseconds,
+      expDate: calculateFutureDates().oneYear.milliseconds,
+    }
+
+    // Only change if organization changes
+    if (name === 'organization') {
+      newPayload.organizationId = generateOrgId(value)
+    }
+
     dispatch({
       type: 'SET_SUBSCRIPTION_INFO',
-      payload: {
-        ...subscriptionInfo, // Spread existing subscription info
-        [name]: value, // Update the changed field
-        organizationId: orgId,
-        expDate: calculateFutureDates().oneYear.milliseconds,
-        signUpDate: calculateFutureDates().current.milliseconds,
-      },
+      payload: newPayload,
     })
   }
+
+  const arr = Array.from({ length: 5 }, (_, i) => {
+    return subscriptionInfo[i]
+  })
+
+  // Method 1: Using Object.keys() and Object.values()
+  const keys = Object.keys(subscriptionInfo)
+  const values = Object.values(subscriptionInfo)
+  // console.log(keys)
+
+  const formatFieldName = (camelCase) => {
+    // Add space before capital letters and capitalize first letter
+    return camelCase
+      .replace(/([A-Z])/g, ' $1') // Add space before capitals
+      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+  }
+
+  console.log(formatFieldName('helloThere'))
 
   return (
     <div className="bg-slate-100 max-w-md mx-auto p-6 mb-8">

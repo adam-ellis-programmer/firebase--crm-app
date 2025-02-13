@@ -31,14 +31,15 @@ export const CrmDataContextProvider = ({ children }) => {
     },
 
     subscriptionInfo: {
-      firstName: 'Tamara',
-      lastName: 'Smith',
-      email: 'tam@gmail.com',
-      phone: '078767849383',
-      organization: 'tams nails',
-      signUpDate: '1770928154861',
-      expDate: '1770928168819',
-      password: '111111',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      organization: '',
+      // organizationId: '',
+      signUpDate: '',
+      expDate: '',
+      password: '',
     },
   }
 
