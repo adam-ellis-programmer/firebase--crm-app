@@ -24,7 +24,7 @@ function AdminPage() {
   })
 
   const { claims } = useAuthStatusTwo()
-  console.log(claims.claims)
+  console.log(claims?.claims)
 
   const [disabledStates, setDisabledStates] = useState({
     populate: true,

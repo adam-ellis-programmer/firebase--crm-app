@@ -482,8 +482,16 @@ exports.handleDatabaseSignUp = onCall(async (request) => {
       updatedAt: new Date(),
       accUsers: 0,
       accUsersLimit: 10,
+      totalSpent: 0,
+      salesMade: 0,
     }
 
+    // todo: add in a user as well
+    // as an account
+    // acc is a stand alone that
+    // holds data genericly for that acc
+    // user who OWNES the account needs
+    // their own account to make sales etc
     await docRef.set(dataToStore)
 
     return {

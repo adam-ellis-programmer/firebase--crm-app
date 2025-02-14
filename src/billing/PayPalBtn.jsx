@@ -23,6 +23,9 @@ const PayPalBtn = ({ price, productId }) => {
   // - Redirect to a success page
   // - Show a success message
   const handleSuccess = useCallback(
+    // async no nesting to get updated value
+    // variable inside server fucntion
+    
     async (data) => {
       try {
         console.log('Payment successful:', data)
