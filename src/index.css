@@ -3798,7 +3798,7 @@ td {
   border: 1px solid;
   width: 100%;
 }
-
+.select-row,
 .form-row {
   display: flex;
   flex-direction: column;
@@ -3934,4 +3934,72 @@ h2 {
   .claims-container {
     padding: 10px;
   }
+}
+/* ===================  new admin page design */
+
+.admin-form {
+  /* border: 1px solid; */
+  box-shadow: 1px 2px 20px #aba4a44c, -1px -2px 20px #aba4a44c;
+  padding: 1em;
+  border-radius: 0.4em;
+  margin-bottom: 1.5rem;
+}
+
+.admin-input {
+  border: 0.5px solid;
+  border-radius: 0.3em;
+}
+
+.admin-label {
+  /* border: 1px solid; */
+  width: 100%;
+  margin: 4px;
+  color: rgb(0, 0, 0);
+  font-weight: 500;
+}
+
+.admin-select {
+  width: 100%;
+  border: 0.5px solid;
+  padding: 0.5rem;
+  /* margin-top: 1rem; */
+  outline: none;
+}
+
+.admin-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+.admin-add-agent-btn {
+  background-color: rgb(57, 103, 151);
+  font-size: 1.2rem;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3em;
+  width: 200px;
+  margin: 0 5px;
+}
+
+.admin-checked-wrap {
+  /* border: 1px solid; */
+  /* display: flex; */
+  text-align: end;
+  /* justify-content: space-around; */
+}
+
+.check-text {
+  text-align: start;
+  margin-bottom: 1.5rem;
+}
+
+.admin-check-label {
+  margin-right: 1rem;
+  font-size: 1.1rem;
+}
+
+.admin-check-box {
+  width: 25px;
+  height: 25px;
 }

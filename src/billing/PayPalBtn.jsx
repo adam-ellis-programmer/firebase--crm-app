@@ -25,14 +25,15 @@ const PayPalBtn = ({ price, productId }) => {
   const handleSuccess = useCallback(
     // async no nesting to get updated value
     // variable inside server fucntion
-    
     async (data) => {
       try {
         console.log('Payment successful:', data)
         setPaymentStatus('Payment completed successfully!')
         console.log('subscription data=>', subscriptionInfo)
 
+        //  we need the id and full name
         // Set up claims
+        // delete dbSubscriptionInfo.claims called later
         subscriptionInfo.claims = {
           orgOwner: true,
           admin: true,
@@ -40,34 +41,38 @@ const PayPalBtn = ({ price, productId }) => {
           manager: true,
           ceo: true,
           sales: true,
-          reportsTo: '',
+          reportsTo: {
+            id: 'hello', // from data we get back from the server
+            name: 'adam', // from data we get back from the server
+          },
           organization: subscriptionInfo.organization,
           organizationId: subscriptionInfo.organizationId,
         }
-
+        // MOVE HANDLE DB SIGHN UP INTO SERVER FUCNTIONS
         const functions = getFunctions()
         const newSubscriber = httpsCallable(functions, 'newSubscriber')
         const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
 
         // First create the user and get their ID
         const newUserResult = await newSubscriber({ ...subscriptionInfo })
+        console.log(newUserResult)
         console.log('User Record:', newUserResult.data.userRecord)
         console.log('Claims Response:', newUserResult.data.claimsResponse)
         console.log('Original Data:', newUserResult.data.data)
 
         const userId = newUserResult.data.userRecord.uid
-        setNewSubId(userId) // Set the ID in state for other uses
 
         // Now create the database entry with the user ID
         const dbSubscriptionInfo = {
           ...subscriptionInfo,
-          id: userId, // Use the ID directly instead of from state
+          id: userId,
         }
         console.log(userId)
         console.log(dbSubscriptionInfo.id)
 
         delete dbSubscriptionInfo.password
-
+        // delete dbSubscriptionInfo.claims
+ 
         const dbResult = await handleDatabaseSignUp(dbSubscriptionInfo)
         console.log('User created:', dbResult.data)
       } catch (error) {

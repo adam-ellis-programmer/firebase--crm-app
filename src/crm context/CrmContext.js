@@ -39,7 +39,7 @@ export const CrmDataContextProvider = ({ children }) => {
       organizationId: '',
       signUpDate: '',
       expDate: '',
-      password: '',
+      password: '111111',
     },
   }
 

@@ -182,7 +182,7 @@ export async function submitUpdatedDocument(collectionName, orderId, formData) {
   return data
 }
 
-// add a doc and get the updated array back 
+// add a doc and get the updated array back
 export async function newDataBaseEntry(collectionName, newEntryObj, paramsUid) {
   const docRef = await addDoc(collection(db, collectionName), newEntryObj)
   const userReference = collection(db, collectionName)
@@ -473,9 +473,21 @@ export async function getStatsForStatsPage(collectionName, params) {
 // used on the admin page to add agent to the dataBase
 export async function addAgentToDbFromAdmin(collectionName, uid, newEntryObj) {
   try {
+    // Write the document
     await setDoc(doc(db, collectionName, uid), newEntryObj)
+
+    // Return the object that was written
+    return {
+      success: true,
+      data: newEntryObj,
+      id: uid,
+    }
   } catch (error) {
     console.log(error)
+    return {
+      success: false,
+      error: error.message,
+    }
   }
 }
 
@@ -886,4 +898,24 @@ export async function updateOrder(orderId, formData) {
     console.error('Error updating order:', error)
     throw error // Propagate error to caller
   }
+}
+
+export async function getManagers(orgId) {
+  const data = []
+  const q = query(
+    collection(db, 'agents'),
+    where('claims.manager', '==', true),
+    where('organizationId', '==', 'HEL--7532718663')
+  )
+
+  const querySnapshot = await getDocs(q)
+  querySnapshot.forEach((doc) => {
+    const dataObj = {
+      id: doc.id,
+      data: doc.data(),
+    }
+    data.push(dataObj)
+  })
+
+  return data
 }
