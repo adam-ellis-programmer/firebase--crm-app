@@ -902,20 +902,23 @@ export async function updateOrder(orderId, formData) {
 
 export async function getManagers(orgId) {
   const data = []
-  const q = query(
-    collection(db, 'agents'),
-    where('claims.manager', '==', true),
-    where('organizationId', '==', 'HEL--7532718663')
-  )
 
-  const querySnapshot = await getDocs(q)
-  querySnapshot.forEach((doc) => {
-    const dataObj = {
-      id: doc.id,
-      data: doc.data(),
-    }
-    data.push(dataObj)
-  })
+  try {
+    const q = query(
+      collection(db, 'agents'),
+      where('claims.manager', '==', true),
+      where('organizationId', '==', orgId)
+    )
+
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      const dataObj = {
+        id: doc.id,
+        data: doc.data(),
+      }
+      data.push(dataObj)
+    })
+  } catch (error) {}
 
   return data
 }

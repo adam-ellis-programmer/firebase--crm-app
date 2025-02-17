@@ -53,7 +53,7 @@ const PayPalBtn = ({ price, productId }) => {
         const newSubscriber = httpsCallable(functions, 'newSubscriber')
         const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
 
-        // First create the user and get their ID
+        // First create the user and get their ID§
         const newUserResult = await newSubscriber({ ...subscriptionInfo })
         console.log(newUserResult)
         console.log('User Record:', newUserResult.data.userRecord)

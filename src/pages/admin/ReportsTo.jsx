@@ -4,24 +4,12 @@ import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import FormRow from './FormRow'
 import { getManagers } from '../../crm context/CrmAction'
 
-const ReportsTo = () => {
-  const [managers, setManagers] = useState(null)
+const ReportsTo = ({ data }) => {
   const { claims } = useAuthStatusTwo()
   const [formData, setFormData] = useState({
     email: '',
     reportsTo: '',
   })
-
-  useEffect(() => {
-    const getData = async () => {
-      const data = await getManagers(claims?.claims?.organizationId)
-      setManagers(data)
-      console.log(data)
-    }
-
-    getData()
-    return () => {}
-  }, [claims?.claims?.organizationId])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -42,7 +30,7 @@ const ReportsTo = () => {
           //   onChange={handleFormInput}
         >
           <option value="">Select Manager</option>
-          {managers?.map((item) => {
+          {data?.map((item) => {
             const { data } = item
             const fullName = `${data.firstName} ${data.lastName}`
             return <option key={item.id}>{fullName}</option>

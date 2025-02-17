@@ -1,5 +1,16 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { admin, db, getFirestore } = require('./firebase.config')
+// index.js (root functions folder)
+// const authFunctions = require('./src/auth')
+// // Export all auth functions
+// exports.auth = authFunctions
+
+// follow node inport / export
+const { adminAddUser } = require('./src/auth')
+const { authTest, singleUpdate } = require('./src/testFuncitons')
+exports.authTest = authTest
+exports.adminAddUser = adminAddUser
+exports.singleUpdate = singleUpdate
 
 exports.addAdminRole = onCall((request) => {
   return admin
@@ -62,8 +73,9 @@ exports.getUser = onCall((request) => {
 // make obj and pass into function to create db
 // records
 exports.newSubscriber = onCall(async (request) => {
-  let userRecordData // Variable to store the userRecord
+  const id = `ORG-${org}-${db.collection('agents').doc().id}`
 
+  let userRecordData // Variable to store the userRecord
   return admin
     .auth()
     .createUser({

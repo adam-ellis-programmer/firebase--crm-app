@@ -2,11 +2,29 @@ import NewAgent from './NewAgent'
 import DeleteAgent from './DeleteAgent'
 import ChangeAccess from './ChangeAccess'
 import ReportsTo from './ReportsTo'
+import { useState, useEffect } from 'react'
+import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
+import { getManagers } from '../../crm context/CrmAction'
 
 function AdminPage() {
+  const { claims } = useAuthStatusTwo()
+  const [managers, setManagers] = useState()
+
+  // only get data once we have the claims
+  useEffect(() => {
+    const getData = async () => {
+      // Only run if organizationId exists
+      if (claims?.claims?.organizationId) {
+        const data = await getManagers(claims.claims.organizationId)
+        setManagers(data)
+      }
+    }
+
+    getData()
+    return () => {}
+  }, [claims?.claims?.organizationId])
   return (
     <div>
-      {/* <Test /> */}
       {/* {showAlert && <AdminPageMModal alertData={alertData} setShowAlert={setShowAlert} />} */}
       <div className="admin-grid">
         <div className="agent-sign-up agent-sign-up-left">
@@ -30,10 +48,10 @@ function AdminPage() {
           </div>
           {/* ========================================== */}
           {/*  */}
-          <NewAgent />
-          <DeleteAgent />
-          <ChangeAccess />
-          <ReportsTo />
+          <NewAgent data={managers} />
+          <DeleteAgent data={managers} />
+          <ChangeAccess data={managers} />
+          <ReportsTo data={managers} />
           {/*  */}
           {/* ========================================== */}
         </div>
