@@ -1,16 +1,15 @@
-// for funcitons that handle initial payed sign up
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { getAuth } = require('../firebase.config')
 const { getFirestore } = require('firebase-admin/firestore')
 
 // Initialize Firestore
 const db = getFirestore()
-const newAccSignUp = onCall(async (request) => {
+
+const adminAddUser = onCall(async (request) => {
   try {
-    // USE REGEX TO FIND \S REPLACE '' THE CAPS
     const data = request.data.data
     const org = request.data.data.organization.slice(0, 4).toUpperCase()
-    const id = `COMP-${org}-${db.collection('organizations').doc().id}`
+    const id = `AGENT-${org}-${db.collection('agents').doc().id}`
 
     // Create the user in Authentication
     const userRecord = await getAuth().createUser({
@@ -35,10 +34,9 @@ const newAccSignUp = onCall(async (request) => {
         reportsTo: data.reportsTo,
         organization: data.organization,
         organizationId: data.organizationId,
-        orgId: id,
+        orgId: data.orgId,
       },
     })
-
     // Get the updated user info
     const user = await getAuth().getUser(userRecord.uid)
 
@@ -47,13 +45,26 @@ const newAccSignUp = onCall(async (request) => {
     const agentObj = {
       ...data,
       claims: user.customClaims.claims,
+      docId: id,
+      createdAt: new Date(),
+      docId: id,
+      orgId: data.orgId,
     }
 
     // Create the database entry
-    const dbResult = await makeDbEntry(agentObj, userRecord.uid, id)
-    // const update = await updateAccountDoc(data.organizationId)
+    const dbResult = await agentDbEntry(agentObj, id, data.orgId)
 
-    return { user, success: true, userRecord, dbResult, agentObj, dbResult }
+    console.log('Successfully created new user:', userRecord.uid)
+    return {
+      success: true,
+      uid: userRecord.uid,
+      data,
+      user,
+      dbEntry: dbResult,
+      org,
+      docId: id,
+      orgId: data.orgId,
+    }
   } catch (error) {
     console.log('Error creating new user:', error)
     throw new HttpsError('internal', 'Error creating new user: ' + error.message)
@@ -61,45 +72,51 @@ const newAccSignUp = onCall(async (request) => {
   }
 })
 
-// ============
-// MAKE DB ENTRY
-// ============
-
-async function makeDbEntry(userData, uid, id) {
+async function agentDbEntry(userData, id, orgId) {
   try {
     // Create a new document in the agents collection
-    const agentRef = db.collection('agents').doc(uid)
-    const orgRef = db.collection('organizations').doc(uid)
+    const agentRef = db.collection('agents').doc(id)
 
     // Prepare the agent data
     const agentData = {
       ...userData,
-      createdAt: new Date(),
-      // delete one or the other
-      orgId: id,
-      docId: id,
     }
 
-    delete userData.claims
-    const orgObj = {
-      ...userData,
-      accUsersLimit: 10,
-      accUsers: 0,
-      orgId: id,
-      docId: id,
-    }
-
-    // Add the documents to Firestore
+    // Add the document to Firestore
     await agentRef.set(agentData)
-    await orgRef.set(orgObj)
+    const updateData = await updateDocument(orgId)
 
-    return { success: true, data: agentData }
+    return { success: 'yes', data: agentData, updateData }
   } catch (error) {
     console.error('Error making DB entry:', error)
     throw new Error('Failed to create database entry')
   }
 }
 
+// look up atomic data
+async function updateDocument(id) {
+  // update ref
+  const updateRef = db.collection('organizations').doc(id)
+
+  // get doc ref
+  const orgRef = db.collection('organizations').doc(id)
+
+  // get doc
+  const doc = await orgRef.get()
+
+  if (!doc.exists) {
+    return { msg: 'No Such document' }
+  } else {
+    // get current users
+    const accUsersNum = doc.data().accUsers
+
+    // update doc
+    const res = await updateRef.update({ accUsers: accUsersNum + 1 })
+
+    return { msg: 'success', accUsersNum, res }
+  }
+}
+
 module.exports = {
-  newAccSignUp,
+  adminAddUser,
 }

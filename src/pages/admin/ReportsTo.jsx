@@ -19,7 +19,7 @@ const ReportsTo = ({ data }) => {
   return (
     <div>
       <form onSubmit={handleSubmit} action="" className="admin-form">
-        <ComponentHeader text={`change agent access`} />
+        <ComponentHeader text={`change reports to`} />
 
         <FormRow type="text" name="email" formId="reports-to" placeholder="Enter Email" />
 

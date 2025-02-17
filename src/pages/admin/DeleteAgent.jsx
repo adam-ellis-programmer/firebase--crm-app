@@ -2,24 +2,35 @@ import React from 'react'
 import FormRow from './FormRow'
 import { useState } from 'react'
 import ComponentHeader from './ComponentHeader'
+import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const DeleteAgent = () => {
   const [formData, setFormData] = useState({
     email: '',
   })
 
-  const onChange = () => {
-    console.log('object')
+  const onChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
+
   const formArr = Object.entries(formData)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData)
+    const functions = getFunctions()
+    const deleteAgent = httpsCallable(functions, 'deleteAgent')
+    const data = await deleteAgent({ email: formData.email })
+
+    console.log(data)
   }
+
   return (
     <div>
-      <form onSubmit={handleSubmit} className="admin-form">
+      <form id="form" onSubmit={handleSubmit} className="admin-form">
         <ComponentHeader text={`delete agent`} />
 
         {formArr.map((item) => {

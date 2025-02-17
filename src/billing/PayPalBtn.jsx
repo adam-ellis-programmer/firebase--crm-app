@@ -6,7 +6,7 @@ import CrmContext from '../crm context/CrmContext'
 const PayPalBtn = ({ price, productId }) => {
   const { dispatch, subscriptionInfo } = useContext(CrmContext)
   // Add state to track payment status
-  console.log(subscriptionInfo)
+  // console.log(subscriptionInfo)
   const [newSubId, setNewSubId] = useState('')
   const [paymentStatus, setPaymentStatus] = useState('')
 
@@ -29,52 +29,14 @@ const PayPalBtn = ({ price, productId }) => {
       try {
         console.log('Payment successful:', data)
         setPaymentStatus('Payment completed successfully!')
-        console.log('subscription data=>', subscriptionInfo)
+        // console.log('subscription data=>', subscriptionInfo)
 
-        //  we need the id and full name
-        // Set up claims
-        // delete dbSubscriptionInfo.claims called later
-        subscriptionInfo.claims = {
-          orgOwner: true,
-          admin: true,
-          superAdmin: true,
-          manager: true,
-          ceo: true,
-          sales: true,
-          reportsTo: {
-            id: 'hello', // from data we get back from the server
-            name: 'adam', // from data we get back from the server
-          },
-          organization: subscriptionInfo.organization,
-          organizationId: subscriptionInfo.organizationId,
-        }
-        // MOVE HANDLE DB SIGHN UP INTO SERVER FUCNTIONS
         const functions = getFunctions()
-        const newSubscriber = httpsCallable(functions, 'newSubscriber')
-        const handleDatabaseSignUp = httpsCallable(functions, 'handleDatabaseSignUp')
+        const newAccSignUp = httpsCallable(functions, 'newAccSignUp')
 
-        // First create the user and get their ID§
-        const newUserResult = await newSubscriber({ ...subscriptionInfo })
+        // First create the user and get their ID
+        const newUserResult = await newAccSignUp({ data: subscriptionInfo })
         console.log(newUserResult)
-        console.log('User Record:', newUserResult.data.userRecord)
-        console.log('Claims Response:', newUserResult.data.claimsResponse)
-        console.log('Original Data:', newUserResult.data.data)
-
-        const userId = newUserResult.data.userRecord.uid
-
-        // Now create the database entry with the user ID
-        const dbSubscriptionInfo = {
-          ...subscriptionInfo,
-          id: userId,
-        }
-        console.log(userId)
-        console.log(dbSubscriptionInfo.id)
-
-        delete dbSubscriptionInfo.password
-        // delete dbSubscriptionInfo.claims
- 
-        const dbResult = await handleDatabaseSignUp(dbSubscriptionInfo)
-        console.log('User created:', dbResult.data)
       } catch (error) {
         console.error('Error in handleSuccess:', error)
         // Handle error appropriately

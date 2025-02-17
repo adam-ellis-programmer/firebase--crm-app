@@ -9,6 +9,7 @@ import { getManagers } from '../../crm context/CrmAction'
 function AdminPage() {
   const { claims } = useAuthStatusTwo()
   const [managers, setManagers] = useState()
+  // console.log(claims?.claims)
 
   // only get data once we have the claims
   useEffect(() => {
@@ -16,6 +17,7 @@ function AdminPage() {
       // Only run if organizationId exists
       if (claims?.claims?.organizationId) {
         const data = await getManagers(claims.claims.organizationId)
+        console.log(data)
         setManagers(data)
       }
     }

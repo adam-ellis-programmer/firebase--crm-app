@@ -61,7 +61,28 @@ const singleUpdate = onCall(async (request) => {
     throw new HttpsError('internal', 'Error updating document: ' + error.message)
   }
 })
+
+const simpleQuery = onCall(async (request) => {
+  const data = []
+  // [START firestore_query_filter_eq_string]
+  // Create a reference to the cities collection
+  const citiesRef = db.collection('organizations')
+
+  // Create a query against the collection
+  const queryRef = citiesRef.where('organizationId', '==', 'HEL--9223343305')
+  // [END firestore_query_filter_eq_string]
+
+  const res = await queryRef.get()
+  res.forEach((doc) => {
+    console.log(doc.id, ' => ', doc.data())
+    data.push({ id: doc.id, data: doc.data() })
+  })
+
+  return { success: true, data }
+})
+
 module.exports = {
   authTest,
   singleUpdate,
+  simpleQuery,
 }

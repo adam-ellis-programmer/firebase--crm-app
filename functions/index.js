@@ -6,11 +6,19 @@ const { admin, db, getFirestore } = require('./firebase.config')
 // exports.auth = authFunctions
 
 // follow node inport / export
-const { adminAddUser } = require('./src/auth')
-const { authTest, singleUpdate } = require('./src/testFuncitons')
+const { newAccSignUp } = require('./src/accountSignUp')
+const { adminAddUser } = require('./src/addAgent')
+const { deleteAgent } = require('./src/deleteAgent')
+const { getClaims, updateAccess } = require('./src/changeAccess')
+const { authTest, singleUpdate, simpleQuery } = require('./src/testFuncitons')
 exports.authTest = authTest
 exports.adminAddUser = adminAddUser
 exports.singleUpdate = singleUpdate
+exports.newAccSignUp = newAccSignUp
+exports.simpleQuery = simpleQuery
+exports.deleteAgent = deleteAgent
+exports.getClaims = getClaims
+exports.updateAccess = updateAccess
 
 exports.addAdminRole = onCall((request) => {
   return admin
@@ -169,34 +177,34 @@ exports.makeNewUser = onCall((request) => {
 })
 exports.globalArray = []
 
-exports.deleteAgent = onCall((request) => {
-  if (!request.data.email) {
-    throw new HttpsError('invalid-argument', 'Email is required')
-  }
+// exports.deleteAgent = onCall((request) => {
+//   if (!request.data.email) {
+//     throw new HttpsError('invalid-argument', 'Email is required')
+//   }
 
-  return admin
-    .auth()
-    .getUserByEmail(request.data.email)
-    .then((user) => {
-      admin.auth().deleteUser(user.uid)
-      return user
-    })
-    .then((user) => {
-      console.log('Successfully deleted user')
-      exports.globalArray.push({
-        userData: user,
-        status: 'ok',
-        msg: `success ${user.uid} has been deleted`,
-      })
-      return {
-        userData: user,
-        msg: `success ${user.displayName} has been deleted`,
-      }
-    })
-    .catch((error) => {
-      throw new HttpsError('internal', 'Error deleting user: ' + error.message)
-    })
-})
+//   return admin
+//     .auth()
+//     .getUserByEmail(request.data.email)
+//     .then((user) => {
+//       admin.auth().deleteUser(user.uid)
+//       return user
+//     })
+//     .then((user) => {
+//       console.log('Successfully deleted user')
+//       exports.globalArray.push({
+//         userData: user,
+//         status: 'ok',
+//         msg: `success ${user.uid} has been deleted`,
+//       })
+//       return {
+//         userData: user,
+//         msg: `success ${user.displayName} has been deleted`,
+//       }
+//     })
+//     .catch((error) => {
+//       throw new HttpsError('internal', 'Error deleting user: ' + error.message)
+//     })
+// })
 
 exports.updateDBPermissions = onCall(async (request) => {
   if (!request.auth) {

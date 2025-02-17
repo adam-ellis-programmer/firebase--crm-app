@@ -8,12 +8,14 @@ import { getFunctions, httpsCallable } from 'firebase/functions'
 const NewAgent = ({ data }) => {
   // console.log(data)
   const { claims } = useAuthStatusTwo()
+  // console.log(claims)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     firstName: 'Fiona',
     lastName: 'Ellis',
     email: 'fiona@gmail.com',
     password: '111111',
+    reportsTo: null,
   })
 
   // Update formData when claims load
@@ -23,6 +25,7 @@ const NewAgent = ({ data }) => {
         ...prev,
         organizationId: claims.claims.organizationId,
         organization: claims.claims.organization,
+        orgId: claims.claims.orgId,
       }))
     }
   }, [claims])
@@ -57,14 +60,21 @@ const NewAgent = ({ data }) => {
   // 2: -- claims.manager = true
 
   const handleSubmit = async (e) => {
-    if (!formData.reportsTo || formData.reportsTo.name === '') {
-      console.log('Please select a reports to!')
+    e.preventDefault()
+    // const form = e.target
+    // check for all values
+    // prettier-ignore
+    // We use && (AND) instead of || (OR) because we want ALL of these conditions to be true for each value.
+    // If ANY of these conditions fails (i.e., if the value IS an empty string, or IS null, or IS undefined), the whole expression returns false.
+    // loops
+    // some and every
+    const isFormComplete = Object.values(formData).every((value) => value !== '' && value !== null && value !== undefined)
+
+    if (!isFormComplete) {
+      console.log('please fill in all fields')
       return
     }
     setLoading(true)
-    e.preventDefault()
-    // const form = e.target
-    // console.log(formData)
 
     const functions = getFunctions()
 
@@ -99,7 +109,7 @@ const NewAgent = ({ data }) => {
     const functions = getFunctions()
 
     // Create a reference to your function
-    const authTest = httpsCallable(functions, 'singleUpdate')
+    const authTest = httpsCallable(functions, 'simpleQuery')
 
     // Call the function
     try {
@@ -152,7 +162,7 @@ const NewAgent = ({ data }) => {
               const fullName = `${data.firstName} ${data.lastName}`
               return (
                 <option
-                  data-manager-id={data.id}
+                  data-manager-id={data.docId}
                   key={item.id}
                   value={fullName} // Add value here
                 >

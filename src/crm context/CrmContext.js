@@ -31,11 +31,11 @@ export const CrmDataContextProvider = ({ children }) => {
     },
 
     subscriptionInfo: {
-      firstName: 'Olivia ',
-      lastName: 'Smith',
-      email: 'hello@pub.com',
-      phone: '078966543278',
-      organization: 'hello pub ltd',
+      firstName: 'Sally ',
+      lastName: 'Jones',
+      email: 'hello@waxcandles.com',
+      phone: '078966543118',
+      organization: 'waxcandles',
       organizationId: '',
       signUpDate: '',
       expDate: '',
