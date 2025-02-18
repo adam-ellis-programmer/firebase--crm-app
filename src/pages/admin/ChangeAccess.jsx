@@ -5,6 +5,11 @@ import CheckboxRow from './CheckboxRow'
 import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 const ChangeAccess = () => {
+  const [loading, setLoading] = useState({
+    populate: false,
+    submit: false,
+  })
+
   const [formData, setFormData] = useState({
     superAdmin: false,
     admin: false,
@@ -14,10 +19,11 @@ const ChangeAccess = () => {
     email: 'fiona@gmail.com',
   })
 
-  // leave for reference
+  // leave for reference ***
   const allChecked = Object.entries(formData)
     .filter(([key]) => key !== 'email') // Exclude email field
     .every(([_, value]) => value === true)
+  // leave for reference ***
 
   // Check if any checkbox is true
   // if any value is true
@@ -27,7 +33,6 @@ const ChangeAccess = () => {
 
   const handleSelectAll = () => {
     // If any checkboxes are true, set all to false
-    // If all checkboxes are false, set all to true
     const newValue = !anyChecked
     console.log(anyChecked)
 
@@ -53,33 +58,67 @@ const ChangeAccess = () => {
 
   const onPopulate = async (e) => {
     e.preventDefault()
-    const functions = getFunctions()
-    const getClaims = httpsCallable(functions, 'getClaims')
-    const res = await getClaims({ email: formData.email })
-    // Added optional chaining (?.) to safely access nested properties
-    // Added nullish coalescing operator (??) to provide default values
-    // Provides a fallback value if the result is null or undefined
-    setFormData((prevState) => ({
-      ...prevState,
-      superAdmin: res.data.claims?.superAdmin ?? false,
-      admin: res.data.claims?.admin ?? false,
-      manager: res.data.claims?.manager ?? false,
-      ceo: res.data.claims?.ceo ?? false,
-      sales: res.data.claims?.sales ?? false,
-      email: formData.email,
-    }))
+    handleLoading('populate', true)
+    try {
+      const functions = getFunctions()
+      const getClaims = httpsCallable(functions, 'getClaims')
+      const res = await getClaims({ email: formData.email })
+      // Added optional chaining (?.) to safely access nested properties
+      // Added nullish coalescing operator (??) to provide default values
+      // Provides a fallback value if the result is null or undefined
+      setFormData((prevState) => ({
+        ...prevState,
+        superAdmin: res.data.claims?.superAdmin ?? false,
+        admin: res.data.claims?.admin ?? false,
+        manager: res.data.claims?.manager ?? false,
+        ceo: res.data.claims?.ceo ?? false,
+        sales: res.data.claims?.sales ?? false,
+        email: formData.email,
+      }))
+      handleLoading('populate', false)
+    } catch (error) {
+      handleLoading('populate', false)
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // console.log(formData)
-    const functions = getFunctions()
-    const updateAccess = httpsCallable(functions, 'updateAccess')
-    const res = await updateAccess({ data: formData })
-    console.log(res)
+    handleLoading('submit', true)
+
+    try {
+      const functions = getFunctions()
+      const updateAccess = httpsCallable(functions, 'updateAccess')
+      const res = await updateAccess({ data: formData })
+      console.log(res)
+      handleLoading('submit', false)
+      handleReset()
+    } catch (error) {
+      console.log(error)
+      handleLoading('submit', false)
+    }
   }
 
-  console.log(formData.email)
+  function handleLoading(field, value) {
+    setLoading((prevState) => ({
+      ...prevState,
+      [field]: value,
+    }))
+  }
+
+  // first loops around all the entries
+  // converts this into an array of key-value pairs:
+  // method then loops through each pair:
+  function handleReset() {
+    setFormData((prev) => {
+      const resetData = Object.entries(prev).reduce((acc, [key, _]) => {
+        // Keep email field empty string, set all others to false
+        acc[key] = key === 'email' ? '' : false
+        return acc
+      }, {})
+      return resetData
+    })
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="admin-form">
@@ -142,10 +181,28 @@ const ChangeAccess = () => {
         </div>
 
         <div className="admin-btn-container">
-          <button onClick={onPopulate} type="button" className="admin-add-agent-btn">
-            populate
+          <button
+            disabled={loading.populate}
+            onClick={onPopulate}
+            type="button"
+            className={`${
+              loading.populate
+                ? 'admin-add-agent-btn admin-btn-disabled'
+                : 'admin-add-agent-btn'
+            }`}
+          >
+            {loading.populate ? 'populating...' : 'populate'}
           </button>
-          <button className="admin-add-agent-btn">submit</button>
+          <button
+            disabled={loading.submit}
+            className={`${
+              loading.submit
+                ? 'admin-add-agent-btn admin-btn-disabled'
+                : 'admin-add-agent-btn'
+            }`}
+          >
+            {loading.submit ? 'submiting...' : 'submit'}
+          </button>
         </div>
       </form>
     </div>

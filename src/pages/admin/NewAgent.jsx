@@ -121,6 +121,11 @@ const NewAgent = ({ data }) => {
       console.error('Error:', error)
     }
   }
+
+  // instead of using global state
+  // make a specific server function
+  // that handle the population
+  // of user data for admin pannel
   return (
     <div>
       <button onClick={handleTest}>test me</button>
@@ -174,7 +179,12 @@ const NewAgent = ({ data }) => {
         </div>
 
         <div className="admin-btn-container">
-          <button disabled={loading} className="admin-add-agent-btn">
+          <button
+            disabled={loading}
+            className={`${
+              loading ? 'admin-add-agent-btn admin-btn-disabled' : 'admin-add-agent-btn'
+            }`}
+          >
             {loading ? 'making user' : 'submit'}
           </button>
         </div>

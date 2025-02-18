@@ -13,6 +13,18 @@ const ReportsTo = ({ data }) => {
       id: '',
     },
   })
+
+  const handleSelect = (e) => {
+    const select = document.getElementById('reportsTo')
+    for (const option of select.options) {
+      console.log(option.label) // "Option 1" and "Option 2"
+    }
+    let collection = e.target.selectedOptions[0].dataset.value
+    const index = e.target.selectedIndex
+    const test = e.target.options[index].dataset.id
+    // console.log(collection)
+    console.log(test)
+  }
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -25,26 +37,28 @@ const ReportsTo = ({ data }) => {
 
   const onChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-    console.log('object')
-  }
 
-  // const index = e.target.selectedIndex
-  // const test = e.target.options[index].dataset.id
-  const handleSelect = (e) => {
-    const select = document.getElementById('reportsTo')
-    let id = e.target.selectedOptions[0].dataset.id
+    // Special handling for select element
+    if (name === 'reportsTo') {
+      // Get the selected option element
+      const selectedOption = e.target.options[e.target.selectedIndex]
+      // Get the data-id from the selected option
+      const selectedId = selectedOption.getAttribute('data-id')
 
-    setFormData((prev) => ({
-      ...prev,
-      reportsTo: {
-        name: e.target.value,
-        id,
-      },
-    }))
+      setFormData((prev) => ({
+        ...prev,
+        reportsTo: {
+          name: value,
+          id: selectedId,
+        },
+      }))
+    } else {
+      // Handle other form inputs normally
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }))
+    }
   }
 
   return (
@@ -70,12 +84,12 @@ const ReportsTo = ({ data }) => {
             name="reportsTo"
             id="reportsTo"
             value={formData.reportsTo.name}
-            onChange={handleSelect}
+            onChange={onChange}
           >
             <option value="">Select Manager</option>
             {data?.map((item) => {
               const { data } = item
-              // console.log(item)
+              console.log(item)
               const fullName = `${data.firstName} ${data.lastName}`
               return (
                 <option

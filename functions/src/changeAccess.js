@@ -57,17 +57,26 @@ const updateAccess = onCall(async (request) => {
 // different parts to make the
 // chain of code do what we
 // want it to do
-async function updateDb(id, data) {
-  //..
+async function updateDb(id, updateData) {
+  //.. loop and get if starts with
   try {
-    const cityRef = db.collection('agents').doc(id)
-    const doc = await cityRef.get()
+    const agentRef = db.collection('agents').doc(id)
+    const doc = await agentRef.get()
     if (!doc.exists) {
       console.log('No such document!')
     } else {
-      const claims = doc.data().claims
-      const res = await cityRef.update({ capital: false })
-      return { data: doc.data(), claims }
+      const exIstingClaims = doc.data().claims
+      const res = await agentRef.update({
+        claims: {
+          ...exIstingClaims,
+          admin: updateData.admin,
+          ceo: updateData.ceo,
+          manager: updateData.manager,
+          sales: updateData.sales,
+          superAdmin: updateData.superAdmin,
+        },
+      })
+      return { data: doc.data(), exIstingClaims, updateData }
     }
   } catch (error) {
     throw new HttpsError('internal', 'Error changing user access: ' + error.message)

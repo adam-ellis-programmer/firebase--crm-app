@@ -5,26 +5,34 @@ import ReportsTo from './ReportsTo'
 import { useState, useEffect } from 'react'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { getManagers } from '../../crm context/CrmAction'
-
+import AgentCard from './AgentCard'
+import { getFunctions, httpsCallable } from 'firebase/functions'
 function AdminPage() {
   const { claims } = useAuthStatusTwo()
-  const [managers, setManagers] = useState()
+  const [managers, setManagers] = useState(null)
+  const [agents, setAgents] = useState(null)
   // console.log(claims?.claims)
 
   // only get data once we have the claims
   useEffect(() => {
     const getData = async () => {
       // Only run if organizationId exists
-      if (claims?.claims?.organizationId) {
+      if (claims?.claims?.organizationId && claims?.claims?.orgId) {
         const data = await getManagers(claims.claims.organizationId)
-        console.log(data)
+        // console.log(data)
         setManagers(data)
       }
+      const functions = getFunctions()
+      const getAllAgentsByOrg = httpsCallable(functions, 'getAllAgentsByOrg')
+      const data = await getAllAgentsByOrg({ orgId: claims?.claims.orgId })
+      setAgents(data?.data?.agentData)
+      // console.log(data?.data?.agentData)
     }
 
     getData()
     return () => {}
   }, [claims?.claims?.organizationId])
+
   return (
     <div>
       {/* {showAlert && <AdminPageMModal alertData={alertData} setShowAlert={setShowAlert} />} */}
@@ -58,22 +66,13 @@ function AdminPage() {
           {/* ========================================== */}
         </div>
         <div className="agent-page-right">
-          <div className="agent-page-right-header-container">
+          <div className="admin-controls-text-container">
             <p>Active Agents</p>
           </div>
           <div className="user-list-container">
-            {/* <ul className="user-list-ul">
-              {!loading &&
-                agentData &&
-                agentData.length > 0 &&
-                agentData.map((item) => (
-                  <li key={item.id} className="user-list-li">
-                    <span className="user-list-info">{item.data.name}</span>
-                    <span className="user-list-info">{item.data.email}</span>
-                  </li>
-                ))}
-            </ul>
-            {loading && <Loader />} */}
+            {agents?.map((item, i) => {
+              return <AgentCard key={item.id} item={item} i={i} />
+            })}
           </div>
         </div>
       </div>

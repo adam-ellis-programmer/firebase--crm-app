@@ -5,6 +5,9 @@ import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const DeleteAgent = () => {
+  const [loading, setLoading] = useState({
+    delete: false,
+  })
   const [formData, setFormData] = useState({
     email: '',
   })
@@ -21,13 +24,36 @@ const DeleteAgent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const functions = getFunctions()
-    const deleteAgent = httpsCallable(functions, 'deleteAgent')
-    const data = await deleteAgent({ email: formData.email })
-
-    console.log(data)
+    try {
+      handleLoading('delete', true)
+      const functions = getFunctions()
+      const deleteAgent = httpsCallable(functions, 'deleteAgent')
+      const data = await deleteAgent({ email: formData.email })
+      handleReset()
+      console.log(data)
+      handleLoading('delete', false)
+    } catch (error) {
+      handleLoading('delete', false)
+      console.log(error)
+    }
   }
 
+  function handleLoading(field, value) {
+    setLoading((prevState) => ({
+      ...prevState,
+      [field]: value,
+    }))
+  }
+
+  function handleReset() {
+    setFormData((prev) => {
+      const resetData = Object.entries(prev).reduce((acc, [key, _]) => {
+        acc[key] = ''
+        return acc
+      }, {})
+      return resetData
+    })
+  }
   return (
     <div>
       <form id="form" onSubmit={handleSubmit} className="admin-form">
@@ -50,7 +76,16 @@ const DeleteAgent = () => {
         })}
 
         <div className="admin-btn-container">
-          <button className="admin-add-agent-btn">submit</button>
+          <button
+            disabled={loading.delete}
+            className={`${
+              loading.delete
+                ? 'admin-add-agent-btn admin-btn-disabled'
+                : 'admin-add-agent-btn'
+            }`}
+          >
+            {loading.delete ? 'deleting...' : 'delete'}
+          </button>
         </div>
       </form>
     </div>

@@ -29,6 +29,11 @@ async function deleteFromDB(id) {
   return { success: true, res }
 }
 
+async function handleDbUpdate(id) {
+  //...
+  return { success: true, id }
+}
+
 module.exports = {
   deleteAgent,
 }

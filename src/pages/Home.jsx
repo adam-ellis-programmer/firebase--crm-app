@@ -2,27 +2,28 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { useEffect, useContext } from 'react'
 import CrmContext from '../crm context/CrmContext'
 import EmailSignUpModal from '../components/EmailSignUpModal'
-
+import svg from '../svgs/heat.svg'
+import svg2 from '../svgs/growth.svg'
 function Home() {
   const { dispatch } = useContext(CrmContext)
   const auth = getAuth()
 
+  const data = {}
+
   return (
     <div className="page-container-home">
       <EmailSignUpModal />
+      <section className="home-data-header-div">
+        <h1>Easy Data systems</h1>
+      </section>
       <div className="grid-wrapper">
-        {/* flex wrapper */}
-        <div className="home-text-container">
-          <div className="text-container">
-            <h1 className="home-h1">
-              <span className="home-text-sub-top">your trusty crm system</span>
-              <span className="home-text-main"> easy data systems</span>
-              <span className="home-text-sub">company data safe in the cloud</span>
-              <span className="home-text-sub des-by">Designed by Adam Ellis</span>
-              <div className="money-off-home">30%off</div>
-            </h1>
+        <section className="home-grid-item grid-right-home">
+          <div className="svg-container">
+            <img className="home-svg" src={svg} alt="" />
           </div>
-        </div>
+          <div className="home-data-header-div"></div>
+        </section>
+        <section className="home-grid-item"></section>
       </div>
     </div>
   )

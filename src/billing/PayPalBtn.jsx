@@ -22,6 +22,11 @@ const PayPalBtn = ({ price, productId }) => {
   // - Update your database
   // - Redirect to a success page
   // - Show a success message
+  // -
+  // - ADD IN A REPORTS TO
+  // - IT IS CAUSING A BUG WHEN ADDING IN
+  // - NEW USER
+  // -
   const handleSuccess = useCallback(
     // async no nesting to get updated value
     // variable inside server fucntion

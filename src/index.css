@@ -1425,13 +1425,36 @@ input {
   height: 100%;
 }
 .grid-wrapper {
-  background-image: url('./images/beach.jpg');
-  object-fit: cover;
-  width: 100%;
-  height: 73.2vh;
-  min-height: 680px;
+  border: 1px solid red;
   height: 100%;
-  background-position: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.home-grid-item {
+  /* border: 1px solid; */
+}
+
+.grid-right-home {
+}
+
+.home-data-header-div {
+  /* border: 1px solid; */
+}
+.home-data-header-div h1 {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.home-section-right {
+  /* border: 1px solid; */
+  display: flex;
+  justify-content: center;
+  /* margin: 5rem 0; */
+}
+
+.home-svg {
+  height: 300px;
 }
 
 .admin-grid {
@@ -1469,85 +1492,6 @@ input {
 
 .text-container {
   /* border: 3px solid green; */
-}
-
-.home-h1 {
-  /* background-color: red; */
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  /* align-items: end; */
-}
-
-.home-text-container {
-  /* border: 3px solid white; */
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.home-text-main {
-  font-size: 3rem;
-  color: #fff;
-  background-color: #012e40;
-  padding: 0.2em 0.6em;
-  border-radius: 0em;
-  border-radius: 0.2em;
-
-  opacity: 0.8;
-}
-
-.home-text-sub {
-  font-size: 1.4rem;
-  color: #fff;
-  background-color: #bf244e;
-  padding: 0.2em 0.6em;
-  border-radius: 0.2em;
-
-  display: block;
-  width: fit-content;
-  margin-top: 0.3em;
-  align-self: flex-end;
-  opacity: 0.8;
-}
-.home-text-sub-top {
-  font-size: 1.4rem;
-  color: #fff;
-  background-color: #bf244e;
-  padding: 0.2em 0.6em;
-  border-radius: 0.2em;
-
-  display: block;
-  width: fit-content;
-  margin-bottom: 0.3em;
-  align-self: flex-start;
-  opacity: 0.8;
-}
-
-.home-text-sub.des-by {
-  font-size: 14px;
-  background-color: rgb(186, 34, 199);
-}
-
-.money-off-home {
-  background-color: #ff551b;
-  color: #fff;
-  /* padding: 3em; */
-  height: 60px;
-  width: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-
-  /* border-radius: 50%; */
-  position: absolute;
-  top: -65px;
-  font-weight: 700;
-  transform: rotate(-5deg);
-  /* right: -40px; */
-  opacity: 0.8;
 }
 
 .agent-log-in-form-container {
@@ -1921,9 +1865,18 @@ input {
   margin-bottom: 1em;
 }
 .admin-controls-text-container p {
-  background: #384173;
+  background: #c11364;
   color: #fff;
-  padding: 0.5em;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  font-size: 1.3rem;
+  transition: transform 500ms ease-in-out;
+  cursor: default;
+}
+
+.admin-controls-text-container p:hover {
+  transform: translateX(20px) scale(1.02);
+  box-shadow: 1px 2px 20px #4e44447c;
 }
 .sign-up-input {
   border: 0.1px solid #8a1049;
@@ -2311,7 +2264,7 @@ td {
 }
 
 .agent-page-right-header-container p {
-  background-color: #384173;
+  background-color: #f2055c;
   color: #fff;
   padding: 0.7em 1em;
 }
@@ -3943,6 +3896,12 @@ h2 {
   padding: 1em;
   border-radius: 0.4em;
   margin-bottom: 1.5rem;
+  transition: transform 300ms ease-in-out;
+}
+
+.admin-form:hover {
+  transform: translateY(-5px);
+  box-shadow: 1px 2px 70px #aba4a44c, -1px -2px 70px #aba4a44c;
 }
 
 .admin-input {
@@ -3962,7 +3921,7 @@ h2 {
   width: 100%;
   border: 0.5px solid;
   padding: 0.5rem;
-  /* margin-top: 1rem; */
+  margin-top: 0.3rem;
   outline: none;
 }
 
@@ -4002,4 +3961,70 @@ h2 {
 .admin-check-box {
   width: 25px;
   height: 25px;
+}
+.admin-btn-disabled {
+  background-color: rgb(83, 102, 111);
+}
+
+.user-list-container {
+  margin-top: 2.8rem;
+}
+
+.reports-to-wrap {
+  /* border: 1px solid; */
+  margin-top: 1rem;
+}
+
+/* =================== */
+/* AGENT CARD */
+/* =================== */
+.agent-card {
+  position: relative;
+  /* border: 1px solid; */
+  box-shadow: 1px 2px 20px #aba4a44c, -1px -2px 20px #aba4a44c;
+  /* height: 150px; */
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  transition: transform 500ms ease-in-out;
+  border-radius: 8px;
+  display: grid;
+  /* grid-template-rows: repeat(4, 35px); */
+  grid-auto-rows: 35px;
+}
+
+.agent-card:hover {
+  /* background-color: red; */
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 1px 2px 80px #aba4a44c, -1px -2px 80px #aba4a44c;
+}
+
+.card-key-value-pair {
+  display: flex;
+  /* border: 1px solid; */
+}
+.agent-card-name-info {
+  margin: 0 7px;
+}
+
+.agent-card-inner-div {
+  display: flex;
+  justify-content: space-around;
+}
+
+.agent-card-inner-div-claims {
+  display: flex;
+  /* border: 1px solid; */
+}
+
+/* .agent-card-claims-key {
+  background: rgb(37, 75, 98);
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  margin: 0 5px;
+} */
+.item-num-span {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
 }

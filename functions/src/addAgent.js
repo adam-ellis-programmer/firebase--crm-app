@@ -25,7 +25,7 @@ const adminAddUser = onCall(async (request) => {
     // Set custom claims
     await getAuth().setCustomUserClaims(userRecord.uid, {
       claims: {
-        orgOwner: true,
+        // orgOwner: true,
         superAdmin: true,
         admin: true,
         manager: true,

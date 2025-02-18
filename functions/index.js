@@ -10,7 +10,11 @@ const { newAccSignUp } = require('./src/accountSignUp')
 const { adminAddUser } = require('./src/addAgent')
 const { deleteAgent } = require('./src/deleteAgent')
 const { getClaims, updateAccess } = require('./src/changeAccess')
+const { changeReportsTo } = require('./src/changeReportsTo')
 const { authTest, singleUpdate, simpleQuery } = require('./src/testFuncitons')
+const { getAllAgentsByOrg } = require('./src/getData')
+
+// handle auth / signup add / remove
 exports.authTest = authTest
 exports.adminAddUser = adminAddUser
 exports.singleUpdate = singleUpdate
@@ -19,6 +23,9 @@ exports.simpleQuery = simpleQuery
 exports.deleteAgent = deleteAgent
 exports.getClaims = getClaims
 exports.updateAccess = updateAccess
+exports.changeReportsTo = changeReportsTo
+// handle data
+exports.getAllAgentsByOrg = getAllAgentsByOrg
 
 exports.addAdminRole = onCall((request) => {
   return admin
