@@ -13,6 +13,7 @@ const { getClaims, updateAccess } = require('./src/changeAccess')
 const { changeReportsTo } = require('./src/changeReportsTo')
 const { authTest, singleUpdate, simpleQuery } = require('./src/testFuncitons')
 const { getAllAgentsByOrg } = require('./src/getData')
+const { getManagersData } = require('./src/getManagersData')
 
 // handle auth / signup add / remove
 exports.authTest = authTest
@@ -26,6 +27,7 @@ exports.updateAccess = updateAccess
 exports.changeReportsTo = changeReportsTo
 // handle data
 exports.getAllAgentsByOrg = getAllAgentsByOrg
+exports.getManagersData = getManagersData
 
 exports.addAdminRole = onCall((request) => {
   return admin

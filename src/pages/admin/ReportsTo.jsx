@@ -47,6 +47,10 @@ const ReportsTo = ({ data }) => {
     }))
   }
 
+  /**
+   * change id and name to
+   * name and id sent from f/e
+   */
   return (
     <div>
       <form onSubmit={handleSubmit} action="" className="admin-form">

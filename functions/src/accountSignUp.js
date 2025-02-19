@@ -32,14 +32,17 @@ const newAccSignUp = onCall(async (request) => {
         manager: true,
         ceo: true,
         sales: true,
-        reportsTo: data.reportsTo,
+        reportsTo: {
+          id: id,
+          name: userRecord.displayName,
+        },
         organization: data.organization,
         organizationId: data.organizationId,
         orgId: id,
       },
     })
 
-    // Get the updated user info
+    // Get the updated user info with claims
     const user = await getAuth().getUser(userRecord.uid)
 
     // delete password from db
@@ -47,6 +50,10 @@ const newAccSignUp = onCall(async (request) => {
     const agentObj = {
       ...data,
       claims: user.customClaims.claims,
+      reportsTo: {
+        id: id,
+        name: userRecord.displayName,
+      },
     }
 
     // Create the database entry

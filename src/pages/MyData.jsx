@@ -106,7 +106,7 @@ function Data() {
     <div className="page-container">
       <header className="data-header">
         <p className="data-header-text">
-          <span> {loggedInUser && `logged in as ${loggedInUser}`}</span>
+          <span> {loggedInUser && `Showing ${loggedInUser}s data`}</span>
         </p>
       </header>
 

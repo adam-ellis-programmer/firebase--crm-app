@@ -121,7 +121,7 @@ function Profile() {
     <div className="page-container">
       <DashboardHeader />
       <main>
-        <div className="profile-grid grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 ">
+        <div className="profile-grid grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
           <div className="profile-agent-details">
             <div className="profile-detais-header">
               <button
@@ -134,31 +134,29 @@ function Profile() {
                 {changeDetails ? 'done' : 'edit details'}
               </button>
             </div>
-            <div className="profile-card-container">
-              <div className="profile-card">
-                <form>
-                  <input
-                    type="text"
-                    id="name"
-                    className={!changeDetails ? 'profile-name' : 'profile-name-active'}
-                    disabled={!changeDetails}
-                    value={name}
-                    onChange={onChange}
-                  />
-                  <input
-                    type="text"
-                    id="email"
-                    className={!changeDetails ? 'profile-email' : 'profile-email-active'}
-                    disabled={!changeDetails}
-                    value={email}
-                    onChange={onChange}
-                  />
-                </form>
-              </div>
+            <div className="">
+              <form className="agent-profile-info-card">
+                <input
+                  type="text"
+                  id="name"
+                  className={!changeDetails ? 'agent-details' : 'agent-details ag-active'}
+                  disabled={!changeDetails}
+                  value={name}
+                  onChange={onChange}
+                />
+                <input
+                  type="text"
+                  id="email"
+                  className={!changeDetails ? 'agent-details' : 'agent-details ag-active'}
+                  disabled={!changeDetails}
+                  value={email}
+                  onChange={onChange}
+                />
+              </form>
             </div>
             {/* display claims data! */}
             <Claims />
-            
+
             {emails && emails.length > 0 ? (
               <>
                 <p className="profile-top-five-header profile-emails">

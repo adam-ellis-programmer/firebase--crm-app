@@ -8,16 +8,16 @@ const db = getFirestore()
 const changeReportsTo = onCall(async (request) => {
   try {
     const email = request.data.data.email
-    const data = request.data
+    const reportsToObj = request.data.data.reportsTo
     const user = await getAuth().getUserByEmail(email)
-    const agentRecord = await updateDatabase(user.uid)
-    return { agentRecord, success: true, res: request.data, user, data }
+    const agentRecord = await updateDatabase(user.uid, reportsToObj)
+    return { success: true, res: request.data, user, reportsToObj, agentRecord }
   } catch (error) {
     throw new HttpsError('internal', 'Error changing user access: ' + error.message)
   }
 })
 
-async function updateDatabase(id) {
+async function updateDatabase(id, reportsToObj) {
   try {
     const cityRef = db.collection('agents').doc(id)
     const doc = await cityRef.get()
@@ -25,31 +25,20 @@ async function updateDatabase(id) {
       console.log('No such document!')
     } else {
       console.log('Document data:', doc.data())
-      const initialData = {
-        name: 'Frank',
-        age: 12,
-        favorites: {
-          food: 'Pizza',
-          color: 'Blue',
-          subject: 'recess',
-        },
-      }
-
       // ...
-      const res = await db.collection('agents').doc(id).update({
-        age: 13,
-        'favorites.color': 'Red',
+      const updateRes = await db.collection('agents').doc(id).update({
+        'reportsTo.id': reportsToObj.id,
+        'reportsTo.name': reportsToObj.name,
+        'claims.reportsTo.id': reportsToObj.id,
+        'claims.reportsTo.name': reportsToObj.name,
       })
-      return { id: doc.id, data: doc.data() }
+      return { id: doc.id, data: doc.data(), updateRes }
     }
   } catch (error) {
     throw new HttpsError('internal', 'Error changing user access: ' + error.message)
   }
 }
-/**
- * update the auth claims
- * update the agent in the database
- */
+
 module.exports = {
   changeReportsTo,
 }

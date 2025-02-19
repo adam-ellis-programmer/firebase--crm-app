@@ -31,8 +31,8 @@ export const CrmDataContextProvider = ({ children }) => {
     },
 
     subscriptionInfo: {
-      firstName: 'Sally ',
-      lastName: 'Jones',
+      firstName: 'Marina',
+      lastName: 'Hyde',
       email: 'hello@waxcandles.com',
       phone: '078966543118',
       organization: 'waxcandles',

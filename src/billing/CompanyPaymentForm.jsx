@@ -56,8 +56,8 @@ const CompanyPaymentForm = () => {
   console.log(formatFieldName('helloThere'))
 
   return (
-    <div className="bg-slate-100 max-w-md mx-auto p-6 mb-8">
-      <form id="company-payment-form" className="space-y-4">
+    <div className="max-w-md mx-auto p-6 mb-8">
+      <form id="company-payment-form" className="space-y-4 company-payment-form">
         <FormRow
           type="text"
           name="firstName"

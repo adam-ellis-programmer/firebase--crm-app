@@ -83,7 +83,7 @@ function DisplayCustomerData({ customer }) {
   return (
     <div>
       <div className="profile-card profile-page-card">
-        <form>
+        <form className='profile-form' >
           <input
             className={changeDetails ? 'profile-input' : 'profile-card-active'}
             type="text"

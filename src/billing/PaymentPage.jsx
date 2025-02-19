@@ -38,23 +38,29 @@ const PaymentPage = () => {
             <span className="recommended-badge">Recommended</span>
           )}
           <i className={`pricing-icon ${selectedTier.iconClass}`}></i>
-          <h3 className="pricing-name">{selectedTier.name}</h3>
-          <p className="pricing-description">{selectedTier.description}</p>
-          <div className="pricing-price">
+          <h3 className="pricing-name tier-page-el">{selectedTier.name}</h3>
+          <p className="pricing-description tier-page-el">{selectedTier.description}</p>
+          <div className="pricing-price tier-page-el">
             £{selectedTier.price}
-            <span className="pricing-period">/{selectedTier.billingPeriod}</span>
+            <span className="pricing-period tier-page-el">
+              /{selectedTier.billingPeriod}
+            </span>
           </div>
 
           <ul className="features-list">
             {selectedTier.features.map((feature, index) => (
-              <li key={index}>{feature}</li>
+              <li className="tier-page-el" key={index}>
+                {feature}
+              </li>
             ))}
           </ul>
 
           {selectedTier.limitations.length > 0 && (
             <ul className="limitations-list">
               {selectedTier.limitations.map((limitation, index) => (
-                <li key={index}>{limitation}</li>
+                <li className="tier-page-el" key={index}>
+                  {limitation}
+                </li>
               ))}
             </ul>
           )}

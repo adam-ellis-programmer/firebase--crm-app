@@ -19,15 +19,15 @@ const Claims = () => {
   const claimsArray = Object.entries(claims?.claims || {})
 
   return (
-    <div className="claims-container">
+    <div className="claims-container ">
       {/* Claims Section */}
-      <div className="claims-section">
-        <h2>User Claims</h2>
+      <div className="claims-section ">
+        <h2 className="">User Claims</h2>
         <div className="claims-grid">
           {claimsArray.map(([key, value]) => (
             <div key={key} className="claim-item">
-              <span className="claim-label">{key}</span>
-              <div className="claim-value">
+              <span className="claim-label dark-mode-toggle">{key}</span>
+              <div className="claim-value dark-mode-toggle ">
                 {typeof value === 'boolean' ? (
                   value ? (
                     <i className="fas fa-check check"></i>
@@ -35,7 +35,7 @@ const Claims = () => {
                     <i className="fas fa-times cross"></i>
                   )
                 ) : (
-                  <span className="text-value">
+                  <span className="text-value dark-mode-toggle">
                     {value === '' ? 'None' : String(value)}
                   </span>
                 )}

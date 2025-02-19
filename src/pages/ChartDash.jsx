@@ -1,7 +1,7 @@
 import LineChartJS from '../components/Charts/LineChartJS'
 import Chart from '../components/Charts/Chart'
 import PieChartJS from '../components/Charts/PieChartJS'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import CrmContext from '../crm context/CrmContext'
 import { useState, useEffect } from 'react'
 import { getAllCustomers, getAllOrders } from '../crm context/CrmAction'
@@ -15,6 +15,7 @@ import AggeregatedMonths from '../components/Charts/aggeregated data/Aggeregated
 import AggeregatedWeeks from '../components/Charts/aggeregated data/AggeregatedWeeks'
 import AggeregatedDaily from '../components/Charts/aggeregated data/AggeregatedDaily'
 import AggeregatedHour from '../components/Charts/aggeregated data/AggeregatedHour'
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 
 const url = new URL(window.location.href)
 const id = url.pathname.split('/')[2]
@@ -23,6 +24,21 @@ console.log(id)
 const ChartDash = () => {
   const [total, setTotal] = useState(0)
   const [customerData, setCustomerData] = useState(null)
+  const { claims } = useAuthStatusTwo()
+  console.log(claims)
+
+  const navigate = useNavigate()
+
+  console.log(claims?.claims?.ceo)
+
+  useEffect(() => {
+    // Only navigate away if ceo is explicitly false
+    if (claims?.claims?.ceo === false) {
+      navigate('/')
+      return
+    }
+    return () => {}
+  }, [claims])
 
   useEffect(() => {
     const getOrders = async () => {

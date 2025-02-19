@@ -13,11 +13,12 @@ const NewSignupForm = () => {
 
   const navigate = useNavigate()
   const { loggedIn, checkingStatus, loggedInUser, claims } = useAuthStatusTwo()
-  console.log(claims)
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    orgId: '',
     company: '',
     address: '',
     image: null,
@@ -29,8 +30,16 @@ const NewSignupForm = () => {
   })
   const [isDragging, setIsDragging] = useState(false)
 
-  const { name, email, phone, company, address, image } = formData
-
+  const { name, email, phone, company, address, image, orgId } = formData
+  useEffect(() => {
+    if (claims?.claims) {
+      setFormData((prev) => ({
+        ...prev,
+        orgId: claims?.claims.orgId,
+      }))
+    }
+    return () => {}
+  }, [claims?.claims])
   useEffect(() => {
     // Cleanup function to revoke the object URL when the component is unmounted
     return () => {
@@ -237,6 +246,7 @@ const NewSignupForm = () => {
       phone: formattNumber(),
       urlData,
       progress: 0,
+      orgId,
       signUpagent: loggedInUser.displayName,
       agentUid: loggedInUser.uid,
       dateOfSignUp: new Date().toLocaleString('en-GB'),
@@ -252,6 +262,7 @@ const NewSignupForm = () => {
       amountSpent: 0,
       numberOfOrders: 0,
       rating: 0,
+      orgId,
       points: 0,
       goldCustomer: false,
       company,
@@ -260,11 +271,14 @@ const NewSignupForm = () => {
       agentUid: loggedInUser.uid,
     }
 
-    await setDoc(doc(db, 'customers', id), userData)
-    await setDoc(doc(db, 'stats', id), stats)
-    resetState()
-
-    navigate(`/data/${loggedInUser.uid}}`)
+    try {
+      await setDoc(doc(db, 'customers', id), userData)
+      await setDoc(doc(db, 'stats', id), stats)
+      resetState()
+      navigate(`/data/${loggedInUser.uid}}`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   function resetState() {

@@ -101,8 +101,8 @@ function NavItem({ setToggleNav, toggleNav }) {
     {
       id: 1,
       el:   <Link to={navLoginLogoutControl ?'/agent-sign-in' : '/'}> 
-      <button className={ navLoginLogoutControl ?  "nav-button nav-button-agent-sign-in" : "none"}>Agent sign in</button>
-      <button onClick={handleLogOut} className={ navLoginLogoutControl ?  "none" : "nav-button nav-button-agent-sign-out"}>Agent sign out</button>
+      <button className={ navLoginLogoutControl ?  "nav-button nav-button-agent-sign-in" : "none"}>sign in</button>
+      <button onClick={handleLogOut} className={ navLoginLogoutControl ?  "none" : "nav-button nav-button-agent-sign-out"}> sign out</button>
       </Link>  ,
     }, 
   ];
