@@ -37,12 +37,69 @@
 
 body {
   font-family: 'Raleway', sans-serif;
-  /* font-optical-sizing: auto; */
-  /* font-weight: <weight>; */
-  /* font-style: normal; */
-  background-color: #fff;
+  transition: background-color 1s, color 0.3s;
 }
 
+.dark-mode-on {
+  background-color: rgb(43, 58, 83);
+  color: #fff;
+}
+
+/* input,
+textarea,
+select,
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='number'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input[type='date'],
+textarea,
+select {
+  background: rgb(72, 85, 95);
+  color: #fff;
+}  */
+
+/* Default light mode styles for inputs (if needed) */
+input,
+textarea,
+select {
+  background: #fff;
+  color: #000;
+  transition: background-color 1s, color 0.3s;
+}
+
+/* Dark mode styles - these only apply when dark-mode-on class is present */
+.dark-mode-on input,
+.dark-mode-on textarea,
+.dark-mode-on select {
+  background: rgb(72, 85, 95);
+  color: #fff;
+}
+
+/* OR with specific input types */
+/* input,
+textarea,
+select,
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='number'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input[type='date'],
+textarea,
+select {
+  background: rgb(72, 85, 95);
+} */
+
+/* OR using :is() */
+/* :is(input, textarea, select) {
+  background: rgb(72, 85, 95);
+}
 code {
 }
 /* Ensure the background is always white */
@@ -67,11 +124,11 @@ code {
   border-color: #4caf50;
 } */
 
-textarea,
+/* textarea,
 select,
 input {
   background-color: #fff;
-}
+} */
 .customer-box {
   /* border: 1px solid; */
   /* min-height: 70vh; */
@@ -79,7 +136,7 @@ input {
 }
 
 .main {
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 .main-wrap {
@@ -307,7 +364,7 @@ input {
   width: 95%;
   /* border: 1px solid;  */
   margin: auto;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 .page-header {
@@ -3819,7 +3876,7 @@ td {
 
 /* Claims Section Styles */
 .claims-section {
-  background: white;
+  /* background: white; */
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -3829,7 +3886,7 @@ h2 {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #333;
+  /* color: #333; */
 }
 
 .claims-grid {
@@ -3843,7 +3900,7 @@ h2 {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   border-radius: 6px;
   transition: transform 0.2s ease;
 }
@@ -4027,4 +4084,19 @@ h2 {
   position: absolute;
   top: 1rem;
   left: 1rem;
+}
+.dark-mode-div {
+  /* position: absolute; */
+  /* right: 1rem; */
+  margin-left: 1rem;
+  /* border: 1px solid; */
+}
+.dark-mode-icon {
+  font-size: 1.8rem;
+}
+
+.nav-signup-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

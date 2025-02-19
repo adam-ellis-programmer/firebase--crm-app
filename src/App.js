@@ -27,6 +27,7 @@ import ChartDash from './pages/ChartDash'
 import Terms from './pages/Terms'
 import SignUpAccPage from './pages/SignUpTierPage'
 import PaymentPage from './billing/PaymentPage'
+import DarkMode from './DarkMode'
 
 // PROTECT THE ROUTES
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Router>
           <Navbar setToggleNav={setToggleNav} toggleNav={toggleNav} />
           <div className="main">
+            {/* <DarkMode /> */}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sign-in" element={<Signin />} />

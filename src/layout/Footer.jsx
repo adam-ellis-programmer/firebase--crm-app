@@ -5,7 +5,7 @@ function Footer() {
   console.log(date)
   return (
     <footer className="footer">
-      <div className="footer-div"></div>
+      {/* <div className="footer-div"></div> */}
       <div className="footer-div">
         <div className="footer-date-div">
           <p className='footer-date' >© {date}</p>
@@ -15,7 +15,7 @@ function Footer() {
           </Link>
         </div>
       </div>
-      <div className="footer-div"></div>
+      {/* <div className="footer-div"></div> */}
     </footer>
   )
 }

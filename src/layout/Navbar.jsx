@@ -4,6 +4,7 @@ import { ReactComponent as Logo } from '../icons/logo.svg'
 import NavItem from './NavItem'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import DarkMode from '../DarkMode'
 function Navbar({ setToggleNav, toggleNav }) {
   const [userUid, setUserUid] = useState('')
   const [userObj, setUserObj] = useState({
@@ -86,9 +87,12 @@ function Navbar({ setToggleNav, toggleNav }) {
             <Logo className="logo" />
           </Link>
         </div>
-        <Link to="/sign-up-acc" className="sign-up-btn">
-          sign up
-        </Link>
+        <div className="nav-signup-div">
+          <Link to="/sign-up-acc" className="sign-up-btn">
+            sign up
+          </Link>
+          <DarkMode/>
+        </div>
         <ul className="nav-ul">
           <NavItem setToggleNav={setToggleNav} toggleNav={toggleNav} />
         </ul>
