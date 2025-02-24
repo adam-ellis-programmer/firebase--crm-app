@@ -2,10 +2,33 @@ import { useState, useEffect } from 'react'
 import ComponentHeader from './ComponentHeader'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import FormRow from './FormRow'
-import { getManagers } from '../../crm context/CrmAction'
+
 import { getFunctions, httpsCallable } from 'firebase/functions'
+import { getAllAgents } from '../../crm context/CrmAction'
+import SelectRow from './SelectRow'
 const ReportsTo = ({ data }) => {
+  const [agentsData, setAgentsData] = useState(null)
   const { claims } = useAuthStatusTwo()
+  const orgId = claims?.claims?.orgId
+
+  // ...
+
+  // only make subordinate if
+  // access > roleLevel
+
+  useEffect(() => {
+    const getData = async () => {
+      const functions = getFunctions()
+      const getAllAgents = httpsCallable(functions, 'getAllAgents')
+      const data = await getAllAgents({ orgId })
+      // console.log(data.data.agents)
+      setAgentsData(data.data.agents)
+    }
+    if (orgId) {
+      getData()
+    }
+    return () => {}
+  }, [orgId])
   const [formData, setFormData] = useState({
     email: 'marina@gmail.com',
     reportsTo: {
@@ -14,14 +37,6 @@ const ReportsTo = ({ data }) => {
     },
   })
   const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const functions = getFunctions()
-    const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
-    const data = await changeReportsTo({ data: formData })
-    console.log(data)
-  }
 
   const onChange = (e) => {
     const { name, value } = e.target
@@ -34,7 +49,7 @@ const ReportsTo = ({ data }) => {
 
   // const index = e.target.selectedIndex
   // const test = e.target.options[index].dataset.id
-  const handleSelect = (e) => {
+  const handleManagersSelect = (e) => {
     const select = document.getElementById('reportsTo')
     let id = e.target.selectedOptions[0].dataset.id
 
@@ -47,52 +62,37 @@ const ReportsTo = ({ data }) => {
     }))
   }
 
-  /**
-   * change id and name to
-   * name and id sent from f/e
-   */
+  console.log(agentsData)
+
+  const handleAgentsSelect = (e) => {
+    const agentId = e.target.selectedOptions[0].dataset.id
+    console.log(agentId)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const functions = getFunctions()
+    const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
+    const data = await changeReportsTo({ data: formData })
+    console.log(data)
+  }
   return (
     <div>
       <form onSubmit={handleSubmit} action="" className="admin-form">
         <ComponentHeader text={`change reports to`} />
-        <FormRow
-          type="text"
-          id="reports-to"
-          name="email"
-          value={formData.email}
-          onChange={onChange}
-          formId="reports-to"
-          placeholder="Enter Email"
-        />
 
-        <div className="reports-to-wrap">
-          <label htmlFor={'reportsTo'} className="admin-label">
-            reports to
-          </label>
-          <select
-            className="admin-select"
-            name="reportsTo"
-            id="reportsTo"
-            value={formData.reportsTo.name}
-            onChange={handleSelect}
-          >
-            <option value="">Select Manager</option>
-            {data?.map((item) => {
-              const { data } = item
-              // console.log(item)
-              const fullName = `${data.firstName} ${data.lastName}`
-              return (
-                <option
-                  value={fullName} // Added this line
-                  data-id={item.id}
-                  key={item.id}
-                >
-                  {fullName}
-                </option>
-              )
-            })}
-          </select>
-        </div>
+        <SelectRow
+          data={agentsData}
+          text="select agent"
+          labelText={'agent'}
+          onChange={handleAgentsSelect}
+        />
+        <SelectRow
+          data={data}
+          text="select manager"
+          labelText={'reports to'}
+          onChange={handleManagersSelect}
+        />
 
         <div className="admin-btn-container">
           <button className="admin-add-agent-btn">submit</button>

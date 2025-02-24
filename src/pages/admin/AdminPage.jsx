@@ -11,24 +11,28 @@ function AdminPage() {
   const { claims } = useAuthStatusTwo()
   const [managers, setManagers] = useState(null)
   const [agents, setAgents] = useState(null)
-  console.log(claims)
+  // console.log(claims)
   // console.log(managers)
   // console.log(claims?.claims?.orgId)
 
   // only get data once we have the claims
   useEffect(() => {
     const getData = async () => {
-      // Only run if organizationId exists
-      // get managers
-      if (claims?.claims?.orgId) {
-        const data = await getManagers(claims.claims.orgId)
-        setManagers(data)
+      try {
+        // Only run if orgId exists
+        // get managers
+        if (claims?.claims?.orgId) {
+          const data = await getManagers(claims.claims.orgId)
+          setManagers(data)
+        }
+        // get org agents
+        const functions = getFunctions()
+        const getAllAgentsByOrg = httpsCallable(functions, 'getAllAgentsByOrg')
+        const data = await getAllAgentsByOrg({ orgId: claims?.claims?.orgId })
+        setAgents(data?.data?.agentData)
+      } catch (error) {
+        console.log(error)
       }
-      // get org agents
-      const functions = getFunctions()
-      const getAllAgentsByOrg = httpsCallable(functions, 'getAllAgentsByOrg')
-      const data = await getAllAgentsByOrg({ orgId: claims?.claims?.orgId })
-      setAgents(data?.data?.agentData)
     }
 
     getData()
@@ -62,8 +66,8 @@ function AdminPage() {
           {/*  */}
           <NewAgent data={managers} />
           <DeleteAgent data={managers} />
-          <ChangeAccess data={managers} />
-          <ReportsTo data={managers} />
+          <ChangeAccess claims={claims} />
+          <ReportsTo data={managers} claims={claims} />
           {/*  */}
           {/* ========================================== */}
         </div>

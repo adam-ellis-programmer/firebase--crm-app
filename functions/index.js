@@ -14,6 +14,12 @@ const { changeReportsTo } = require('./src/changeReportsTo')
 const { authTest, singleUpdate, simpleQuery } = require('./src/testFuncitons')
 const { getAllAgentsByOrg } = require('./src/getData')
 const { getManagersData } = require('./src/getManagersData')
+const {
+  getRolesData,
+  getAgentData,
+  changePermissons,
+  getAllAgents,
+} = require('./src/getRolesData')
 
 // handle auth / signup add / remove
 exports.authTest = authTest
@@ -25,6 +31,10 @@ exports.deleteAgent = deleteAgent
 exports.getClaims = getClaims
 exports.updateAccess = updateAccess
 exports.changeReportsTo = changeReportsTo
+exports.getRolesData = getRolesData
+exports.getAgentData = getAgentData
+exports.changePermissons = changePermissons
+exports.getAllAgents = getAllAgents
 // handle data
 exports.getAllAgentsByOrg = getAllAgentsByOrg
 exports.getManagersData = getManagersData

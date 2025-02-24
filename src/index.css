@@ -210,7 +210,7 @@ input {
 
 .main {
   /* background-color: #fff; */
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 .main-wrap {
@@ -2113,7 +2113,14 @@ input {
   align-items: center;
   justify-content: space-between;
 }
-
+.radio-row-wrap,
+.check-row-wrap {
+  /* border: 1px solid; */
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
+  justify-content: end;
+}
 .admin-label {
   /* border: 1px solid; */
   /* width: 100%; */
@@ -4121,6 +4128,12 @@ h2 {
   padding: 0.5rem;
   margin-top: 0.3rem;
   outline: none;
+  border-radius: 3px;
+}
+
+.admin-select:focus {
+  outline: 0.1px solid; /* Or whatever color matches your design */
+  outline-offset: 2px;
 }
 
 .admin-btn-container {
@@ -4150,12 +4163,12 @@ h2 {
   text-align: start;
   margin-bottom: 1.5rem;
 }
-
+.admin-radio-label,
 .admin-check-label {
   margin-right: 1rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
-
+.admin-radio-input,
 .admin-check-box {
   width: 25px;
   height: 25px;
@@ -4240,4 +4253,41 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.change-access-form-grid {
+  /* border: 1px solid; */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.change-access-header-p {
+  font-size: 1.3rem;
+}
+
+.change-access-item-p {
+  /* border: 1px solid; */
+  display: flex;
+  justify-content: space-around;
+}
+
+.change-access-item-p span {
+  border: 0.1px solid;
+  width: 100%;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.change-access-alert {
+  background: #c03333;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  font-size: 1.3rem;
+}
+.select-row-wrap {
+  /* border: 1px solid; */
+  margin-top: 1rem;
 }

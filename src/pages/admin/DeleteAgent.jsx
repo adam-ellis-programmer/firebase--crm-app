@@ -5,7 +5,7 @@ import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 const DeleteAgent = ({ data }) => {
-  console.log(data)
+  // console.log(data)
   const { claims } = useAuthStatusTwo()
   // console.log(claims)
 

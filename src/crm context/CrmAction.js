@@ -905,10 +905,12 @@ export async function getManagers(orgId) {
   // console.log(orgId)
   const data = []
 
+  // 2 = manager
+  const accessLevel = 2
   try {
     const q = query(
       collection(db, 'agents'),
-      where('claims.permissions.admin.hasFullAccess', '==', true),
+      where('roleLevel', '>=', accessLevel),
       where('orgId', '==', orgId)
     )
 
@@ -920,7 +922,36 @@ export async function getManagers(orgId) {
       }
       data.push(dataObj)
     })
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
+
+  return data
+}
+
+export async function getAllAgents(orgId) {
+  // console.log(orgId)
+  const data = []
+
+  // 2 = manager
+  const accessLevel = 2
+  try {
+    const q = query(
+      collection(db, 'agents'),
+      where('orgId', '==', orgId)
+    )
+
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      const dataObj = {
+        id: doc.id,
+        data: doc.data(),
+      }
+      data.push(dataObj)
+    })
+  } catch (error) {
+    console.log(error)
+  }
 
   return data
 }

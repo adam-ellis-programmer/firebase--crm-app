@@ -1,207 +1,207 @@
 import React from 'react'
 import FormRow from './FormRow'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CheckboxRow from './CheckboxRow'
 import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
-const ChangeAccess = () => {
+import RadioRow from './RadioRow '
+
+const ChangeAccess = ({ claims }) => {
+  const orgId = claims?.claims?.orgId
+  const [alert, setAlert] = useState({
+    msg: '',
+    show: '',
+  })
+  const [roleData, setRoleData] = useState({})
+  const [updateData, setUpdateData] = useState(null)
+  const [agentData, setAgentData] = useState(null)
+  const [selectedOption, setSelectedOption] = useState({}) // Default selected option
   const [loading, setLoading] = useState({
     populate: false,
     submit: false,
   })
 
-  const [formData, setFormData] = useState({
-    superAdmin: false,
-    admin: false,
-    manager: false,
-    ceo: false,
-    sales: false,
-    email: 'fiona@gmail.com',
-  })
+  useEffect(() => {
+    const getData = async () => {
+      const functions = getFunctions()
+      const getRolesData = httpsCallable(functions, 'getRolesData')
+      const res = await getRolesData({ orgId })
+      setRoleData(res.data.roles)
+      setAgentData(res.data.agents)
+    }
+    getData()
+    return () => {}
+  }, [orgId])
 
-  // leave for reference ***
-  const allChecked = Object.entries(formData)
-    .filter(([key]) => key !== 'email') // Exclude email field
-    .every(([_, value]) => value === true)
-  // leave for reference ***
-
-  // Check if any checkbox is true
-  // if any value is true
-  const anyChecked = Object.entries(formData)
-    .filter(([key]) => key !== 'email')
-    .some(([_, value]) => value === true)
-
-  const handleSelectAll = () => {
-    // If any checkboxes are true, set all to false
-    const newValue = !anyChecked
-    console.log(anyChecked)
-
-    setFormData((prev) => ({
-      ...prev,
-      superAdmin: newValue,
-      admin: newValue,
-      manager: newValue,
-      ceo: newValue,
-      sales: newValue,
-    }))
-  }
-
-  const onChange = (e) => {
-    const { name, type, checked, value } = e.target
-    setFormData((prevState) => ({
+  const handleRadioChange = (e) => {
+    const options = e.target.dataset
+    const role = e.target.value
+    const roleLevel = options.rolelevel
+    setSelectedOption((prevState) => ({
       ...prevState,
-      // Use checked for checkboxes, value for text inputs
-      [name]: type === 'checkbox' ? checked : value,
+      role,
+      roleLevel: parseInt(roleLevel),
     }))
   }
-  const formArr = Object.entries(formData)
 
-  const onPopulate = async (e) => {
-    e.preventDefault()
-    handleLoading('populate', true)
+  const roleArr = Object.entries(roleData) // Only get the role entries
+
+  const handleSelectAgent = async (e) => {
+    handleLoading(false, true)
+
+    const selectEl = document.getElementById('agent-select')
+    const index = selectEl.selectedIndex
+    const options = e.target.options[index].dataset
+    const agentId = options.id
+    const isNotValid = agentId === 'select-agent'
+
+    if (isNotValid) {
+      setAlert((prevState) => ({
+        ...prevState,
+        show: true,
+        msg: 'please select an option',
+      }))
+      handleLoading(false, false)
+      reset(2000)
+      return false
+    }
+
     try {
       const functions = getFunctions()
-      const getClaims = httpsCallable(functions, 'getClaims')
-      const res = await getClaims({ email: formData.email })
-      // Added optional chaining (?.) to safely access nested properties
-      // Added nullish coalescing operator (??) to provide default values
-      // Provides a fallback value if the result is null or undefined
-      setFormData((prevState) => ({
+      const getAgentData = httpsCallable(functions, 'getAgentData')
+      const agentData = await getAgentData({ agentId })
+      setUpdateData(agentData.data.minimizedData)
+      setSelectedOption((prevState) => ({
         ...prevState,
-        superAdmin: res.data.claims?.superAdmin ?? false,
-        admin: res.data.claims?.admin ?? false,
-        manager: res.data.claims?.manager ?? false,
-        ceo: res.data.claims?.ceo ?? false,
-        sales: res.data.claims?.sales ?? false,
-        email: formData.email,
+        role: agentData.data.minimizedData.role,
+        roleLevel: agentData.data.minimizedData.roleLevel,
       }))
-      handleLoading('populate', false)
+      handleLoading(false, false)
     } catch (error) {
-      handleLoading('populate', false)
+      handleLoading(false, false)
+      console.log(error)
     }
   }
+
+  function reset(time) {
+    setTimeout(() => {
+      setAlert((prevState) => ({
+        ...prevState,
+        show: false,
+        msg: '',
+      }))
+    }, time)
+  }
+
+  const updateDataArr = updateData && Object.entries(updateData).slice(0, 4)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    handleLoading('submit', true)
-
+    handleLoading(true, false)
     try {
+      const { role, roleLevel } = selectedOption
+      const { id } = updateData
+
       const functions = getFunctions()
-      const updateAccess = httpsCallable(functions, 'updateAccess')
-      const res = await updateAccess({ data: formData })
-      console.log(res)
-      handleLoading('submit', false)
-      handleReset()
+      const changePermissons = httpsCallable(functions, 'changePermissons')
+      const data = await changePermissons({
+        role,
+        roleLevel,
+        id,
+      })
+      console.log('Selected role:', selectedOption)
+      console.log(data)
+
+      const getAgentData = httpsCallable(functions, 'getAgentData')
+      const agentData = await getAgentData({ agentId: id })
+      setUpdateData(agentData.data.minimizedData)
+      handleLoading(false, false)
     } catch (error) {
+      handleLoading(false, false)
       console.log(error)
-      handleLoading('submit', false)
     }
   }
 
-  function handleLoading(field, value) {
+  function handleLoading(submit, populate) {
     setLoading((prevState) => ({
       ...prevState,
-      [field]: value,
+      submit,
+      populate,
     }))
   }
-
-  // first loops around all the entries
-  // converts this into an array of key-value pairs:
-  // method then loops through each pair:
-  function handleReset() {
-    setFormData((prev) => {
-      const resetData = Object.entries(prev).reduce((acc, [key, _]) => {
-        // Keep email field empty string, set all others to false
-        acc[key] = key === 'email' ? '' : false
-        return acc
-      }, {})
-      return resetData
-    })
-  }
-
   return (
     <div>
       <form onSubmit={handleSubmit} className="admin-form">
+        {alert.show && <div className="change-access-alert">{alert.msg}</div>}
         <ComponentHeader text={`change agent access`} />
-
-        <div className="admin-checked-wrap check-text">
-          {formArr.slice(5, 6).map((item) => {
-            const [key, value] = item
+        <select
+          id="agent-select"
+          onChange={handleSelectAgent}
+          className="admin-select"
+          name="agent-select"
+        >
+          <option data-id={'select-agent'} value={'select-agent'}>
+            select agent
+          </option>
+          {agentData?.map((agent) => {
+            const { id, data } = agent
+            const name = `${data.firstName} ${data.lastName}`
             return (
-              <FormRow
-                key={key}
-                type={'text'}
-                name={key}
-                placeholder={`Enter ${key}`}
-                onChange={onChange}
-                checked={value}
-                labelext={key}
-                value={formData.email}
-                // id={key}
-                // added to stop duplicate on page
-                formId="change-agent"
-              />
+              <option data-id={id} value={name} key={id}>
+                {name}
+              </option>
             )
           })}
-        </div>
+        </select>
+        <div className="change-access-form-grid">
+          <div>
+            <p className="change-access-header-p">update data</p>
+            <div>
+              {updateDataArr &&
+                updateDataArr.map(([key, value]) => {
+                  return (
+                    <p className="change-access-item-p" key={key}>
+                      <span>{key}</span> <span>{value}</span>
+                    </p>
+                  )
+                })}
+            </div>
+          </div>
 
-        {/* Select All checkbox */}
-        <div className="admin-checked-wrap">
-          <label className="admin-check-label" htmlFor="selectAll">
-            {anyChecked ? 'Deselect All' : 'Select All'}
-          </label>
-          <input
-            id="selectAll"
-            className="admin-check-box"
-            type="checkbox"
-            checked={anyChecked}
-            onChange={handleSelectAll}
-          />
-        </div>
-        {/* Individual checkboxes */}
-
-        <div className="admin-checked-wrap">
-          {formArr.slice(0, 5).map((item) => {
-            const [key, value] = item
-            return (
-              <CheckboxRow
-                key={key}
-                type={'checkbox'}
-                name={key}
-                placeholder={`Enter ${key}`}
-                onChange={onChange}
-                checked={value}
-                labelext={key}
-                id={key}
-                // added to stop duplicate on page
-                // formId="delete-agent"
-              />
-            )
-          })}
+          <div>
+            <p className="change-access-header-p">change access level</p>
+            {roleArr.map(([key, value]) => {
+              return (
+                <RadioRow
+                  key={key}
+                  name={key}
+                  id={key}
+                  groupName="accessLevel"
+                  value={key}
+                  labelText={key + ' ' + value}
+                  checked={selectedOption.role === key}
+                  onChange={handleRadioChange}
+                  rowKey={value}
+                />
+              )
+            })}
+          </div>
         </div>
 
         <div className="admin-btn-container">
           <button
-            disabled={loading.populate}
-            onClick={onPopulate}
-            type="button"
-            className={`${
-              loading.populate
-                ? 'admin-add-agent-btn admin-btn-disabled'
-                : 'admin-add-agent-btn'
-            }`}
-          >
-            {loading.populate ? 'populating...' : 'populate'}
-          </button>
-          <button
-            disabled={loading.submit}
+            disabled={loading.submit || loading.populate}
             className={`${
               loading.submit
                 ? 'admin-add-agent-btn admin-btn-disabled'
                 : 'admin-add-agent-btn'
             }`}
           >
-            {loading.submit ? 'submiting...' : 'submit'}
+            {loading.submit
+              ? 'updating...'
+              : loading.populate
+              ? 'populating data...'
+              : 'update access'}
           </button>
         </div>
       </form>

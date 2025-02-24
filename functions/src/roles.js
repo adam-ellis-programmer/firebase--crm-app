@@ -1,6 +1,6 @@
 const ROLES = {
   CEO: 4,
-  ADMIN: 3, // admin has more privliges than manager
+  ADMIN: 3,
   MANAGER: 2,
   SALES: 1,
 }
@@ -8,6 +8,5 @@ const ROLES = {
 module.exports = {
   ROLES,
 }
-
 
 // superAdmin
