@@ -252,38 +252,21 @@ export const aggregateData = async () => {
     if (!hourData || hourData.length === 0) {
       return defaultValues
     }
-    //
-    // // First iteration:
-    // acc.prices = undefined
-    // item.price = 10
-    //
-    // [...(undefined || []), 10]
-    // // 1. (undefined || []) evaluates to []
-    // [...([]), 10]
-    // // 2. Spreading an empty array gives us nothing
-    // [10]
-    //
-    // It safely handles the first iteration when the array might not exist yet
-    // It creates a new array each time instead of modifying the existing one
-    // It preserves all previous values while adding the new one
-    //
-    return hourData.reduce((acc, item, i, arr) => {
+
+    return hourData.reduce((acc, item) => {
+      const newTotal = (acc.total || 0) + item.price
+      const newCount = (acc.count || 0) + 1
+
       return {
         prices: [...(acc.prices || []), item.price],
-        count: (acc.count || 0) + 1,
-        total: (acc.total || 0) + item.price,
+        count: newCount,
+        total: newTotal,
         min: acc.min === 0 ? item.price : Math.min(acc.min, item.price),
-        max: acc.max === 0 ? item.price : Math.min(acc.max, item.price),
-        // medianPrice
+        max: acc.max === 0 ? item.price : Math.max(acc.max, item.price), // Fixed to Math.max
+        average: newTotal / newCount, // Calculated using the new total and count
       }
     }, defaultValues)
   }
-
-  // TODO:
-  // make a func that aggeregates down to
-  // the half hours
-  // array with two objects, each represents
-  // half hour
 
   return {
     monthData: getMonthly,

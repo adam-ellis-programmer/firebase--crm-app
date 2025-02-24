@@ -5,7 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;1,400&display=swap');
 :root {
-  --bg: #242526;
+  --bg: #2c353f;
   --bg-accent: #484a4d;
   --text-color: #dadce1;
   --nav-size: 100px;
@@ -45,6 +45,7 @@ body {
   color: #fff;
 }
 
+.dark-mode-on .company-name,
 .dark-mode-on .admin-label,
 .dark-mode-on .tier-page-el,
 .dark-mode-on .dark-mode-toggle,
@@ -104,6 +105,16 @@ body {
 .dark-mode-on .profile-input {
   background-color: #fff;
   color: #000;
+}
+
+.dark-mode-on tr {
+  /* border: 1px solid black; */
+  overflow: scroll;
+  border-bottom: 0.1px solid #fff;
+}
+
+.dark-mode-on tr:hover {
+  background-color: #46494e;
 }
 /* input,
 textarea,
@@ -251,10 +262,12 @@ input {
   align-items: center;
   background-color: grey;
 }
+.sign-up-btn:hover,
 .nav-button:hover {
   background-color: #484a4d;
   color: #fff;
 }
+.sign-up-btn,
 .nav-button-agent-sign-in {
   border-radius: 5px;
   display: block;
@@ -263,6 +276,19 @@ input {
   background-color: #24a65c;
   color: #fff;
 }
+
+.sign-up-btn {
+  background-color: #f15208;
+  width: 100px;
+  height: 50px;
+  margin-left: 1rem;
+  /* padding: 0.4rem; */
+  /* border-radius: 0.5em; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .nav-button-agent-sign-out {
   border-radius: 5px;
   width: 100px;
@@ -2279,14 +2305,6 @@ th {
   overflow-x: scroll;
   overflow: auto;
 }
-tr {
-  /* border: 1px solid black; */
-  overflow: scroll;
-}
-
-tr:hover {
-  background-color: #ccc;
-}
 
 td {
   /* border: 1px solid; */
@@ -2362,12 +2380,6 @@ td {
 
 .logo-box {
   /* background-color: red; */
-}
-
-.sign-up-btn {
-  background-color: #f15208;
-  padding: 0.4rem;
-  border-radius: 0.5em;
 }
 
 .admin-control-header {
@@ -3421,10 +3433,14 @@ td {
   width: 100%;
   height: 100%;
   border-radius: 1rem;
+  transition: transform 500ms ease-in-out;
+}
+.chart-dash-section > div:hover {
+  transform: translateY(-10px) scale(1.02);
 }
 
 .chart-dash-section > div {
-  box-shadow: 1px 2px 20px #d5d6dccf;
+  box-shadow: 1px 2px 20px #c4c4c9cf;
   padding: 1rem;
   /* height: 50%; */
 }
@@ -3930,6 +3946,11 @@ td {
 .form-row {
   display: flex;
   flex-direction: column;
+}
+
+.select-row {
+  /* border: 1px solid; */
+  margin: 1rem 0;
 }
 .form-row input {
   padding: 0.3rem;

@@ -29,7 +29,7 @@ const DarkMode = () => {
     <div className="dark-mode-div">
       <button onClick={handleToggle} className="dark-toggle-btn">
         {darkMode ? (
-          <i class="dark-mode-icon fa-solid fa-sun"></i>
+          <i className="dark-mode-icon fa-solid fa-sun"></i>
         ) : (
           <i className="dark-mode-icon fa-solid fa-moon"></i>
         )}

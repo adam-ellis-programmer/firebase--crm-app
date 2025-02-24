@@ -2,7 +2,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useCallback, useState, useContext } from 'react'
 import CrmContext from '../crm context/CrmContext'
-
+import { toast } from 'react-toastify'
 const PayPalBtn = ({ price, productId }) => {
   const { dispatch, subscriptionInfo } = useContext(CrmContext)
   // Add state to track payment status
@@ -16,20 +16,9 @@ const PayPalBtn = ({ price, productId }) => {
     intent: 'capture',
   }
 
-  // Handle successful payments
-  // toast.success('Payment completed!') // If using toast notifications
-  // Here you could:
-  // - Update your database
-  // - Redirect to a success page
-  // - Show a success message
-  // -
-  // - ADD IN A REPORTS TO
-  // - IT IS CAUSING A BUG WHEN ADDING IN
-  // - NEW USER
-  // -
+  // async no nesting to get updated value
+  // variable inside server fucntion
   const handleSuccess = useCallback(
-    // async no nesting to get updated value
-    // variable inside server fucntion
     async (data) => {
       try {
         console.log('Payment successful:', data)
@@ -43,6 +32,9 @@ const PayPalBtn = ({ price, productId }) => {
         const newUserResult = await newAccSignUp({ data: subscriptionInfo })
         console.log(newUserResult)
       } catch (error) {
+        // TODO ========
+        // toast.error(error)
+        // TODO ========
         console.error('Error in handleSuccess:', error)
         // Handle error appropriately
       }

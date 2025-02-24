@@ -2,15 +2,16 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { getAuth } = require('../firebase.config')
 const { getFirestore } = require('firebase-admin/firestore')
-
+const { ceoPermissions } = require('./ceoPermissions')
+const { ROLES } = require('./roles')
 // Initialize Firestore
 const db = getFirestore()
 const newAccSignUp = onCall(async (request) => {
   try {
     // USE REGEX TO FIND \S REPLACE '' THE CAPS
     const data = request.data.data
-    const org = request.data.data.organization.slice(0, 4).toUpperCase()
-    const id = `COMP-${org}-${db.collection('organizations').doc().id}`
+    const ORG = request.data.data.organization.slice(0, 4).toUpperCase()
+    const id = `COMP-${ORG}-${db.collection('organizations').doc().id}`
 
     // Create the user in Authentication
     const userRecord = await getAuth().createUser({
@@ -26,19 +27,17 @@ const newAccSignUp = onCall(async (request) => {
     // Set custom claims
     await getAuth().setCustomUserClaims(userRecord.uid, {
       claims: {
-        orgOwner: true,
-        superAdmin: true,
-        admin: true,
-        manager: true,
-        ceo: true,
-        sales: true,
-        reportsTo: {
-          id: id,
-          name: userRecord.displayName,
-        },
-        organization: data.organization,
-        organizationId: data.organizationId,
+        permissions: ceoPermissions(),
+        roleLevel: ROLES['CEO'],
+        role: 'CEO',
+        subordinates: [],
         orgId: id,
+        orgName: request.data.data.organization,
+      },
+      // move data back to org owner
+      defaultHandBack: {
+        id: id,
+        name: userRecord.displayName,
       },
     })
 
@@ -58,7 +57,6 @@ const newAccSignUp = onCall(async (request) => {
 
     // Create the database entry
     const dbResult = await makeDbEntry(agentObj, userRecord.uid, id)
-    // const update = await updateAccountDoc(data.organizationId)
 
     return { user, success: true, userRecord, dbResult, agentObj, dbResult }
   } catch (error) {
@@ -87,6 +85,7 @@ async function makeDbEntry(userData, uid, id) {
       docId: id,
     }
 
+    // no need for claims in org doc
     delete userData.claims
     const orgObj = {
       ...userData,

@@ -87,13 +87,12 @@ function Navbar({ setToggleNav, toggleNav }) {
             <Logo className="logo" />
           </Link>
         </div>
-        <div className="nav-signup-div">
+        <div className="nav-signup-div"></div>
+        <ul className="nav-ul">
+          <DarkMode />
           <Link to="/sign-up-acc" className="sign-up-btn">
             sign up
           </Link>
-        </div>
-        <ul className="nav-ul">
-          <DarkMode/>
           <NavItem setToggleNav={setToggleNav} toggleNav={toggleNav} />
         </ul>
       </div>

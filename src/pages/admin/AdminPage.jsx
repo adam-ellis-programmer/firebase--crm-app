@@ -11,27 +11,29 @@ function AdminPage() {
   const { claims } = useAuthStatusTwo()
   const [managers, setManagers] = useState(null)
   const [agents, setAgents] = useState(null)
-  // console.log(claims?.claims)
+  console.log(claims)
+  // console.log(managers)
+  // console.log(claims?.claims?.orgId)
 
   // only get data once we have the claims
   useEffect(() => {
     const getData = async () => {
       // Only run if organizationId exists
-      if (claims?.claims?.organizationId && claims?.claims?.orgId) {
-        const data = await getManagers(claims.claims.organizationId)
-        // console.log(data)
+      // get managers
+      if (claims?.claims?.orgId) {
+        const data = await getManagers(claims.claims.orgId)
         setManagers(data)
       }
+      // get org agents
       const functions = getFunctions()
       const getAllAgentsByOrg = httpsCallable(functions, 'getAllAgentsByOrg')
-      const data = await getAllAgentsByOrg({ orgId: claims?.claims.orgId })
+      const data = await getAllAgentsByOrg({ orgId: claims?.claims?.orgId })
       setAgents(data?.data?.agentData)
-      // console.log(data?.data?.agentData)
     }
 
     getData()
     return () => {}
-  }, [claims?.claims?.organizationId])
+  }, [claims])
 
   return (
     <div>

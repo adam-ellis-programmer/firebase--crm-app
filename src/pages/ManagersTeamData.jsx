@@ -1,6 +1,5 @@
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useEffect, useState } from 'react'
-import { collection, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import DataAllItem from '../components/DataAllItem'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
@@ -10,20 +9,17 @@ const DataAll = () => {
   const { loggedInUser, claims } = useAuthStatusTwo()
   const [customers, setCustomers] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [agentClaims, setAgentClaims] = useState(null)
-
-  // make sure we get correct company data
+  const [error, setError] = useState(null)
+  console.log(claims)
   useEffect(() => {
-    if (claims?.claims) {
-      setAgentClaims(claims?.claims)
-    }
-    return () => {}
-  }, [claims?.claims])
+    // Reset states when dependencies change
+    setLoading(true)
+    setError(null)
+    setCustomers(null)
 
-  useEffect(() => {
     const getData = async () => {
-      // guard clause to exit the function early if loggedInUser is not defined (stops error in console)
-      if (!loggedInUser || !loggedInUser.uid) {
+      // Guard clauses for required data
+      if (!loggedInUser?.uid || !claims?.claims?.reportsTo?.id) {
         setLoading(false)
         return
       }
@@ -31,44 +27,64 @@ const DataAll = () => {
       try {
         const functions = getFunctions()
         const getManagersData = httpsCallable(functions, 'getManagersData')
+
         const data = {
-          orgId: agentClaims?.reportsTo.id,
-          managersId: agentClaims?.reportsTo.id,
+          orgId: claims.claims.reportsTo.id,
+          managersId: claims.user_id, 
+          // change here
         }
+
         const res = await getManagersData({ data })
+        console.log(res)
         const clients = res.data.clients
-        console.log(clients)
+
+        if (!clients || !Array.isArray(clients)) {
+          throw new Error('Invalid data format received')
+        }
+
         setCustomers(clients)
       } catch (error) {
         console.error('Error fetching data: ', error)
+        setError(error.message)
       } finally {
         setLoading(false)
       }
     }
 
     getData()
-  }, [loggedInUser, agentClaims])
+  }, [loggedInUser?.uid, claims?.claims?.reportsTo?.id]) // More specific dependencies
 
   if (loading) {
     return <Loader />
   }
-  // reports to is their manager
-  // console.log(agentClaims)
-  console.log(claims)
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <p className="error-message">Error loading data: {error}</p>
+      </div>
+    )
+  }
+
+  if (!customers || customers.length === 0) {
+    return (
+      <div className="page-container">
+        <p>No team data available.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="page-container all-data-page-container">
       <section className="all-data-section-top">
         <p className="all-data-header-p">
-          {`${claims?.name}'s`} <span>team data</span>{' '}
+          {claims?.name ? `${claims.name}'s` : 'Team'} <span>team data</span>
         </p>
         <p className="all-data-header-p">
-          {' '}
-          <span>Org Name:</span> {`${claims?.claims?.organization}`}{' '}
+          <span>Org Name:</span> {claims?.claims?.organization || 'N/A'}
         </p>
         <p className="all-data-header-p">
-          {' '}
-          <span>Number on team</span> {`10`}{' '}
+          <span>Number on team:</span> {customers.length}
         </p>
       </section>
 
@@ -85,15 +101,14 @@ const DataAll = () => {
           <div className="data-header-div">rep to</div>
         </div>
 
-        {customers &&
-          customers.map((customer, i) => (
-            <DataAllItem
-              key={customer.id}
-              customer={customer}
-              i={i}
-              loggedInUser={loggedInUser}
-            />
-          ))}
+        {customers.map((customer, i) => (
+          <DataAllItem
+            key={customer.id}
+            customer={customer}
+            i={i}
+            loggedInUser={loggedInUser}
+          />
+        ))}
       </section>
     </div>
   )

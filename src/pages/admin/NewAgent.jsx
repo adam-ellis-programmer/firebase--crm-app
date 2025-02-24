@@ -4,11 +4,16 @@ import ComponentHeader from './ComponentHeader'
 import { getManagers } from '../../crm context/CrmAction'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { getFunctions, httpsCallable } from 'firebase/functions'
-
+import { ROLES } from './roles'
 const NewAgent = ({ data }) => {
   // console.log(data)
   const { claims } = useAuthStatusTwo()
   // console.log(claims)
+  // return
+  // console.log(claims)
+  // GET ALL AGENTS WHERE ROLE > 1
+  // GET ALL AGENTS WHERE ROLE > 1
+  // GET ALL AGENTS WHERE ROLE > 1
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     firstName: 'Fiona',
@@ -16,6 +21,8 @@ const NewAgent = ({ data }) => {
     email: 'fiona@gmail.com',
     password: '111111',
     reportsTo: null,
+    role: '', // Add this
+    roleLevel: 0,
   })
 
   // Update formData when claims load
@@ -23,9 +30,13 @@ const NewAgent = ({ data }) => {
     if (claims?.claims) {
       setFormData((prev) => ({
         ...prev,
-        organizationId: claims.claims.organizationId,
-        organization: claims.claims.organization,
+        // missing data here !!
+        orgName: claims.claims.orgName,
         orgId: claims.claims.orgId,
+        defaultHandBack: {
+          id: claims.defaultHandBack.id,
+          name: claims.defaultHandBack.name,
+        },
       }))
     }
   }, [claims])
@@ -34,10 +45,25 @@ const NewAgent = ({ data }) => {
 
   const handleFormInput = (e) => {
     const { name, value } = e.target
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+
+    // Special handling for role selection
+    if (name === 'role') {
+      const selectedOption = e.target.selectedOptions[0]
+      const roleLevel = selectedOption.dataset.managerValue
+
+      console.log(roleLevel)
+      setFormData((prevState) => ({
+        ...prevState,
+        role: value, // This will be the role name (CEO, ADMIN, etc.)
+        roleLevel: parseInt(roleLevel), // This will be the numeric level (4, 3, etc.)
+      }))
+    } else {
+      // Handle other inputs normally
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }))
+    }
   }
 
   const onSelectChange = (e) => {
@@ -59,31 +85,25 @@ const NewAgent = ({ data }) => {
   // 1: -- organization id
   // 2: -- claims.manager = true
 
+  //  ADD THE SUBORDINATES OBJ WITH ID, NAME, ROLE
+  // const isFormComplete = Object.values(formData).every((value) => value !== '' && value !== null && value !== undefined)
+  // const form = e.target
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // const form = e.target
-    // check for all values
-    // prettier-ignore
-    // We use && (AND) instead of || (OR) because we want ALL of these conditions to be true for each value.
-    // If ANY of these conditions fails (i.e., if the value IS an empty string, or IS null, or IS undefined), the whole expression returns false.
-    // loops
-    // some and every
-    const isFormComplete = Object.values(formData).every((value) => value !== '' && value !== null && value !== undefined)
 
-    if (!isFormComplete) {
-      console.log('please fill in all fields')
-      return
-    }
+    console.log(formData)
+
+    // return
     setLoading(true)
 
     const functions = getFunctions()
 
     // Create a reference to your function
-    const authTest = httpsCallable(functions, 'adminAddUser')
+    const adminAddUser = httpsCallable(functions, 'adminAddUser')
 
     // Call the function
     try {
-      const result = await authTest({ data: formData })
+      const result = await adminAddUser({ data: formData })
       console.log(result.data)
       resetForm()
     } catch (error) {
@@ -105,30 +125,17 @@ const NewAgent = ({ data }) => {
     setLoading(false)
   }
 
-  const handleTest = async () => {
-    const functions = getFunctions()
-
-    // Create a reference to your function
-    const authTest = httpsCallable(functions, 'simpleQuery')
-
-    // Call the function
-    try {
-      const result = await authTest({ id: 'HEL--9223343305' })
-      console.log(result.data)
-      resetForm()
-    } catch (error) {
-      setLoading(false)
-      console.error('Error:', error)
-    }
-  }
-
   // instead of using global state
   // make a specific server function
   // that handle the population
   // of user data for admin pannel
+
+  const roleEntries = Object.entries(ROLES).filter(
+    ([_, level]) => level <= claims?.claims?.roleLevel
+  )
+
   return (
     <div>
-      <button onClick={handleTest}>test me</button>
       <form onSubmit={handleSubmit} className="admin-form">
         <ComponentHeader text={`add new agent`} />
         {/* Slice from index 0 to 4 to get only firstName, lastName, email, and password */}
@@ -147,7 +154,7 @@ const NewAgent = ({ data }) => {
             />
           )
         })}
-        {/* Add select box for reportsTo separately */}
+
         <div className="select-row">
           <label className="admin-label" htmlFor="admin-label">
             Select Who Reports To
@@ -172,6 +179,39 @@ const NewAgent = ({ data }) => {
                   value={fullName} // Add value here
                 >
                   {fullName}
+                </option>
+              )
+            })}
+          </select>
+        </div>
+
+        {/*  */}
+
+        <div className="select-row">
+          <label className="admin-label" htmlFor="admin-label">
+            Select Role
+          </label>
+          <select
+            className="admin-select"
+            id="role-select"
+            name="role"
+            value={formData.role || ''} // Make sure to add role to your formData state
+            onChange={handleFormInput} // You can use the regular handleFormInput here
+          >
+            <option data-manager-id={'please-select'} value="">
+              Select Role
+            </option>
+            {roleEntries?.map((item) => {
+              const [key, value] = item
+
+              return (
+                <option
+                  data-manager-id={value}
+                  data-manager-value={value}
+                  key={key}
+                  value={key} // Add value here
+                >
+                  {key} access level {value}
                 </option>
               )
             })}

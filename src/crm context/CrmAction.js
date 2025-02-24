@@ -770,6 +770,18 @@ export const getAllCustomers = async () => {
   return data
 }
 
+// *** FILTERING PIPELINE ***
+// prevents unnecessary check
+// First, verify this is a current year order
+// Think of it like a funnel,
+// where each level filters out orders that couldn't possibly match the more specific time criteria:
+// It's like a security checkpoint system:
+
+// The nested if statements create a data drilling or "drill-down" pattern, which is a
+// fundamental concept in data analysis.
+//  we're drilling down through time periods:
+// year level > month level > week level > day level > hour level
+
 // aggregated data
 export const getAllOrdersStructured = async () => {
   // Initialize result object with all our time-based arrays
@@ -787,6 +799,7 @@ export const getAllOrdersStructured = async () => {
   const currentMonth = now.getMonth() + 1
   const todayDate = now.getDate()
   const currentHour = now.getHours() // Get current hour (0-23)
+  console.log(currentHour)
 
   // Calculate week boundaries
   const curr = new Date()
@@ -825,18 +838,6 @@ export const getAllOrdersStructured = async () => {
       // console.log(hours)
       orderHour = parseInt(hours)
     }
-
-    // *** FILTERING PIPELINE ***
-    // prevents unnecessary check
-    // First, verify this is a current year order
-    // Think of it like a funnel,
-    // where each level filters out orders that couldn't possibly match the more specific time criteria:
-    // It's like a security checkpoint system:
-
-    // The nested if statements create a data drilling or "drill-down" pattern, which is a
-    // fundamental concept in data analysis.
-    //  we're drilling down through time periods:
-    // year level > month level > week level > day level > hour level
 
     if (orderDate.getFullYear() === currentYear) {
       result.yearOrders.push(orderData)
@@ -901,13 +902,14 @@ export async function updateOrder(orderId, formData) {
 }
 
 export async function getManagers(orgId) {
+  // console.log(orgId)
   const data = []
 
   try {
     const q = query(
       collection(db, 'agents'),
-      where('claims.manager', '==', true),
-      where('organizationId', '==', orgId)
+      where('claims.permissions.admin.hasFullAccess', '==', true),
+      where('orgId', '==', orgId)
     )
 
     const querySnapshot = await getDocs(q)

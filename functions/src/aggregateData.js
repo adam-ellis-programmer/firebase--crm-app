@@ -10,6 +10,14 @@ const adminAddUser = onCall(async (request) => {
   return { success: true }
 })
 
+// as we need live logs
+// this can not be done
+// and tested on the server
+// data needs to be
+// replecated localy
+// get the data aggregation finished 
+// on the client and come back to this 
+// 
 async function processData() {
   const result = {
     yearOrders: [],
@@ -26,6 +34,8 @@ async function processData() {
     return
   }
 
+  // in this loop we route the docs to
+  // the specific arrays
   snapshot.forEach((doc) => {
     console.log(doc.id, '=>', doc.data())
   })

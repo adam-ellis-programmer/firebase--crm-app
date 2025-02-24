@@ -5,21 +5,27 @@ const { getFirestore } = require('firebase-admin/firestore')
 
 // Initialize Firestore
 const db = getFirestore()
+// all data for team manager
 const getManagersData = onCall(async (request) => {
   const managersId = request.data.data.managersId
   const orgId = request.data.data.orgId
   const data = request.data.data
+  const auth = request.auth.token.claims
+
+  // managers id needs to be changed to whoeveris logged in
+  // not the compnay id
 
   const clients = await getData(managersId, orgId)
   //...
   try {
-    return { orgId, managersId, data: request.data, data, clients }
+    return { orgId, managersId, data: request.data, data, clients, auth }
   } catch (error) {
     console.log(error)
     throw new HttpsError('internal', 'Error creating new user: ' + error.message)
   }
 })
 
+//
 async function getData(managersId, orgId) {
   const clients = []
   const dataRef = db.collection('customers')
