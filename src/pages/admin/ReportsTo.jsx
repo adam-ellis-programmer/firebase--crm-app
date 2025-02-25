@@ -1,27 +1,34 @@
 import { useState, useEffect } from 'react'
 import ComponentHeader from './ComponentHeader'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
-import FormRow from './FormRow'
 
 import { getFunctions, httpsCallable } from 'firebase/functions'
-import { getAllAgents } from '../../crm context/CrmAction'
 import SelectRow from './SelectRow'
+
 const ReportsTo = ({ data }) => {
   const [agentsData, setAgentsData] = useState(null)
   const { claims } = useAuthStatusTwo()
   const orgId = claims?.claims?.orgId
 
   // ...
+  const role = 'CEO'
+  const roles = ['CEO', 'ADMIN', 'MANAGER', 'SALES']
 
+  if (roles.includes(role)) {
+    console.log('access granted')
+  }
   // only make subordinate if
   // access > roleLevel
+  // access.inclues(role)
+  //...
+  // get all users access level > 2
+  // list all the users and the submordinates
 
   useEffect(() => {
     const getData = async () => {
       const functions = getFunctions()
       const getAllAgents = httpsCallable(functions, 'getAllAgents')
       const data = await getAllAgents({ orgId })
-      // console.log(data.data.agents)
       setAgentsData(data.data.agents)
     }
     if (orgId) {
@@ -29,52 +36,42 @@ const ReportsTo = ({ data }) => {
     }
     return () => {}
   }, [orgId])
-  const [formData, setFormData] = useState({
-    email: 'marina@gmail.com',
-    reportsTo: {
-      name: '',
-      id: '',
-    },
-  })
+  const [formData, setFormData] = useState({})
   const [loading, setLoading] = useState(false)
 
+  // checkout select-one
+  // const select = document.getElementById('reportsTo')
   const onChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-    console.log('object')
-  }
-
-  // const index = e.target.selectedIndex
-  // const test = e.target.options[index].dataset.id
-  const handleManagersSelect = (e) => {
-    const select = document.getElementById('reportsTo')
     let id = e.target.selectedOptions[0].dataset.id
+    let nameValue = e.target.selectedOptions[0].value
 
-    setFormData((prev) => ({
-      ...prev,
+    if (name === 'agent') {
+      setFormData((prevState) => ({
+        ...prevState,
+        agent: {
+          name: nameValue,
+          id,
+        },
+      }))
+      return
+    }
+    setFormData((prevState) => ({
+      ...prevState,
       reportsTo: {
-        name: e.target.value,
+        name: nameValue,
         id,
       },
     }))
   }
 
-  console.log(agentsData)
-
-  const handleAgentsSelect = (e) => {
-    const agentId = e.target.selectedOptions[0].dataset.id
-    console.log(agentId)
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const functions = getFunctions()
-    const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
-    const data = await changeReportsTo({ data: formData })
-    console.log(data)
+    // const functions = getFunctions()
+    // const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
+    // const data = await changeReportsTo( formData })
+    // console.log(data)
+    console.log(formData)
   }
   return (
     <div>
@@ -85,17 +82,19 @@ const ReportsTo = ({ data }) => {
           data={agentsData}
           text="select agent"
           labelText={'agent'}
-          onChange={handleAgentsSelect}
+          onChange={onChange}
+          name="agent"
         />
         <SelectRow
           data={data}
           text="select manager"
           labelText={'reports to'}
-          onChange={handleManagersSelect}
+          onChange={onChange}
+          name="manager"
         />
 
         <div className="admin-btn-container">
-          <button className="admin-add-agent-btn">submit</button>
+          <button className="admin-add-agent-btn">change</button>
         </div>
       </form>
     </div>

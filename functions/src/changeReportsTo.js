@@ -6,11 +6,18 @@ const { getFirestore } = require('firebase-admin/firestore')
 // Initialize Firestore
 const db = getFirestore()
 const changeReportsTo = onCall(async (request) => {
+  const { formData } = request.data
+
+  const manager = formData.reportsTo
+  const agent = formData.agent
+
   try {
     const email = request.data.data.email
     const reportsToObj = request.data.data.reportsTo
+
     const user = await getAuth().getUserByEmail(email)
     const agentRecord = await updateDatabase(user.uid, reportsToObj)
+
     return { success: true, res: request.data, user, reportsToObj, agentRecord }
   } catch (error) {
     throw new HttpsError('internal', 'Error changing user access: ' + error.message)
