@@ -28,6 +28,7 @@ import Terms from './pages/Terms'
 import SignUpAccPage from './pages/SignUpTierPage'
 import PaymentPage from './billing/PaymentPage'
 import DarkMode from './DarkMode'
+import ReportsToInfo from './pages/admin/ReportsToInfo'
 
 // PROTECT THE ROUTES
 function App() {
@@ -58,6 +59,7 @@ function App() {
                 <Route path="/stats/:uid" element={<Stats />} />
                 <Route path="/new-customer" element={<NewCustomer />} />
                 <Route path="/dash/:uid" element={<ChartDash />} />
+                <Route path="/rep-to-info/:uid" element={<ReportsToInfo />} />
                 <Route
                   path="/single-customer/:agentUid/:uid/:name"
                   element={<SingleCustomer />}

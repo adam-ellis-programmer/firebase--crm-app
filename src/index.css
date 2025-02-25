@@ -68,7 +68,14 @@ body {
   border-radius: 1rem;
   box-shadow: none;
 }
-.dark-mode-on .display-messages-container,
+
+.dark-mode-on .note-edit-modal,
+.dark-mode-on .order-edit-modal {
+  box-shadow: 1px 3px 10px #cac4c4;
+}
+
+.dark-mode-on .note-edit-modal,
+.dark-mode-on .order-edit-modal .dark-mode-on .display-messages-container,
 .dark-mode-on .order-edit-modal,
 .dark-mode-on .sales-header,
 .dark-mode-on .task-list-input-text,

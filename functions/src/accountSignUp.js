@@ -10,16 +10,17 @@ const newAccSignUp = onCall(async (request) => {
   try {
     // USE REGEX TO FIND \S REPLACE '' THE CAPS
     const data = request.data.data
-    const ORG = request.data.data.organization.slice(0, 4).toUpperCase()
-    const id = `COMP-${ORG}-${db.collection('organizations').doc().id}`
-
+    const ORG = request.data.data.orgName.slice(0, 4).toUpperCase()
+    const name = data.firstName.slice(0, 4)
+    const id = `ORG-${ORG}-${db.collection('organizations').doc().id}`
+    const fullName = `${data.firstName} ${data.lastName}`
     // Create the user in Authentication
     const userRecord = await getAuth().createUser({
       uid: id,
       email: data.email,
       emailVerified: false,
       password: data.password,
-      displayName: `${data.firstName} ${data.lastName}`, // Combine first and last name
+      displayName: fullName, // Combine first and last name
       photoURL: 'http://www.example.com/12345678/photo.png',
       disabled: false,
     })
@@ -27,17 +28,16 @@ const newAccSignUp = onCall(async (request) => {
     // Set custom claims
     await getAuth().setCustomUserClaims(userRecord.uid, {
       claims: {
-        permissions: ceoPermissions(),
         roleLevel: ROLES['CEO'],
         role: 'CEO',
-        subordinates: [],
         orgId: id,
-        orgName: request.data.data.organization,
+        agentId: id,
+        orgName: data.orgName,
       },
       // move data back to org owner
       defaultHandBack: {
         id: id,
-        name: userRecord.displayName,
+        name: fullName,
       },
     })
 
@@ -51,7 +51,7 @@ const newAccSignUp = onCall(async (request) => {
       claims: user.customClaims.claims,
       reportsTo: {
         id: id,
-        name: userRecord.displayName,
+        name: fullName,
       },
     }
 
@@ -80,9 +80,10 @@ async function makeDbEntry(userData, uid, id) {
     const agentData = {
       ...userData,
       createdAt: new Date(),
-      // delete one or the other
+      // both the same on acc owner doc
       orgId: id,
       docId: id,
+      permissions: ceoPermissions(),
     }
 
     // no need for claims in org doc
@@ -91,7 +92,6 @@ async function makeDbEntry(userData, uid, id) {
       ...userData,
       accUsersLimit: 10,
       accUsers: 0,
-      orgId: id,
       docId: id,
     }
 

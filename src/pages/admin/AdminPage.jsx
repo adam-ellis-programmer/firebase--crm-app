@@ -11,7 +11,7 @@ function AdminPage() {
   const { claims } = useAuthStatusTwo()
   const [managers, setManagers] = useState(null)
   const [agents, setAgents] = useState(null)
-  // console.log(claims)
+  console.log(claims)
   // console.log(managers)
   // console.log(claims?.claims?.orgId)
 

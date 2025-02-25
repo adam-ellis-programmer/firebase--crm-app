@@ -1,6 +1,5 @@
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useEffect, useState } from 'react'
-import { db } from '../firebase.config'
 import DataAllItem from '../components/DataAllItem'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 import Loader from '../assets/Loader'
@@ -18,20 +17,13 @@ const DataAll = () => {
     setCustomers(null)
 
     const getData = async () => {
-      // Guard clauses for required data
-      if (!loggedInUser?.uid || !claims?.claims?.reportsTo?.id) {
-        setLoading(false)
-        return
-      }
-
       try {
         const functions = getFunctions()
         const getManagersData = httpsCallable(functions, 'getManagersData')
 
         const data = {
-          orgId: claims.claims.reportsTo.id,
-          managersId: claims.user_id, 
-          // change here
+          orgId: claims?.claims?.orgId,
+          managersId: claims?.claims?.agentId,
         }
 
         const res = await getManagersData({ data })
@@ -51,8 +43,10 @@ const DataAll = () => {
       }
     }
 
-    getData()
-  }, [loggedInUser?.uid, claims?.claims?.reportsTo?.id]) // More specific dependencies
+    if (claims?.claims) {
+      getData()
+    }
+  }, [claims]) // More specific dependencies
 
   if (loading) {
     return <Loader />

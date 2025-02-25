@@ -34,6 +34,7 @@ const adminAddUser = onCall(async (request) => {
         role: data.role,
         orgId: data.orgId,
         orgName: data.orgName,
+        agentId: id,
       },
       defaultHandBack: {
         id: data.defaultHandBack.id,

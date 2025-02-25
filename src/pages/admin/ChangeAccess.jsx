@@ -1,7 +1,5 @@
 import React from 'react'
-import FormRow from './FormRow'
 import { useState, useEffect } from 'react'
-import CheckboxRow from './CheckboxRow'
 import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import RadioRow from './RadioRow '
@@ -61,6 +59,8 @@ const ChangeAccess = ({ claims }) => {
         show: true,
         msg: 'please select an option',
       }))
+      // reset obj to prevent bugs
+      setSelectedOption({})
       handleLoading(false, false)
       reset(2000)
       return false
@@ -97,8 +97,20 @@ const ChangeAccess = ({ claims }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    handleLoading(true, false)
+
+    if (Object.entries(selectedOption).length === 0) {
+      console.log('please select an agent ')
+      setAlert((prevState) => ({
+        ...prevState,
+        show: true,
+        msg: 'please select an option',
+      }))
+      reset(2000)
+      return
+    }
+
     try {
+      handleLoading(true, false)
       const { role, roleLevel } = selectedOption
       const { id } = updateData
 
@@ -129,6 +141,19 @@ const ChangeAccess = ({ claims }) => {
       populate,
     }))
   }
+
+  // helper funciton
+  function isEmptyObject(obj) {
+    return (
+      obj &&
+      Object.keys(obj).length === 0 &&
+      Object.getPrototypeOf(obj) === Object.prototype
+    )
+  }
+
+  // The object exists (not null/undefined)
+  // It has no keys
+  // It's a plain object (not an array or other object type)
   return (
     <div>
       <form onSubmit={handleSubmit} className="admin-form">

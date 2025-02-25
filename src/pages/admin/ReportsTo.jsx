@@ -15,7 +15,7 @@ const ReportsTo = ({ data }) => {
   const roles = ['CEO', 'ADMIN', 'MANAGER', 'SALES']
 
   if (roles.includes(role)) {
-    console.log('access granted')
+    // console.log('access granted')
   }
   // only make subordinate if
   // access > roleLevel
@@ -45,20 +45,22 @@ const ReportsTo = ({ data }) => {
     const { name, value } = e.target
     let id = e.target.selectedOptions[0].dataset.id
     let nameValue = e.target.selectedOptions[0].value
+    let currentRepTo = e.target.selectedOptions[0].dataset.reptoid
 
     if (name === 'agent') {
       setFormData((prevState) => ({
         ...prevState,
         agent: {
           name: nameValue,
-          id,
+          agentId: id,
+          currentRepTo,
         },
       }))
       return
     }
     setFormData((prevState) => ({
       ...prevState,
-      reportsTo: {
+      newReportsTo: {
         name: nameValue,
         id,
       },
@@ -67,15 +69,20 @@ const ReportsTo = ({ data }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // const functions = getFunctions()
-    // const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
-    // const data = await changeReportsTo( formData })
-    // console.log(data)
-    console.log(formData)
+    try {
+      const functions = getFunctions()
+      const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
+      const data = await changeReportsTo({ formData })
+      console.log(data)
+
+      console.log(formData)
+    } catch (error) {
+      console.log(error)
+    }
   }
   return (
     <div>
-      <form onSubmit={handleSubmit} action="" className="admin-form">
+      <form onSubmit={handleSubmit} className="admin-form">
         <ComponentHeader text={`change reports to`} />
 
         <SelectRow

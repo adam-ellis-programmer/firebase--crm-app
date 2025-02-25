@@ -584,9 +584,9 @@ exports.handleDatabaseSignUp = onCall(async (request) => {
   }
 })
 
-exports.handleWelcomeEmails = onCall(async (request) => {
-  return request.data
-})
+// exports.handleWelcomeEmails = onCall(async (request) => {
+//   return request.data
+// })
 
 async function getData() {
   try {

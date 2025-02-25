@@ -25,6 +25,8 @@ const PayPalBtn = ({ price, productId }) => {
         setPaymentStatus('Payment completed successfully!')
         // console.log('subscription data=>', subscriptionInfo)
 
+        console.log(subscriptionInfo)
+        // return
         const functions = getFunctions()
         const newAccSignUp = httpsCallable(functions, 'newAccSignUp')
 

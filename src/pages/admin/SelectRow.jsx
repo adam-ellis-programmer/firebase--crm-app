@@ -11,10 +11,16 @@ const SelectRow = ({ data, onChange, name, text, labelText, value, id }) => {
         <option value="select-agent">{text}</option>
         {data?.map((item) => {
           const { id, data } = item
-          // console.log(data)
+          // console.log(data.reportsTo)
           const fullName = `${data.firstName} ${data.lastName}`
           return (
-            <option key={id} data-id={id} value={data.value} name={'data.fullName'}>
+            <option
+              data-reptoid={data.reportsTo.id}
+              key={id}
+              data-id={id}
+              value={data.value}
+              name={'data.fullName'}
+            >
               {fullName}
             </option>
           )

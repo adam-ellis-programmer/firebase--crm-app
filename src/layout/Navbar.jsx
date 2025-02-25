@@ -70,6 +70,7 @@ function Navbar({ setToggleNav, toggleNav }) {
     { id: crypto.randomUUID(), text: 'team data', url: `/all-data/${userUid}` },
     { id: crypto.randomUUID(), text: 'stats', url: `/stats/${userUid}` },
     { id: crypto.randomUUID(), text: 'dashboard', url: `/dash/${userUid}` },
+    { id: crypto.randomUUID(), text: 'reports to', url: `/rep-to-info/${userUid}` },
   ]
 
   const handleSignOut = (e) => {

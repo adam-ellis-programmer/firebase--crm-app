@@ -8,19 +8,35 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { getAgent } from '../../crm context/CrmAction'
+
 const NewSignupForm = () => {
   const { uid } = useParams()
+  const { loggedIn, checkingStatus, loggedInUser, claims } = useAuthStatusTwo()
+  const [agentData, setAgentData] = useState(null)
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getAgent(claims?.claims?.agentId)
+      setAgentData(res.data)
+    }
+
+    if (claims?.claims) {
+      getData()
+    }
+
+    return () => {}
+  }, [claims?.claims])
 
   const navigate = useNavigate()
-  const { loggedIn, checkingStatus, loggedInUser, claims } = useAuthStatusTwo()
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: 'Sally Sue',
+    email: 'Sally@gmail.com',
+    phone: '07665454343',
     orgId: '',
-    company: '',
-    address: '',
+    company: 'sally nails',
+    address: '1 London Road Dartford',
     image: null,
   })
 
@@ -171,8 +187,8 @@ const NewSignupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // if the agent has not got sales permission
-    if (!claims.claims.sales) {
+    // if the agent has not got manager permission
+    if (claims.claims.roleLevel < 2) {
       console.log('you are not authorized to sign up new customers! ')
       return
     }
@@ -251,7 +267,7 @@ const NewSignupForm = () => {
       agentUid: loggedInUser.uid,
       dateOfSignUp: new Date().toLocaleString('en-GB'),
       timestamp: serverTimestamp(),
-      reportsTo: claims.claims.reportsTo,
+      reportsTo: agentData.reportsTo,
       custId: id,
     }
 

@@ -936,10 +936,7 @@ export async function getAllAgents(orgId) {
   // 2 = manager
   const accessLevel = 2
   try {
-    const q = query(
-      collection(db, 'agents'),
-      where('orgId', '==', orgId)
-    )
+    const q = query(collection(db, 'agents'), where('orgId', '==', orgId))
 
     const querySnapshot = await getDocs(q)
     querySnapshot.forEach((doc) => {
@@ -954,4 +951,14 @@ export async function getAllAgents(orgId) {
   }
 
   return data
+}
+
+export async function getAgent(id) {
+  const docRef = doc(db, 'agents', id)
+  const docSnap = await getDoc(docRef)
+
+  if (docSnap.exists()) {
+    console.log('Document data:', docSnap.data())
+    return { success: true, data: docSnap.data(), id: docSnap.id }
+  }
 }

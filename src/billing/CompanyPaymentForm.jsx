@@ -13,7 +13,7 @@ const CompanyPaymentForm = () => {
   const generateOrgId = (orgName) => {
     return orgName.slice(0, 3).toUpperCase() + '--' + generateTenDigitNumber()
   }
-  const orgId = generateOrgId(subscriptionInfo.organization)
+  const orgId = generateOrgId(subscriptionInfo.orgName)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -88,9 +88,9 @@ const CompanyPaymentForm = () => {
         />
         <FormRow
           type="text"
-          name="organization"
-          labelText="Organization"
-          defaultValue={subscriptionInfo.organization}
+          name="orgName"
+          labelText="OrgName"
+          defaultValue={subscriptionInfo.orgName}
           onChange={handleChange}
         />
         <FormRow
