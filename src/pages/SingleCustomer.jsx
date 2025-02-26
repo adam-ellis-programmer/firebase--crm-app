@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState, useContext, useMemo } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getDoc, doc } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
@@ -18,71 +18,78 @@ import SendEmail from '../drop down modals/SendEmail'
 import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
 import Loader from '../assets/Loader'
-import { canViewData } from './view data dash/canView'
+import { AuthorizedView, canViewData } from './view data dash/canView'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
+import { getDocument } from '../crm context/CrmAction'
+import RestricedAccessPage from './view data dash/RestricedAccessPage'
+import useGetAgentDoc from '../hooks/useGetAgentDoc'
 function SingleCustomer() {
   const { claims } = useAuthStatusTwo()
-  const allowAccess = canViewData()
-  console.log(allowAccess)
-  // console.log(claims)
+  const { agentDoc } = useGetAgentDoc(claims?.user_id, 'agents')
   const { deleteBtn, editPurchase, editNote, toggleEmail, ordersLength, notesLength } =
     useContext(CrmContext)
 
   const [searchParams, setSearchParams] = useSearchParams()
-
   const [customer, setCustomer] = useState(null)
-  const [testing, setTesting] = useState(null)
+  const [agent, setAgent] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [shareLinkCopied, setShareLinkCopied] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
+  const [authorized, setAuthorized] = useState(null)
+
   const navigate = useNavigate()
   const params = useParams()
-
   const auth = getAuth()
-  // throw in data to access and recieve a
-  // boolean back
-  // console.log(customer)
+
+  const permissions = useMemo(() => {
+    if (!agentDoc?.permissions) return {}
+
+    return agentDoc.permissions
+  }, [agentDoc])
+  // Load customer data
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!claims) return
       try {
-        const docRef = doc(db, 'customers', params.uid)
-        const docSnap = await getDoc(docRef)
-        // check if document exists
-        if (docSnap.exists()) {
-          // console.log(docSnap.data());
-          setCustomer(docSnap.data())
-        }
+        const document = await getDocument(params.uid, 'customers')
+        const agent = await getDocument(claims?.user_id, 'agents')
+        document && setCustomer(document)
+        agent && setAgent(agent)
       } catch (error) {
         console.log(error)
       } finally {
         setLoading(false)
       }
     }
-
-    // try / catch and finally to set loader 0
     fetchData()
-  }, [navigate, params.uid])
+  }, [params.uid, claims?.user_id])
+  //
 
-  window.addEventListener('popstate', (e) => {
-    // navigate(`/data/${params.uid}`);
-  })
-  const pathname = window.location.pathname
-
-  window.addEventListener('popstate', (e) => {
-    if (
-      pathname === document.location.pathname &&
-      pathname.includes('/single-customer/')
-    ) {
-      navigate(`/data/${params.uid}`)
+  // Only check authorization after both customer data AND user claims are loaded
+  useEffect(() => {
+    // Only proceed if loading is complete and we have both customer and claims
+    if (!loading && customer && agent && claims) {
+      try {
+        // We make sure not to run the check until we have both pieces of data
+        const isAuthorized = canViewData(claims, agent, customer)
+        setAuthorized(isAuthorized)
+      } catch (error) {
+        console.error('Authorization check error:', error)
+        setAuthorized(false)
+      } finally {
+        setAuthChecked(true)
+      }
     }
-  })
+  }, [loading, customer, claims])
 
+  // Show loader while initial data is loading
   if (loading) {
     return <Loader />
   }
+  // Only show unauthorized page after auth check is complete and explicitly failed
+  if (authChecked && !authorized) return <RestricedAccessPage />
 
-  if (!allowAccess) {
-    return <h1>access denied ! </h1>
-  }
+  // Only render the content after we've confirmed authorization
   return (
     <>
       <ProgressBar />
@@ -96,9 +103,8 @@ function SingleCustomer() {
             <div className="profile-pic-container">
               <img
                 className="profile-pic"
-                // src="https://i.pravatar.cc/300"
-                src={customer && customer?.urlData.url}
-                alt=""
+                src={customer?.urlData?.url || 'https://via.placeholder.com/150'}
+                alt="Customer profile"
               />
             </div>
           </div>
@@ -114,7 +120,7 @@ function SingleCustomer() {
             </h2>
             <OrdersSumUp />
           </div>
-          <DisplayOrders />
+          <DisplayOrders permissions={permissions} />
         </div>
         <div className="customer-box customer-box-notes">
           {editNote && <NoteEdit />}
@@ -124,7 +130,7 @@ function SingleCustomer() {
               <div className="number-of-notes"> {notesLength}</div>
             </h2>
           </div>
-          <DisplayNotes />
+          <DisplayNotes permissions={permissions} />
         </div>
       </div>
     </>

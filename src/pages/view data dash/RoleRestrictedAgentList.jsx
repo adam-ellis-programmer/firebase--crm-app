@@ -3,18 +3,32 @@ import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import React from 'react'
+import useGetAgentDoc from '../../hooks/useGetAgentDoc'
+import { canViewpage } from './canView'
+import RestricedAccessPage from './RestricedAccessPage'
+import Loader from '../../assets/Loader'
 const ViewableAgents = () => {
+  const [loading, setLoading] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(null)
   const [agents, setAgents] = useState(null)
   const { claims } = useAuthStatusTwo()
   const orgID = claims?.claims?.orgId
+  const { agentDoc } = useGetAgentDoc(claims?.user_id, 'agents')
+  // console.log(agentDoc)
   const roleLevel = claims?.claims?.roleLevel
   //   const agentId = claims?.claims?.agentId
-
   useEffect(() => {
     const getData = async () => {
-      const data = await getAllAgents(orgID, roleLevel)
-      console.log(data)
-      setAgents(data)
+      try {
+        const data = await getAllAgents(orgID, roleLevel)
+        console.log(data)
+        setAgents(data)
+        setLoading(false)
+      } catch (error) {
+        setLoading(false)
+      } finally {
+        setLoading(false)
+      }
     }
 
     if (orgID) {
@@ -22,6 +36,14 @@ const ViewableAgents = () => {
     }
     return () => {}
   }, [orgID])
+
+  useEffect(() => {
+    if (claims && agents) {
+      const isAuthorized = canViewpage(claims)
+      setIsAuthorized(isAuthorized)
+    }
+    return () => {}
+  }, [claims, agents])
 
   const newData = {
     name: '',
@@ -31,9 +53,13 @@ const ViewableAgents = () => {
     signUpDate: '',
   }
 
-  const headNames = Array.from(Object.keys(newData))
+  if (loading) return <Loader />
+  // if isAuth ret tru invert it to false so this does not run
+  // if isAuth ret false invert this to true so it runs
+  if (!isAuthorized) return <RestricedAccessPage />
 
   // additionally check before render
+  const headNames = Array.from(Object.keys(newData))
   const filtered = agents?.filter((item) => item.data.roleLevel === roleLevel)
   return (
     <div className="page-container">
@@ -82,6 +108,5 @@ const ViewableAgents = () => {
     </div>
   )
 }
-
 
 export default ViewableAgents

@@ -3,19 +3,33 @@ import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import React from 'react'
+import { canViewpage } from './canView'
+import Loader from '../../assets/Loader'
+import RestricedAccessPage from './RestricedAccessPage'
+
 const ViewableAgents = () => {
   const [customers, setCustomers] = useState(null)
+  const [isAuthorized, setIsAuthorized] = useState(null)
+  const [loading, setLoading] = useState(true)
   const { claims } = useAuthStatusTwo()
   const orgID = claims?.claims?.orgId
   const roleLevel = claims?.claims?.roleLevel
   const agentId = claims?.claims?.agentId
-  // console.log(claims)
+  // console.log(roleLevel)
   useEffect(() => {
     const getData = async () => {
-      // // cannot view record if repto level is higher
-      const data = await getAgentsCustomers(orgID, roleLevel)
-      console.log(data)
-      setCustomers(data)
+      try {
+        // // cannot view record if repto level is higher
+        const data = await getAgentsCustomers(orgID, roleLevel)
+        console.log(data)
+        setCustomers(data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      } finally {
+        setLoading(false)
+      }
     }
 
     if (orgID) {
@@ -24,6 +38,13 @@ const ViewableAgents = () => {
     return () => {}
   }, [orgID])
 
+  useEffect(() => {
+    if (claims && customers) {
+      const isAuthorized = canViewpage(claims)
+      setIsAuthorized(isAuthorized)
+    }
+    return () => {}
+  }, [isAuthorized, claims, customers])
   const newData = {
     name: '',
     company: '',
@@ -31,18 +52,23 @@ const ViewableAgents = () => {
     progress: '',
     signUpDate: '',
   }
-
   const headNames = Array.from(Object.keys(newData))
 
   // additionally check before render
-  const filtered = customers?.filter(
-    (item) => item.data.reportsTo.repToLevel === roleLevel
-  )
+  const filtered = customers?.filter((item) => item.data.docAccessLevel === roleLevel)
+
+  if (loading) {
+    return <Loader />
+  }
+
+  if (!isAuthorized) {
+    return <RestricedAccessPage />
+  }
 
   return (
     <div className="page-container">
       <section>
-        <h1 className="viewable-agents-h1">list of all agent's viewable records </h1>
+        <h1 className="viewable-agents-h1">list of all manager's viewable records </h1>
         <p className="viewable-agents-p">agent: Marina Hyde</p>
         <p className="viewable-agents-p">Role Level: 4</p>
         <p className="viewable-agents-">Role Type: CEO</p>

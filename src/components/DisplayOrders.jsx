@@ -32,8 +32,23 @@ import OrderCard from '../cards/OrderCard'
 // for testing
 // const {history} = useHistory();
 
-function DisplayOrders() {
+function DisplayOrders({ permissions }) {
   const { loggedInUser } = useAuthStatusTwo()
+  // permissions[resource][action]
+  // checks permissions[customers][delete] = false
+  // resource is the actural object
+  // action is the object value name
+  // if (!hasPermission('customers', 'delete')) return
+  const hasPermission = (resource, action) => {
+    if (!permissions || !permissions[resource] || !permissions[resource][action]) {
+      const msg = `You do not have ${action} permissions for ${resource}`
+      console.log(msg)
+      toast.error(msg)
+      // console.log(permissions[resource])
+      return false
+    }
+    return true
+  }
 
   const auth = getAuth()
 
@@ -113,7 +128,9 @@ function DisplayOrders() {
   // 4: on delete and on edit make reqest to update
 
   const onDelete = async (id) => {
+    if (!hasPermission('customers', 'delete')) return
     // Prevent multiple simultaneous deletions
+    // Then use it like:
     if (isDeleting) {
       return
     }
@@ -178,6 +195,8 @@ function DisplayOrders() {
   }
 
   const onEdit = (id) => {
+    if (!hasPermission('customers', 'update')) return
+
     console.log(id)
     // return
     openModal()
@@ -197,6 +216,7 @@ function DisplayOrders() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    if (!hasPermission('customers', 'create')) return
 
     if (isSubmitting) return
 
@@ -285,6 +305,7 @@ function DisplayOrders() {
   }
 
   const handleSelect = (data) => {
+    if (!hasPermission('customers', 'create')) return
     console.log(data)
     setIsSelectOpen(false)
 

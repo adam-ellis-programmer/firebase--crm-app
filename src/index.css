@@ -53,7 +53,13 @@ body {
 .dark-mode-on .features-list li::before {
   color: #fff;
 }
-
+.dark-mode-on .formatted-phone-number:nth-child(1) {
+  color: rgb(255, 255, 255);
+  font-weight: 400;
+  background-color: #dd552b;
+  padding: 0.2em;
+  border-radius: 30px;
+}
 .dark-mode-on .note-input {
   outline: none;
   border: 0.1px solid #ffff;
@@ -213,6 +219,11 @@ input {
   /* background: #fff; */
   padding: 1rem;
   box-shadow: 1px 2px 20px #ccc;
+  transition: transform 800ms ease-in-out;
+}
+
+.customer-box:hover {
+  transform: translateY(-10px) scale(1.001);
 }
 
 .main {
@@ -971,7 +982,7 @@ input {
 }
 
 .formatted-phone-number:nth-child(1) {
-  color: red;
+  color: rgb(255, 0, 0);
 }
 
 .profile-phone-div {
@@ -2853,7 +2864,7 @@ td {
   height: 30px;
   background-color: #c9d2d8;
   margin: 0.5rem;
-  border-radius: 6px;
+  border-radius: 60px;
   margin-bottom: 1rem;
 }
 
@@ -2867,14 +2878,19 @@ td {
   /* background-color: #0067CC; */
   /* background-color: #F23207; */
   background-color: #3d557f;
-  border-radius: 6px;
+  background: rgb(221, 144, 109);
+  background: linear-gradient(
+    90deg,
+    rgba(221, 144, 109, 1) 0%,
+    rgba(255, 0, 106, 1) 100%
+  );
+  border-radius: 60px;
 }
 
 .progress-buttons {
   /* height: 40px; */
   display: flex;
   justify-content: center;
-
   /* margin-top: 0.5rem; */
 }
 
@@ -2917,6 +2933,8 @@ td {
 @media screen and (max-width: 600px) {
   .progress-buttons {
     flex-direction: column;
+    width: 77%;
+    margin: auto;
   }
 
   .progress-buttons button {
@@ -2924,12 +2942,15 @@ td {
   }
 
   .percentage-div {
-    width: 100%;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     font-size: 1.3rem;
     margin-top: 0.7rem;
     font-size: 2.5rem;
     font-weight: 00;
+    border-radius: 50%;
+    margin: auto;
+    margin-top: 1rem;
   }
 
   .convert-active-div {
@@ -4325,4 +4346,28 @@ h2 {
 }
 .viewable-agents-p {
   font-size: 1.1rem;
+}
+.access-denied-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.access-denied-wrap p {
+  font-size: 1.4rem;
+}
+
+.go-back-auth-btn {
+  background-color: #19879e;
+  padding: 0.3em;
+  font-size: 1.5em;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.go-back-auth-btn-div {
+  margin-top: 1rem;
 }

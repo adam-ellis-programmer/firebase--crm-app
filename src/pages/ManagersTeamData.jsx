@@ -4,6 +4,8 @@ import DataAllItem from '../components/DataAllItem'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 import Loader from '../assets/Loader'
 
+// TO BE FILTERD BY SUBORDINATES ONLY
+
 const DataAll = () => {
   const { loggedInUser, claims } = useAuthStatusTwo()
   const [customers, setCustomers] = useState(null)

@@ -3,52 +3,145 @@ const ROLES = {
   MANAGER: 2,
   ADMIN: 3,
   CEO: 4,
+  TEST: 5,
 }
-// run in a loop
-export const canViewData = (viewer, targetId) => {
-  // if (targetId === ROLES['CE0']) {
-  //   return true
-  // }
-  // Same level can view each other
-  // if (viewer === targetId) {
-  //   return true
-  // }
-  // Higher roles can view lower roles (looking down)
-  
-  // if (viewer > targetId) {
-  //   return true
-  // }
 
-  // Check if targetId is a direct subordinate
-  // if (viewer.subordinates.includes(targetId)) {
-  //   return true
-  // }
+/**
+ * Determines if a user can view data based on role level and document access level
+ *
+ * @param {Object} user - The user attempting to view the data
+ * @param {Object} document - The document being accessed
+ * @returns {boolean} Whether the user can view the document
+ */
 
-  // Lower roles cannot view higher roles (looking up)
+export const canViewpage = (user) => {
+  if (!user) {
+    console.log('Missing user or document data in canViewData')
+    return false
+  }
+  const viewerRoleLevel = user.claims?.roleLevel
+  console.log(viewerRoleLevel)
+  console.log(ROLES['TEST'])
+
+  if (viewerRoleLevel >= ROLES['MANAGER']) {
+    console.log('Acces granted: manager and above role')
+    return true
+  }
+
+  return false
+}
+//
+//
+//
+export const canViewData = (user, agent, document) => {
+  // console.log(agent)
+  // Handle null or undefined inputs
+  if (!user || !document || !agent) {
+    console.log('Missing user or document data in canViewData')
+    return false
+  }
+
+  // Get the relevant properties with null checks
+  // Make sure we're accessing nested properties safely
+  const viewerRoleLevel = user.claims?.roleLevel
+  const documentAccessLevel = document.docAccessLevel
+  const documentOwnerId = document.ownerId
+  const userId = user.user_id
+
+  // Log important values for debugging
+  // console.log('Viewer role level:', viewerRoleLevel)
+  // console.log('Document access level:', documentAccessLevel)
+  // console.log('Document owner ID:', documentOwnerId)
+  // console.log('User ID:', userId)
+
+  // If any essential values are missing, deny access by default
+  if (viewerRoleLevel === undefined || documentAccessLevel === undefined) {
+    console.log('Missing essential role data')
+    return false
+  }
+
+  // CEO (highest role level) can view everything
+  if (viewerRoleLevel === ROLES['CEO']) {
+    console.log('Access granted: CEO role')
+    return true
+  }
+
+  // Document owner can always view their own documents
+  if (userId === documentOwnerId) {
+    console.log('Access granted: Document owner')
+    return true
+  }
+
+  // Higher role levels can view documents with lower access levels
+  if (viewerRoleLevel > documentAccessLevel) {
+    console.log('Access granted: Higher role level')
+    return true
+  }
+
+  // Check if document owner is a direct subordinate of the viewer
+  if (
+    agent.subordinates &&
+    documentOwnerId &&
+    agent.subordinates.includes(documentOwnerId)
+  ) {
+    console.log('Access granted: Direct subordinate')
+    return true
+  }
+  // look
+  // For equal role levels, check if viewer is authorized to see this specific document
+  if (viewerRoleLevel === documentAccessLevel) {
+    // Additional logic here if needed for same-level access
+    // Default: same level cannot view each other's documents
+    console.log('Access denied: Same level without specific permission')
+    return false
+  }
+
+  // Default deny - Lower roles cannot view higher role documents
+  console.log('Access denied: Default case')
   return false
 }
 
-// /**
-//  * Check if target is anywhere in the viewer's reporting chain
-//  *
-//  * @param {string} viewerId - ID of the potential manager
-//  * @param {string} targetId - ID of the potential subordinate
-//  * @returns {boolean} Whether target is in viewer's reporting chain
-//  */
-// export function isInReportingChain(viewer, target) {
-//   // const viewer = agents.find((agent) => agent.id === viewerId)
+/**
+ * React component wrapper that checks authorization before rendering content
+ */
+export const AuthorizedView = ({ user, document, children }) => {
+  // Skip the check if user or document isn't loaded yet
+  if (!user || !document) {
+    return null // Return loading state or null instead of unauthorized message
+  }
 
-//   // Check direct subordinates
-//   if (viewer.subordinates.includes(target)) {
-//     return true
-//   }
+  const canView = canViewData(user, document)
 
-//   // Check each subordinate's subordinates recursively
-//   for (const subId of viewer.subordinates) {
-//     if (isInReportingChain(subId, target)) {
-//       return true
-//     }
-//   }
+  if (!canView) {
+    return (
+      <div className="not-authorized">
+        <h3>Not Authorized</h3>
+        <p>You don't have permission to view this content.</p>
+      </div>
+    )
+  }
 
-//   return false
-// }
+  return children
+}
+
+/**
+ * Hook to check if the current user can access a document
+ */
+export const useDocumentAccess = (user, document) => {
+  // Return null instead of false when data is loading
+  // This helps distinguish between "unauthorized" and "still checking"
+  if (!user || !document) {
+    return null
+  }
+  return canViewData(user, document)
+}
+
+/**
+ * Function to filter an array of documents based on user access
+ */
+export const filterAccessibleDocuments = (user, documents) => {
+  if (!user || !documents || !Array.isArray(documents)) {
+    return []
+  }
+  return documents.filter((doc) => doc && canViewData(user, doc))
+}

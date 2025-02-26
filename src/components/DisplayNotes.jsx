@@ -11,16 +11,22 @@ import { toast } from 'react-toastify'
 import { newNoteEntry, getCollectionNotes } from '../crm context/CrmAction'
 import DataSvgIcon from './DataSvgIcon'
 import Loader from '../assets/Loader'
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 
-function DisplayNotes() {
+function DisplayNotes({ permissions }) {
+  const hasPermission = (resource, action) => {
+    if (!permissions || !permissions[resource] || !permissions[resource][action]) {
+      const msg = `You do not have ${action} permissions for ${resource} data`
+      console.log(msg)
+      toast.error(msg)
+      // console.log(permissions[resource])
+      return false
+    }
+    return true
+  }
+  const { loggedInUser: user } = useAuthStatusTwo()
   const { dispatch, editNote, notesData } = useContext(CrmContext)
-
   const [searchParams, setSearchParams] = useSearchParams()
-  const auth = getAuth()
-
-  const [customerId, setCustomerId] = useState(null)
-  const [loggedInUser, setLoggedInUser] = useState(null)
-
   const params = useParams()
 
   const [formData, setFormData] = useState({
@@ -29,25 +35,6 @@ function DisplayNotes() {
   })
 
   const { noteText } = formData
-
-  // get customer
-  useEffect(() => {
-    const getUser = async () => {
-      const docRef = doc(db, 'users', params.uid)
-      const docSnap = await getDoc(docRef)
-      setCustomerId(docSnap.id)
-    }
-    getUser()
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setLoggedInUser(user.displayName)
-      } else {
-        // navigate()...
-      }
-    })
-  }, [])
-
   // get notes
   useEffect(() => {
     const getData = async () => {
@@ -60,7 +47,7 @@ function DisplayNotes() {
   }, [])
 
   const onDelete = async (id) => {
-    const newNotes = await deleteDoc(doc(db, 'notes', id))
+    await deleteDoc(doc(db, 'notes', id))
     const updatedArr = notesData.filter((note) => note.id !== id)
 
     dispatch({ type: 'NOTES_LENGTH', payload: updatedArr.length })
@@ -73,14 +60,15 @@ function DisplayNotes() {
       [e.target.id]: e.target.value,
     }))
   }
-
   const onSubmit = async (e) => {
     e.preventDefault()
+    // FUNCT RET TRUE SO WE INVERT TO GET THE 'RETURN'
+    if (!hasPermission('customers', 'create')) return
     const noteData = {
       ...formData,
       noteDate: serverTimestamp(),
-      custId: customerId,
-      noteWrittenBy: loggedInUser,
+      custId: params.uid,
+      noteWrittenBy: user.displayName,
       dateOfNote: new Date().toLocaleString('en-GB'),
       agentId: params.agentUid,
       customerName: params.name,
@@ -89,10 +77,8 @@ function DisplayNotes() {
 
     if (noteText === '') {
       toast('Please enter a note')
-      console.log('Please enter a note')
       return
     }
-
     try {
       const data = await newNoteEntry('notes', noteData, params.uid)
 
@@ -115,6 +101,7 @@ function DisplayNotes() {
   }
 
   const onEdit = (id) => {
+    if (!hasPermission('customers', 'update')) return
     toggleModal()
     setSearchParams((prevState) => {
       prevState.set('editedNote', id)

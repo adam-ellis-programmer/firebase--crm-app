@@ -155,16 +155,6 @@ export async function getCollectionNotes(collectionName, params) {
   }
 }
 
-// this is getting a document
-export async function getDocument(id, collectionName) {
-  const docRef = doc(db, collectionName, id)
-  const docSnap = await getDoc(docRef)
-  const data = docSnap.data()
-
-  if (docSnap.exists()) {
-    return docSnap.data()
-  } // else... toast.error()
-}
 // gets a single doc for the orders page
 export async function getSingleDoc(collectionName, orderId) {
   const docRef = doc(db, collectionName, orderId)
@@ -963,7 +953,7 @@ export async function getAgentsCustomers(orgId, roleLevel) {
       collection(db, 'customers'),
       where('orgId', '==', orgId),
       // if agent repTo higher manager
-      where('reportsTo.repToLevel', '<=', roleLevel)
+      where('docAccessLevel', '<=', roleLevel)
     )
 
     const querySnapshot = await getDocs(q)
@@ -993,4 +983,14 @@ export async function getAgent(id) {
   } catch (error) {
     console.log(error)
   }
+}
+// this is getting a document
+export async function getDocument(id, collectionName) {
+  const docRef = doc(db, collectionName, id)
+  const docSnap = await getDoc(docRef)
+  const data = docSnap.data()
+
+  if (docSnap.exists()) {
+    return docSnap.data()
+  } // else... toast.error()
 }
