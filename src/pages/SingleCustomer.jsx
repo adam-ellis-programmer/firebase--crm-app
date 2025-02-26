@@ -18,8 +18,13 @@ import SendEmail from '../drop down modals/SendEmail'
 import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
 import Loader from '../assets/Loader'
-
+import { canViewData } from './view data dash/canView'
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 function SingleCustomer() {
+  const { claims } = useAuthStatusTwo()
+  const allowAccess = canViewData()
+  console.log(allowAccess)
+  // console.log(claims)
   const { deleteBtn, editPurchase, editNote, toggleEmail, ordersLength, notesLength } =
     useContext(CrmContext)
 
@@ -33,7 +38,9 @@ function SingleCustomer() {
   const params = useParams()
 
   const auth = getAuth()
-
+  // throw in data to access and recieve a
+  // boolean back
+  // console.log(customer)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,6 +80,9 @@ function SingleCustomer() {
     return <Loader />
   }
 
+  if (!allowAccess) {
+    return <h1>access denied ! </h1>
+  }
   return (
     <>
       <ProgressBar />

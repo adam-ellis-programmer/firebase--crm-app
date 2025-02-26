@@ -929,14 +929,42 @@ export async function getManagers(orgId) {
   return data
 }
 
-export async function getAllAgents(orgId) {
-  // console.log(orgId)
+export async function getAllAgents(orgId, roleLevel) {
   const data = []
 
-  // 2 = manager
-  const accessLevel = 2
   try {
-    const q = query(collection(db, 'agents'), where('orgId', '==', orgId))
+    const q = query(
+      collection(db, 'agents'),
+      where('orgId', '==', orgId),
+      where('roleLevel', '<=', roleLevel)
+    )
+
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      const dataObj = {
+        id: doc.id,
+        data: doc.data(),
+      }
+      data.push(dataObj)
+    })
+  } catch (error) {
+    console.log(error)
+  }
+
+  return data
+}
+// get doc with hard array first
+// where('country', 'in', ['USA', 'Japan'])
+export async function getAgentsCustomers(orgId, roleLevel) {
+  const data = []
+
+  try {
+    const q = query(
+      collection(db, 'customers'),
+      where('orgId', '==', orgId),
+      // if agent repTo higher manager
+      where('reportsTo.repToLevel', '<=', roleLevel)
+    )
 
     const querySnapshot = await getDocs(q)
     querySnapshot.forEach((doc) => {
@@ -954,11 +982,15 @@ export async function getAllAgents(orgId) {
 }
 
 export async function getAgent(id) {
-  const docRef = doc(db, 'agents', id)
-  const docSnap = await getDoc(docRef)
+  try {
+    const docRef = doc(db, 'agents', id)
+    const docSnap = await getDoc(docRef)
 
-  if (docSnap.exists()) {
-    console.log('Document data:', docSnap.data())
-    return { success: true, data: docSnap.data(), id: docSnap.id }
+    if (docSnap.exists()) {
+      console.log('Document data:', docSnap.data())
+      return { success: true, data: docSnap.data(), id: docSnap.id }
+    }
+  } catch (error) {
+    console.log(error)
   }
 }

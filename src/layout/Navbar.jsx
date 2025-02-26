@@ -71,10 +71,10 @@ function Navbar({ setToggleNav, toggleNav }) {
     { id: crypto.randomUUID(), text: 'stats', url: `/stats/${userUid}` },
     { id: crypto.randomUUID(), text: 'dashboard', url: `/dash/${userUid}` },
     { id: crypto.randomUUID(), text: 'reports to', url: `/rep-to-info/${userUid}` },
+    { id: crypto.randomUUID(), text: 'my agents', url: `/view-agents/${userUid}` },
   ]
 
   const handleSignOut = (e) => {
-    // console.log('click')
     setToggleNav(false)
     navigate('/')
     auth.signOut()

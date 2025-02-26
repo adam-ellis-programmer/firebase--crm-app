@@ -4298,3 +4298,31 @@ h2 {
   /* border: 1px solid; */
   margin-top: 1rem;
 }
+
+.agent-table-li,
+.agent-table-row-header {
+  display: grid;
+  /* margin-top: 1rem; */
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid;
+}
+
+.agent-table-li {
+  border-bottom: 0.1px solid;
+  padding-bottom: 0.4em;
+  padding: 1rem;
+}
+.agent-table-row {
+  height: 50px;
+  /* border: 1px solid; */
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  border-radius: 2px;
+}
+.viewable-agents-h1 {
+  font-size: 1.3rem;
+}
+.viewable-agents-p {
+  font-size: 1.1rem;
+}

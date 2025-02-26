@@ -27,6 +27,7 @@ const getManagersData = onCall(async (request) => {
 
 // test
 // !Array.isArray(clients))
+// used in reports to page
 async function getData(managersId, orgId) {
   const clients = []
   const dataRef = db.collection('customers')

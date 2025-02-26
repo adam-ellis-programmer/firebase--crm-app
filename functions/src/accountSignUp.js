@@ -84,6 +84,9 @@ async function makeDbEntry(userData, uid, id) {
       orgId: id,
       docId: id,
       permissions: ceoPermissions(),
+      role: 'CEO',
+      roleLevel: ROLES['CEO'],
+      subordinates: [],
     }
 
     // no need for claims in org doc

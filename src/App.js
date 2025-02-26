@@ -29,6 +29,8 @@ import SignUpAccPage from './pages/SignUpTierPage'
 import PaymentPage from './billing/PaymentPage'
 import DarkMode from './DarkMode'
 import ReportsToInfo from './pages/admin/ReportsToInfo'
+import ViewableAgents from './pages/view data dash/ViewableAgents'
+import AgentsData from './pages/view data dash/AgentsData'
 
 // PROTECT THE ROUTES
 function App() {
@@ -60,6 +62,8 @@ function App() {
                 <Route path="/new-customer" element={<NewCustomer />} />
                 <Route path="/dash/:uid" element={<ChartDash />} />
                 <Route path="/rep-to-info/:uid" element={<ReportsToInfo />} />
+                <Route path="/view-agents/:uid" element={<ViewableAgents />} />
+                <Route path="/agents-data/:uid" element={<AgentsData />} />
                 <Route
                   path="/single-customer/:agentUid/:uid/:name"
                   element={<SingleCustomer />}
