@@ -35,6 +35,7 @@ const adminAddUser = onCall(async (request) => {
         orgId: data.orgId,
         orgName: data.orgName,
         agentId: id,
+        disabled: false,
       },
       defaultHandBack: {
         id: data.defaultHandBack.id,
@@ -55,6 +56,7 @@ const adminAddUser = onCall(async (request) => {
       docId: id,
       createdAt: new Date(),
       orgId: data.orgId,
+      disabled: false,
     }
 
     // Create the database entry
