@@ -28,11 +28,23 @@ const PayPalBtn = ({ price, productId }) => {
         console.log(subscriptionInfo)
         // return
         const functions = getFunctions()
-        const newAccSignUp = httpsCallable(functions, 'newAccSignUp')
+        // const newAccSignUp = httpsCallable(functions, 'newAccSignUp')
 
-        // First create the user and get their ID
-        const newUserResult = await newAccSignUp({ data: subscriptionInfo })
-        console.log(newUserResult)
+        // // First create the user and get their ID
+        // const newUserResult = await newAccSignUp({ data: subscriptionInfo })
+        // console.log(newUserResult)
+
+        const sendWelcomeEmails = httpsCallable(functions, 'sendWelcomeEmails')
+
+        const updatedObj = {
+          ...subscriptionInfo,
+          expires: new Date(subscriptionInfo.expDate).toLocaleString('en-GB'),
+          to: `ellisadam88@gmail.com`,
+          from: `easy data systems`,
+          subject: ``,
+        }
+        const emailRes = await sendWelcomeEmails({ updatedObj })
+        console.log(emailRes)
       } catch (error) {
         // TODO ========
         // toast.error(error)

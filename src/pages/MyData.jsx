@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { getCustomersForMainDataPage } from '../crm context/CrmAction'
+import { getCustomersForMainDataPage, getTeamData } from '../crm context/CrmAction'
 
 import DataSvgIcon from '../components/DataSvgIcon'
 import Loader from '../assets/Loader'
-
-function Data() {
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
+// getTeamData()
+// tidy up
+// useAuth hook
+// check access function only allow if data is === to own id
+function MyData() {
+  // const { loggedInUser } = useAuthStatusTwo()
   const auth = getAuth()
   // const [searchParams, setSearchParams] = useSearchParams()
   const [customers, setCustomers] = useState(null)
@@ -14,6 +19,23 @@ function Data() {
   const [loggedInUserUid, setLoggedInUserUid] = useState('')
   // const [searchTearm, setSearchTearm] = useState('initialState')
   const [loading, setLoading] = useState(true)
+  // ONLY USE THE IS MY DATA FUNCTION
+  // check do these record strictly belong to me
+
+  // use filter to only show viewer.id === document
+  // use filere to only show correct docs
+  //
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const data = await getTeamData(loggedInUserUid)
+  //     console.log(data)
+  //   }
+  //   if (loggedInUserUid) {
+  //     getData()
+  //   }
+
+  //   return () => {}
+  // }, [loggedInUserUid])
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -205,4 +227,4 @@ function Data() {
   )
 }
 
-export default Data
+export default MyData

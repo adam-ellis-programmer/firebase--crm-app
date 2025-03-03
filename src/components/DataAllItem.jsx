@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 
-const DataAllItem = ({ customer, i, loggedInUser }) => {
+const DataAllItem = ({ customer, i, loggedInUser, claims }) => {
   const { name, company, email, phone, dateOfSignUp, signUpagent, urlData, reportsTo } =
     customer.data
-  // console.log(customer.data)
+
   return (
     <>
       <Link
@@ -23,6 +23,10 @@ const DataAllItem = ({ customer, i, loggedInUser }) => {
             />{' '}
           </div>
           <div className="data-all-item">
+            <div className="item-div">access level</div>
+            <span>level </span> <span> {claims?.claims?.roleLevel}</span>
+          </div>
+          <div className="data-all-item">
             <div className="item-div">Name</div>
             {name}
           </div>
@@ -39,8 +43,8 @@ const DataAllItem = ({ customer, i, loggedInUser }) => {
             {phone}
           </div>
           <div className="data-all-item">
-            <div className="item-div">Reg</div>
-            {dateOfSignUp}
+            <div className="item-div">Reg Date</div>
+            {dateOfSignUp.split(',')[0]}
           </div>
           <div className="data-all-item">
             <div className="item-div">Owner</div>

@@ -237,7 +237,12 @@ export async function addTaskToDatabase(collectionName, formData) {
 
 // add email to email collection
 export async function submitEmail(collectionName, formData) {
-  const docRef = await addDoc(collection(db, collectionName), formData)
+  try {
+    const docRef = await addDoc(collection(db, collectionName), formData)
+    return docRef
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // used in sendEmail.jsx to get email and place in form
@@ -919,6 +924,30 @@ export async function getManagers(orgId) {
   return data
 }
 
+//  get all org agents
+export async function getAgents(orgId) {
+  // console.log(orgId)
+  const data = []
+
+  try {
+    const q = query(collection(db, 'agents'), where('orgId', '==', orgId))
+
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      const dataObj = {
+        id: doc.id,
+        data: doc.data(),
+      }
+      data.push(dataObj)
+    })
+  } catch (error) {
+    console.log(error)
+  }
+
+  return data
+}
+
+// get by role level
 export async function getAllAgents(orgId, roleLevel) {
   const data = []
 
@@ -943,6 +972,7 @@ export async function getAllAgents(orgId, roleLevel) {
 
   return data
 }
+
 // get doc with hard array first
 // where('country', 'in', ['USA', 'Japan'])
 export async function getAgentsCustomers(orgId, roleLevel) {
@@ -971,13 +1001,41 @@ export async function getAgentsCustomers(orgId, roleLevel) {
   return data
 }
 
+export async function getAgentCustomersByID(orgId, agentId, roleLevel) {
+  const data = []
+
+  try {
+    const q = query(
+      collection(db, 'customers'),
+      where('orgId', '==', orgId),
+      // change to docOwner
+      where('agentUid', '==', agentId),
+      // if agent repTo higher manager
+      where('docAccessLevel', '<=', roleLevel)
+    )
+
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      const dataObj = {
+        id: doc.id,
+        data: doc.data(),
+      }
+      data.push(dataObj)
+    })
+  } catch (error) {
+    console.log(error)
+  }
+
+  return data
+}
+
 export async function getAgent(id) {
   try {
     const docRef = doc(db, 'agents', id)
     const docSnap = await getDoc(docRef)
 
     if (docSnap.exists()) {
-      console.log('Document data:', docSnap.data())
+      // console.log('Document data:', docSnap.data())
       return { success: true, data: docSnap.data(), id: docSnap.id }
     }
   } catch (error) {
@@ -992,5 +1050,110 @@ export async function getDocument(id, collectionName) {
 
   if (docSnap.exists()) {
     return docSnap.data()
-  } // else... toast.error()
+  }
+}
+
+// --1: get manager with logged in claims id
+// --2:
+// --1:
+export async function getTeamData(managerId) {
+  const data = []
+  // 1 get agent
+  const agentRef = doc(db, 'agents', managerId)
+  const agentSnap = await getDoc(agentRef)
+
+  if (agentSnap.exists()) {
+    // console.log('Document data:', agentSnap.data())
+    const subArr = agentSnap.data().subordinates
+    // 2 get cusomers collection
+    const q = query(collection(db, 'customers'))
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      // find all customers where reportsTo.id matches the logged in user
+      if (subArr.includes(doc.data().reportsTo.id)) {
+        const obj = { id: doc.id, data: doc.data() }
+        // push each customer to dataArray
+        data.push(obj)
+      }
+    })
+    // final return
+    return { data: agentSnap.data(), subArr, data }
+  }
+}
+
+export async function updateAgentPermissions(agentId, updatedPermissions) {
+  try {
+    const agentRef = doc(db, 'agents', agentId)
+
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(agentRef, {
+      permissions: updatedPermissions,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// ===== test  =====
+export async function getAgentById(agentId) {
+  try {
+    const docRef = doc(db, 'agents', agentId)
+    const docSnap = await getDoc(docRef)
+
+    if (docSnap.exists()) {
+      return docSnap.data()
+    } else {
+      console.log(`No agent found with ID: ${agentId}`)
+      return null
+    }
+  } catch (error) {
+    console.error(`Error fetching agent ${agentId}:`, error)
+    return null
+  }
+}
+
+// get managers with a sub array
+export async function managersWithSubs(orgId, roleLevel) {
+  const data = []
+
+  try {
+    // Use array-contains-any or array-not-empty constraint
+    // Option 1: Check if the array is not empty (requires a different approach)
+    const q = query(
+      collection(db, 'agents'),
+      where('orgId', '==', orgId)
+      // where('roleLevel', '<=', roleLevel)
+      // Firestore doesn't have a direct "array not empty" query operator
+    )
+
+    const querySnapshot = await getDocs(q)
+
+    // Filter results after fetching to find agents with non-empty subordinates array
+    querySnapshot.forEach((doc) => {
+      const agentData = doc.data()
+
+      // Check if subordinates array exists and has items
+      if (
+        agentData.subordinates &&
+        Array.isArray(agentData.subordinates) &&
+        agentData.subordinates.length > 0
+      ) {
+        const dataObj = {
+          id: doc.id,
+          data: agentData,
+        }
+        data.push(dataObj)
+      }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+
+  return data
+}
+// ==========
+// samw as above but in one function
+// ==========
+async function getManagersAndSubs(params) {
+  //...
 }

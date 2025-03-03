@@ -17,11 +17,11 @@ const ViewableAgents = () => {
   // console.log(agentDoc)
   const roleLevel = claims?.claims?.roleLevel
   //   const agentId = claims?.claims?.agentId
+
   useEffect(() => {
     const getData = async () => {
       try {
         const data = await getAllAgents(orgID, roleLevel)
-        console.log(data)
         setAgents(data)
         setLoading(false)
       } catch (error) {
@@ -60,13 +60,17 @@ const ViewableAgents = () => {
 
   // additionally check before render
   const headNames = Array.from(Object.keys(newData))
-  const filtered = agents?.filter((item) => item.data.roleLevel === roleLevel)
+  const filtered = agents?.filter((item) => item.data.roleLevel <= roleLevel)
   return (
     <div className="page-container">
       <section>
         <h1 className="viewable-agents-h1">list of all my viewable agents allowed </h1>
-        <p className="viewable-agents-p">my role level: 4</p>
-        <p className="viewable-agents-">my role type: CEO</p>
+        <ul>
+          <li>my role level: xxxx</li>
+          <li>my role type: xxxx</li>
+          <li>show by access level: xxxx</li>
+          <li>equal or below yours xxxx</li>
+        </ul>
       </section>
       <section>
         <div className="agent-table-row-header">
@@ -91,6 +95,11 @@ const ViewableAgents = () => {
               docId: agentId,
             } = data
             const date = new Date(signUpDate)
+            console.log(date)
+            const day = date.getDay()
+            const month = date.getMonth()
+            const year = date.getFullYear()
+            const fullDate = `${day} ${month} ${year}`
             return (
               <Link key={i} to={`/agents-data/${agentId}`}>
                 <li className="agent-table-li">

@@ -3,52 +3,32 @@ import { useEffect, useState } from 'react'
 import DataAllItem from '../components/DataAllItem'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 import Loader from '../assets/Loader'
-
-// TO BE FILTERD BY SUBORDINATES ONLY
-
-const DataAll = () => {
+import { getTeamData } from '../crm context/CrmAction'
+// view by subordinates
+const ManagersTeamData = () => {
+  // console.log('ManagersTeamData page')
+  // console.log('view by subordinates ')
   const { loggedInUser, claims } = useAuthStatusTwo()
   const [customers, setCustomers] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  console.log(claims)
-  useEffect(() => {
-    // Reset states when dependencies change
-    setLoading(true)
-    setError(null)
-    setCustomers(null)
 
+  useEffect(() => {
     const getData = async () => {
       try {
-        const functions = getFunctions()
-        const getManagersData = httpsCallable(functions, 'getManagersData')
-
-        const data = {
-          orgId: claims?.claims?.orgId,
-          managersId: claims?.claims?.agentId,
-        }
-
-        const res = await getManagersData({ data })
-        console.log(res)
-        const clients = res.data.clients
-
-        if (!clients || !Array.isArray(clients)) {
-          throw new Error('Invalid data format received')
-        }
-
-        setCustomers(clients)
+        const data = await getTeamData(claims?.user_id)
+        setCustomers(data.data)
       } catch (error) {
-        console.error('Error fetching data: ', error)
-        setError(error.message)
       } finally {
         setLoading(false)
       }
     }
-
-    if (claims?.claims) {
+    if (claims?.user_id) {
       getData()
     }
-  }, [claims]) // More specific dependencies
+
+    return () => {}
+  }, [claims?.user_id])
 
   if (loading) {
     return <Loader />
@@ -77,10 +57,25 @@ const DataAll = () => {
           {claims?.name ? `${claims.name}'s` : 'Team'} <span>team data</span>
         </p>
         <p className="all-data-header-p">
-          <span>Org Name:</span> {claims?.claims?.organization || 'N/A'}
+          <span className="all-data-check">
+            <i className="fa-solid fa-check"></i>
+          </span>{' '}
+          <span>company:</span> {claims?.claims?.orgName || 'N/A'}
         </p>
         <p className="all-data-header-p">
-          <span>Number on team:</span> {customers.length}
+          <span className="all-data-check">
+            <i className="fa-solid fa-check"></i>
+          </span>{' '}
+          <span>showing ALL customers of your team </span>
+        </p>
+        <p className="all-data-header-p">
+          <span className="all-data-check">
+            <i className="fa-solid fa-check"></i>
+          </span>{' '}
+          <span>sorted by your subordnates </span>
+        </p>
+        <p className="all-data-header-p">
+          <span className="managers-customers-length">{customers.length}</span>
         </p>
       </section>
 
@@ -88,11 +83,12 @@ const DataAll = () => {
         <div className="data-header">
           <div className="data-header-div">ID</div>
           <div className="data-header-div">img</div>
+          <div className="data-header-div">access</div>
           <div className="data-header-div">name</div>
           <div className="data-header-div">email</div>
           <div className="data-header-div">company</div>
           <div className="data-header-div">phone</div>
-          <div className="data-header-div">reg</div>
+          <div className="data-header-div">reg date</div>
           <div className="data-header-div">owner</div>
           <div className="data-header-div">rep to</div>
         </div>
@@ -103,6 +99,7 @@ const DataAll = () => {
             customer={customer}
             i={i}
             loggedInUser={loggedInUser}
+            claims={claims}
           />
         ))}
       </section>
@@ -110,4 +107,4 @@ const DataAll = () => {
   )
 }
 
-export default DataAll
+export default ManagersTeamData

@@ -21,10 +21,10 @@ export const canViewpage = (user) => {
   }
   const viewerRoleLevel = user.claims?.roleLevel
   console.log(viewerRoleLevel)
-  console.log(ROLES['TEST'])
+  // console.log(ROLES['TEST'])
 
   if (viewerRoleLevel >= ROLES['MANAGER']) {
-    console.log('Acces granted: manager and above role')
+    console.log('Acces granted: your role >= to ' + ROLES['MANAGER'] + ' manager')
     return true
   }
 
@@ -43,8 +43,8 @@ export const canViewData = (user, agent, document) => {
 
   // Get the relevant properties with null checks
   // Make sure we're accessing nested properties safely
-  const viewerRoleLevel = user.claims?.roleLevel
-  const documentAccessLevel = document.docAccessLevel
+  const viewerRoleLevel = user.claims?.roleLevel // ***
+  const documentAccessLevel = document.docAccessLevel // ***
   const documentOwnerId = document.ownerId
   const userId = user.user_id
 

@@ -64,12 +64,13 @@ function SingleCustomer() {
     fetchData()
   }, [params.uid, claims?.user_id])
   //
-
+  console.log(agent)
   // Only check authorization after both customer data AND user claims are loaded
   useEffect(() => {
     // Only proceed if loading is complete and we have both customer and claims
     if (!loading && customer && agent && claims) {
       try {
+        // user, agent, document
         // We make sure not to run the check until we have both pieces of data
         const isAuthorized = canViewData(claims, agent, customer)
         setAuthorized(isAuthorized)
@@ -93,7 +94,7 @@ function SingleCustomer() {
   return (
     <>
       <ProgressBar />
-      <div className="page-container grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="page-container single-customer-wrap grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
         {searchParams.get('name')}
         <div className="customer-box cusomer-info-box">
           {toggleEmail && <SendEmail />}

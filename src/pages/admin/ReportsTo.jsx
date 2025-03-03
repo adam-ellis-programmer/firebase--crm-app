@@ -3,7 +3,7 @@ import ComponentHeader from './ComponentHeader'
 import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 
 import { getFunctions, httpsCallable } from 'firebase/functions'
-import SelectRow from './SelectRow'
+import SelectRowRepTo from './SelectRowRepTo'
 
 const ReportsTo = ({ data }) => {
   const [agentsData, setAgentsData] = useState(null)
@@ -46,7 +46,7 @@ const ReportsTo = ({ data }) => {
     let id = e.target.selectedOptions[0].dataset.id
     let nameValue = e.target.selectedOptions[0].value
     let currentRepTo = e.target.selectedOptions[0].dataset.reptoid
-
+    console.log(nameValue)
     if (name === 'agent') {
       setFormData((prevState) => ({
         ...prevState,
@@ -67,8 +67,12 @@ const ReportsTo = ({ data }) => {
     }))
   }
 
+  // console.log(formData)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log(formData)
+    // return
     try {
       const functions = getFunctions()
       const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
@@ -80,24 +84,29 @@ const ReportsTo = ({ data }) => {
       console.log(error)
     }
   }
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="admin-form">
         <ComponentHeader text={`change reports to`} />
 
-        <SelectRow
+        <SelectRowRepTo
           data={agentsData}
           text="select agent"
           labelText={'agent'}
           onChange={onChange}
           name="agent"
+          value={formData.agent?.name || ''} // Connect to state
+          id="agent-select"
         />
-        <SelectRow
+        <SelectRowRepTo
           data={data}
           text="select manager"
           labelText={'reports to'}
           onChange={onChange}
           name="manager"
+          value={formData.newReportsTo?.name || ''} // Connect to state
+          id="manager-select-manager"
         />
 
         <div className="admin-btn-container">

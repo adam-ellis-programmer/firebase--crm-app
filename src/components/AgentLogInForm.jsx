@@ -14,7 +14,7 @@ function AgentLogInForm() {
     email: '',
     password: '',
   })
-  // test funciton
+  // test funcito
   // useEffect(() => {
   //   window.addEventListener('click', (e) => {
   //     if (!e.target.classList.contains('show-password-button')) {

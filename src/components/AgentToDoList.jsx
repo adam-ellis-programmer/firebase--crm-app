@@ -183,57 +183,59 @@ function AgentToDoList() {
         <span className="task-head-span">Hey {agentName}! Enter a new task</span>
       </p>
 
-      <form onSubmit={handleSubmit} className="todo-form">
-        <textarea
-          onChange={onMutateTextArea}
-          className="task-list-input-text"
-          placeholder="Enter Task and completed date"
-          id="taskText"
-          value={taskText}
-        ></textarea>
-        <div className="date-container">
-          <span className="task-chars-length">{taskLength} chars</span>
-          <div>{chars - taskLength} remaining</div>
+      <div className="agent-task-form-wrap">
+        <form onSubmit={handleSubmit} className="todo-form">
+          <textarea
+            onChange={onMutateTextArea}
+            className="task-list-input-text"
+            placeholder="Enter Task and completed date"
+            id="taskText"
+            value={taskText}
+          ></textarea>
+          <div className="date-container">
+            <span className="task-chars-length">{taskLength} chars</span>
+            <div>{chars - taskLength} remaining</div>
 
-          <div className="completed-by-container">
-            <div className="task-date-heading">
-              <span className="to-be-completed-span">completed by: </span>
-            </div>
+            <div className="completed-by-container">
+              <div className="task-date-heading">
+                <span className="to-be-completed-span">completed by: </span>
+              </div>
 
-            <div className="task-inputs">
-              {' '}
-              <input
-                onChange={onMutate}
-                className="task-list-input-date"
-                type="text"
-                id="day"
-                placeholder="dd"
-                value={day}
-              />
-              <input
-                onChange={onMutate}
-                className="task-list-input-date"
-                type="text"
-                id="month"
-                placeholder="mm"
-                value={month}
-              />
-              <input
-                onChange={onMutate}
-                className="task-list-input-date"
-                type="text"
-                id="year"
-                placeholder="yy"
-                value={year}
-              />
+              <div className="task-inputs">
+                {' '}
+                <input
+                  onChange={onMutate}
+                  className="task-list-input-date"
+                  type="text"
+                  id="day"
+                  placeholder="dd"
+                  value={day}
+                />
+                <input
+                  onChange={onMutate}
+                  className="task-list-input-date"
+                  type="text"
+                  id="month"
+                  placeholder="mm"
+                  value={month}
+                />
+                <input
+                  onChange={onMutate}
+                  className="task-list-input-date"
+                  type="text"
+                  id="year"
+                  placeholder="yy"
+                  value={year}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="task-list-button-container">
-          <button className="task-list-button">enter task</button>
-        </div>
-      </form>
+          <div className="task-list-button-container">
+            <button className="task-list-button">enter task</button>
+          </div>
+        </form>
+      </div>
       {/* to do: loop to find outstanding tasks */}
       <div className="task-list-container">
         <p className="task-list-heading">

@@ -31,6 +31,8 @@ import DarkMode from './DarkMode'
 import ReportsToInfo from './pages/admin/ReportsToInfo'
 import RoleRestrictedAgentList from './pages/view data dash/RoleRestrictedAgentList'
 import AgentsData from './pages/view data dash/RoleRestrictedCustList'
+import CustomersByAgent from './pages/view data dash/CustomersByAgent'
+import AccessPermissions from './pages/admin/AccessPermissions'
 
 // PROTECT THE ROUTES
 function App() {
@@ -63,7 +65,8 @@ function App() {
                 <Route path="/dash/:uid" element={<ChartDash />} />
                 <Route path="/rep-to-info/:uid" element={<ReportsToInfo />} />
                 <Route path="/view-agents/:uid" element={<RoleRestrictedAgentList />} />
-                <Route path="/agents-data/:uid" element={<AgentsData />} />
+                <Route path="/agents-data/:uid" element={<CustomersByAgent />} />
+                <Route path="/change-access" element={<AccessPermissions />} />
                 <Route
                   path="/single-customer/:agentUid/:uid/:name"
                   element={<SingleCustomer />}

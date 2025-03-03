@@ -188,7 +188,7 @@ const NewAgent = ({ data }) => {
         {/*  */}
 
         <div className="select-row">
-          <label className="admin-label" htmlFor="admin-label">
+          <label className="role-select" htmlFor="role-select">
             Select Role
           </label>
           <select

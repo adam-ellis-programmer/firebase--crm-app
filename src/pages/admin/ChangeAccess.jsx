@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import ComponentHeader from './ComponentHeader'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import RadioRow from './RadioRow '
+import CheckboxRow from './CheckboxRow'
 
 const ChangeAccess = ({ claims }) => {
   const orgId = claims?.claims?.orgId

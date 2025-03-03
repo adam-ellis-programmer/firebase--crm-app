@@ -14,7 +14,7 @@ const NewSignupForm = () => {
   const { uid } = useParams()
   const { loggedIn, checkingStatus, loggedInUser, claims } = useAuthStatusTwo()
   const [agentData, setAgentData] = useState(null)
-
+  console.log(claims?.claims?.roleLevel)
   useEffect(() => {
     const getData = async () => {
       const res = await getAgent(claims?.claims?.agentId)
@@ -269,8 +269,8 @@ const NewSignupForm = () => {
       timestamp: serverTimestamp(),
       reportsTo: agentData.reportsTo,
       custId: id,
+      docAccessLevel: claims?.claims?.roleLevel,
     }
-
     const stats = {
       name,
       email,

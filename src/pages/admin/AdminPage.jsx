@@ -7,20 +7,17 @@ import { useAuthStatusTwo } from '../../hooks/useAuthStatusTwo'
 import { getManagers } from '../../crm context/CrmAction'
 import AgentCard from './AgentCard'
 import { getFunctions, httpsCallable } from 'firebase/functions'
+import ChangePermissions from './ChangePermissions'
+import Loader from '../../assets/Loader'
 function AdminPage() {
   const { claims } = useAuthStatusTwo()
   const [managers, setManagers] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [agents, setAgents] = useState(null)
-  console.log(claims)
-  // console.log(managers)
-  // console.log(claims?.claims?.orgId)
 
-  // only get data once we have the claims
   useEffect(() => {
     const getData = async () => {
       try {
-        // Only run if orgId exists
-        // get managers
         if (claims?.claims?.orgId) {
           const data = await getManagers(claims.claims.orgId)
           setManagers(data)
@@ -30,8 +27,10 @@ function AdminPage() {
         const getAllAgentsByOrg = httpsCallable(functions, 'getAllAgentsByOrg')
         const data = await getAllAgentsByOrg({ orgId: claims?.claims?.orgId })
         setAgents(data?.data?.agentData)
+        setLoading(false)
       } catch (error) {
         console.log(error)
+        setLoading(false)
       }
     }
 
@@ -41,7 +40,6 @@ function AdminPage() {
 
   return (
     <div>
-      {/* {showAlert && <AdminPageMModal alertData={alertData} setShowAlert={setShowAlert} />} */}
       <div className="admin-grid">
         <div className="agent-sign-up agent-sign-up-left">
           <div className="agent-inner-div-text">
@@ -68,6 +66,7 @@ function AdminPage() {
           <DeleteAgent data={managers} />
           <ChangeAccess claims={claims} />
           <ReportsTo data={managers} claims={claims} />
+          <ChangePermissions data={managers} claims={claims} />
           {/*  */}
           {/* ========================================== */}
         </div>
@@ -75,10 +74,17 @@ function AdminPage() {
           <div className="admin-controls-text-container">
             <p>Active Agents</p>
           </div>
+
           <div className="user-list-container">
-            {agents?.map((item, i) => {
-              return <AgentCard key={item.id} item={item} i={i} />
-            })}
+            {loading ? (
+              <Loader />
+            ) : (
+              <>
+                {agents?.map((item, i) => {
+                  return <AgentCard key={item.id} item={item} i={i} />
+                })}
+              </>
+            )}
           </div>
         </div>
       </div>

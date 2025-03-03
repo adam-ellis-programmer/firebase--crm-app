@@ -22,7 +22,7 @@ const SelectRow = ({ data, onChange, name, text, labelText, value = '', id }) =>
               data-reptoid={data.reportsTo.id}
               key={id}
               data-id={id}
-              value={data.docId}
+              value={fullName}
               name={fullName}
             >
               {fullName}

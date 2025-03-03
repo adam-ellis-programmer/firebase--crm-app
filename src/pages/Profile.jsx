@@ -121,8 +121,8 @@ function Profile() {
     <div className="page-container">
       <DashboardHeader />
       <main>
-        <div className="profile-grid grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
-          <div className="profile-agent-details">
+        <div className="profile-grid gap-6 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
+          <div className="profile-agent-details profile-grid-item">
             <div className="profile-detais-header">
               <button
                 className="change-personal-details"
@@ -249,7 +249,7 @@ function Profile() {
             </ul>
           </div>
 
-          <div className="profile-dash">
+          <div className="profile-dash profile-grid-item">
             <p className="profile-btn-container">
               <Link
                 className="profile-btns"
@@ -268,7 +268,7 @@ function Profile() {
               <AgentToDoList />
             </div>
           </div>
-          <div className="agentStats-container">
+          <div className="agentStats-container profile-grid-item">
             <div className="agent-stats-header-container">
               <p className="agent-stats-text">
                 <span>Top 3 accounts stats at a glance</span>
