@@ -1,6 +1,7 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { getFirestore } = require('firebase-admin/firestore')
 const nodemailer = require('nodemailer')
+const { onRequest } = require('firebase-functions/v2/https') // Add this
 const fs = require('fs').promises // Changed to use fs.promises for async operations
 const path = require('path')
 const handlebars = require('handlebars')
@@ -46,12 +47,28 @@ const sendEmail = onCall(async (request) => {
     // Compile the template
     const template = handlebars.compile(templateSource)
 
+    // First, save the initial email metadata to get the document ID
+    const initialRef = await db.collection('sentEmails').add({
+      to: emailData.to,
+      subject: emailData.subject,
+      sentAt: new Date(),
+      read: false,
+      opened: 0,
+      status: 'preparing', // Track that we're still preparing the email
+    })
+
+    const emailId = initialRef.id
+    console.log('Created email record with ID:', emailId)
+
+    // Now we have the emailId to use in the tracking URL
+    const trackingUrl = `https://trackemailopen-ttpbrhfxaq-uc.a.run.app?id=${emailId}`
+
     // Prepare data for the template
     const templateData = {
       customerName: emailData.customerName || 'Customer',
       message: emailData.text || '',
       agentName: emailData.from || 'Your Agent',
-      // Add any other dynamic data you need
+      trackingUrl,
     }
 
     // Generate the HTML using the template and data
@@ -79,22 +96,18 @@ const sendEmail = onCall(async (request) => {
 
     console.log('Message sent:', info.messageId)
 
-    // Save email metadata to Firestore
-    try {
-      await db.collection('sentEmails').add({
-        to: emailData.to,
-        subject: emailData.subject,
-        sentAt: new Date(),
-        messageId: info.messageId,
-        read: false,
-      })
-      console.log('Email metadata saved to Firestore')
-    } catch (dbError) {
-      console.error('Failed to save email metadata:', dbError)
-      // Continue execution even if DB save fails
-    }
+    // Update the email record with the message ID and status
+    await db.collection('sentEmails').doc(emailId).update({
+      messageId: info.messageId,
+      status: 'sent',
+      htmlContent: htmlContent, // Optionally store the content
+    })
 
-    return { success: true, messageId: info.messageId, templatePath, dir: __dirname }
+    return {
+      success: true,
+      messageId: info.messageId,
+      emailId: emailId,
+    }
   } catch (error) {
     console.error('Email sending error:', error)
 

@@ -378,7 +378,6 @@ function DisplayOrders({ permissions }) {
             })}
         </ul>
       </div>
-
       {ordersData.length < 3 && <DataSvgIcon />}
     </div>
   )

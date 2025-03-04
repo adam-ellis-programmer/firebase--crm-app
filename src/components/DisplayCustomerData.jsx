@@ -83,7 +83,7 @@ function DisplayCustomerData({ customer }) {
   return (
     <div>
       <div className="profile-card profile-page-card">
-        <form className='profile-form' >
+        <form className="profile-form">
           <input
             className={changeDetails ? 'profile-input' : 'profile-card-active'}
             type="text"
@@ -112,15 +112,6 @@ function DisplayCustomerData({ customer }) {
           <p className="profile-extra-info">
             Cust ID <span>{customer.custId} </span>{' '}
           </p>
-
-          {/* <div className="profile-extra-info profile-phone-div">
-            <div>Phone</div>
-            <div>
-              {custNum?.map((item, i) => {
-                return <span className="formatted-phone-number">{item} </span>
-              })}
-            </div>
-          </div> */}
 
           {formatPhoneNumber(customer.phone)}
 
@@ -158,8 +149,6 @@ function DisplayCustomerData({ customer }) {
           </p>
         </div>
 
-        {/* to be tested and completed */}
-        {/* <UpdateReportToData /> */}
         <ProfileControlButtons />
       </div>
 

@@ -15,6 +15,7 @@ const { authTest, singleUpdate, simpleQuery } = require('./src/testFuncitons')
 const { getAllAgentsByOrg } = require('./src/getData')
 const { getManagersData } = require('./src/getManagersData')
 const { sendEmail } = require('./src/handleEmails')
+const { trackEmailOpen } = require('./src/trackEmailOpen')
 const { sendWelcomeEmails } = require('./src/handleSignUpEmails')
 const {
   getRolesData,
@@ -39,6 +40,8 @@ exports.changePermissons = changePermissons
 exports.getAllAgents = getAllAgents
 exports.sendEmail = sendEmail
 exports.sendWelcomeEmails = sendWelcomeEmails
+exports.trackEmailOpen = trackEmailOpen
+
 // handle data
 exports.getAllAgentsByOrg = getAllAgentsByOrg
 exports.getManagersData = getManagersData
