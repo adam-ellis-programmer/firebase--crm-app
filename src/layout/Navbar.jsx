@@ -11,6 +11,7 @@ import { ReactComponent as AddCustomer } from '../icons/add.svg'
 import { ReactComponent as Profile } from '../icons/profile.svg'
 import { ReactComponent as Logo } from '../icons/logo.svg'
 
+import image from './logo/Asset.svg'
 function Navbar() {
   const auth = getAuth()
   const navigate = useNavigate()
@@ -135,10 +136,10 @@ function Navbar() {
       <div className="nav-bar-container">
         <div className="logo-box">
           <Link to="/">
-            <Logo className="logo" />
+            {/* <Logo className="logo" /> */}
+            <img className="logo" src={image} alt="" />
           </Link>
         </div>
-
         <ul className="nav-ul">
           <DarkMode />
 
