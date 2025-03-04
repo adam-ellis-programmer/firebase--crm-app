@@ -1,22 +1,25 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useMemo } from 'react'
 import CrmContext from '../crm context/CrmContext'
-import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom'
 
 import { getAuth } from 'firebase/auth' // only show if it's that agent's listing
 import { onSubmit } from '../crm context/CrmAction'
 import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
-
 import ProfileControlButtons from './ProfileControlButtons'
-
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 function DisplayCustomerData({ customer }) {
+  const { claims } = useAuthStatusTwo()
   const { changeDetails } = useContext(CrmContext)
 
+  const permissions = useMemo(() => {
+    if (!claims?.claims) return {}
+    return claims?.claims
+  }, [claims])
   // *** leave for reference ***
   const location = useLocation()
   const navigate = useNavigate()
   const auth = getAuth()
   // *** leave for reference ***
-
   const [data, setData] = useState({
     name: customer.name,
     phone: customer.email,
@@ -106,7 +109,7 @@ function DisplayCustomerData({ customer }) {
       <div className="customer-details">
         <div className="customer-details-container">
           <p className="profile-extra-info">
-            Org Name <span> Tooly's Ltd </span>
+            Org Name <span> {permissions?.orgName}</span>
           </p>
 
           <p className="profile-extra-info">
@@ -150,6 +153,11 @@ function DisplayCustomerData({ customer }) {
         </div>
 
         <ProfileControlButtons />
+        <div className="docs-link-contaimer">
+          <Link to="/docs" className="documents-link">
+            documents
+          </Link>
+        </div>
       </div>
 
       <div className="map-container">

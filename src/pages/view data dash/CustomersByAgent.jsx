@@ -14,7 +14,7 @@ import Loader from '../../assets/Loader'
 import { faChessKing } from '@fortawesome/free-regular-svg-icons'
 const CustomersByAgent = () => {
   const { uid } = useParams()
-
+  const [claimsData, setClaimsData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(null)
   const [customers, setCustomers] = useState(null)
@@ -49,6 +49,7 @@ const CustomersByAgent = () => {
     if (claims && customers) {
       const isAuthorized = canViewpage(claims)
       setIsAuthorized(isAuthorized)
+      setClaimsData(claims)
     }
     return () => {}
   }, [claims, customers])
@@ -77,9 +78,10 @@ const CustomersByAgent = () => {
       <section>
         <h1 className="viewable-agents-h1">list of all my viewable agents allowed </h1>
         <ul>
-          <li>my role level: ----</li>
-          <li>my role type: ----</li>
-          <li>show by access level below or equal to ----</li>
+          <li>my role level: {claimsData?.claims?.roleLevel}</li>
+          <li>my role type: {claimsData?.claims?.role}</li>
+          <li>show by access level</li>
+          <li>equal or below yours</li>
           <li>page acces level ----</li>
         </ul>
       </section>

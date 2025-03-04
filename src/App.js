@@ -33,6 +33,7 @@ import RoleRestrictedAgentList from './pages/view data dash/RoleRestrictedAgentL
 import AgentsData from './pages/view data dash/RoleRestrictedCustList'
 import CustomersByAgent from './pages/view data dash/CustomersByAgent'
 import AccessPermissions from './pages/admin/AccessPermissions'
+import Docs from './pages/Docs'
 
 // PROTECT THE ROUTES
 function App() {
@@ -67,6 +68,7 @@ function App() {
                 <Route path="/view-agents/:uid" element={<RoleRestrictedAgentList />} />
                 <Route path="/agents-data/:uid" element={<CustomersByAgent />} />
                 <Route path="/change-access" element={<AccessPermissions />} />
+                <Route path="/docs" element={<Docs />} />
                 <Route
                   path="/single-customer/:agentUid/:uid/:name"
                   element={<SingleCustomer />}

@@ -8,15 +8,14 @@ import { canViewpage } from './canView'
 import RestricedAccessPage from './RestricedAccessPage'
 import Loader from '../../assets/Loader'
 const ViewableAgents = () => {
+  const [claimsData, setClaimsData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(null)
   const [agents, setAgents] = useState(null)
   const { claims } = useAuthStatusTwo()
   const orgID = claims?.claims?.orgId
   const { agentDoc } = useGetAgentDoc(claims?.user_id, 'agents')
-  // console.log(agentDoc)
   const roleLevel = claims?.claims?.roleLevel
-  //   const agentId = claims?.claims?.agentId
 
   useEffect(() => {
     const getData = async () => {
@@ -41,6 +40,7 @@ const ViewableAgents = () => {
     if (claims && agents) {
       const isAuthorized = canViewpage(claims)
       setIsAuthorized(isAuthorized)
+      setClaimsData(claims)
     }
     return () => {}
   }, [claims, agents])
@@ -61,15 +61,16 @@ const ViewableAgents = () => {
   // additionally check before render
   const headNames = Array.from(Object.keys(newData))
   const filtered = agents?.filter((item) => item.data.roleLevel <= roleLevel)
+  console.log(claimsData?.claims?.role)
   return (
     <div className="page-container">
       <section>
         <h1 className="viewable-agents-h1">list of all my viewable agents allowed </h1>
         <ul>
-          <li>my role level: xxxx</li>
-          <li>my role type: xxxx</li>
-          <li>show by access level: xxxx</li>
-          <li>equal or below yours xxxx</li>
+          <li>my role level: {claimsData?.claims?.roleLevel}</li>
+          <li>my role type: {claimsData?.claims?.role}</li>
+          <li>show by access level</li>
+          <li>equal or below yours</li>
         </ul>
       </section>
       <section>

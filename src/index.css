@@ -141,7 +141,7 @@ body {
 .dark-mode-on .task-list-input-date {
   border: 0.1px solid #fff;
 }
-
+.dark-mode-on .documents-link,
 .dark-mode-on .profile-control-btn {
   background-color: rgb(219, 91, 27);
 }
@@ -1303,6 +1303,21 @@ input {
   /* padding: 0.5em; */
   border-radius: 50%;
 }
+.docs-link-contaimer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.documents-link {
+  background-color: #444858;
+  display: block;
+  text-align: center;
+  width: 90%;
+  color: #fff;
+  padding: 0.6em;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 .profile-control-container {
   width: 450px;
@@ -1312,6 +1327,7 @@ input {
   margin: auto;
   margin-top: 1em;
 }
+
 .profile-control-btn {
   background-color: #444858;
   color: #fff;
@@ -4603,4 +4619,13 @@ h2 {
 }
 .single-customer-wrap {
   margin-bottom: 2rem;
+}
+.docs-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 100vh;
+}
+
+.docs-page-grid-item {
+  border: 1px solid;
 }
