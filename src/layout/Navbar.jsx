@@ -1,119 +1,245 @@
 import { useEffect, useState, useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { getAuth } from 'firebase/auth'
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
+import CrmContext from '../crm context/CrmContext'
+import DarkMode from '../DarkMode'
+
+// SVG imports
+import { ReactComponent as CaretIcon } from '../icons/caret.svg'
+import { ReactComponent as AddCustomer } from '../icons/add.svg'
 import { ReactComponent as Profile } from '../icons/profile.svg'
 import { ReactComponent as Logo } from '../icons/logo.svg'
-import NavItem from './NavItem'
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import DarkMode from '../DarkMode'
-function Navbar({ setToggleNav, toggleNav }) {
-  const [userUid, setUserUid] = useState('')
-  const [userObj, setUserObj] = useState({
-    loggedInUser: '',
-    loggedInUserId: '',
-  })
-  const navigate = useNavigate()
-  const { loggedInUser, loggedInUserId } = userObj
 
+function Navbar() {
   const auth = getAuth()
-  const params = useParams()
+  const navigate = useNavigate()
+  const { loggedIn, claims } = useAuthStatusTwo()
+  const { dispatch } = useContext(CrmContext)
 
+  // State management
+  const [toggleNav, setToggleNav] = useState(false)
+  const [toggleLeftNav, setToggleLeftNav] = useState(false)
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    uid: '',
+    initials: '',
+  })
+
+  // Watch for auth status changes using the hook
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      // leave in for testing purpouse
-      if (user) {
-        user.getIdTokenResult().then((idTokenResult) => {
-          // console.log(idTokenResult)
-        })
-        setUserUid(user.uid)
-        setUserObj((prevState) => ({
-          ...prevState,
-          loggedInUser: user.displayName,
-          loggedInUserId: user.uid,
-        }))
-      } else {
-        setUserObj((prevState) => ({
-          ...prevState,
-          loggedInUser: '',
-        }))
-      }
-    })
-  }, []) /// if button does not changen then use auth here?
+    if (loggedIn && auth.currentUser) {
+      // User is logged in, update user info
+      const user = auth.currentUser
+      const name = user.displayName || ''
+      const initials = name
+        .split(' ')
+        .map((part) => part.slice(0, 1))
+        .join('')
 
-  // prettier-ignore
-  const handleOutsideClick = (event) => {
-    // console.log(event.target)
-    const isDropdownOpen = toggleNav
-    const clickedElement = event.target
-    const isDropdownElement =
-      clickedElement.closest('.dropdown') ||
-      clickedElement.closest('.nav-caret-container')
-    // const isDropdownLink = clickedElement.closest('.dropdown-text'); // another way to select
-    // If the dropdown is open AND the click isn't inside these elements, it closes the dropdown by setting toggleNav to false
-    if (isDropdownOpen && !isDropdownElement) {
+      setUserInfo({
+        name: name,
+        uid: user.uid,
+        initials: initials,
+      })
+
+      dispatch({ type: 'TOGGLE_SIGN_IN_SIGN_OUT_BUTTON', payload: false })
+    } else {
+      // User is logged out - clear all user data
+      setUserInfo({
+        name: '',
+        uid: '',
+        initials: '',
+      })
+
+      // Reset any navigation states
       setToggleNav(false)
-    }
-  };
-  // prettier-ignore-end
+      setToggleLeftNav(false)
 
+      dispatch({ type: 'TOGGLE_SIGN_IN_SIGN_OUT_BUTTON', payload: true })
+    }
+  }, [loggedIn, auth.currentUser, dispatch])
+
+  // Handle clicks outside of dropdown menus
   useEffect(() => {
-    // only run if toggleNav is open
-    if (toggleNav) {
+    const handleOutsideClick = (event) => {
+      // Main dropdown (toggleNav)
+      if (
+        toggleNav &&
+        !event.target.closest('.dropdown') &&
+        !event.target.closest('.nav-caret-container')
+      ) {
+        setToggleNav(false)
+      }
+
+      // Left dropdown (toggleLeftNav)
+      if (
+        toggleLeftNav &&
+        !event.target.closest('.nav-button.nav-drop-wrap') &&
+        !event.target.closest('.nav-left')
+      ) {
+        setToggleLeftNav(false)
+      }
+    }
+
+    if (toggleNav || toggleLeftNav) {
       document.addEventListener('click', handleOutsideClick)
     } else {
       document.removeEventListener('click', handleOutsideClick)
     }
-  }, [toggleNav])
 
-  const navButtons = [
-    { id: crypto.randomUUID(), text: 'home', url: '/' },
-    { id: crypto.randomUUID(), text: 'my data', url: `/data/${userUid}` },
-    { id: crypto.randomUUID(), text: 'team data', url: `/all-data/${userUid}` },
-    { id: crypto.randomUUID(), text: 'stats', url: `/stats/${userUid}` },
-    { id: crypto.randomUUID(), text: 'dashboard', url: `/dash/${userUid}` },
-    { id: crypto.randomUUID(), text: 'reports to', url: `/rep-to-info/${userUid}` },
-    { id: crypto.randomUUID(), text: 'my agents', url: `/view-agents/${userUid}` },
-  ]
+    return () => document.removeEventListener('click', handleOutsideClick)
+  }, [toggleNav, toggleLeftNav])
 
-  const handleSignOut = (e) => {
+  // Sign out handler
+  const handleSignOut = () => {
     setToggleNav(false)
+    setToggleLeftNav(false)
     navigate('/')
     auth.signOut()
   }
-  // prettier-ignore
+
+  // Toggle handlers
+  const handleMainNavToggle = () => {
+    setToggleNav(!toggleNav)
+  }
+
+  const handleLeftNavToggle = (e) => {
+    e.preventDefault()
+    setToggleLeftNav(!toggleLeftNav)
+  }
+
+  // Navigation data
+  const mainNavItems = [
+    { id: 1, text: 'home', url: '/' },
+    { id: 2, text: 'my data', url: `/data/${userInfo.uid}` },
+    { id: 3, text: 'team data', url: `/all-data/${userInfo.uid}` },
+    { id: 4, text: 'stats', url: `/stats/${userInfo.uid}` },
+    { id: 5, text: 'dashboard', url: `/dash/${userInfo.uid}` },
+    { id: 6, text: 'reports to', url: `/rep-to-info/${userInfo.uid}` },
+    { id: 7, text: 'my agents', url: `/view-agents/${userInfo.uid}` },
+  ]
+
+  const leftNavItems = [
+    { id: 1, text: 'Admin', url: `/admin/${userInfo.uid}` },
+    { id: 2, text: 'Profile', url: `/profile/${userInfo.uid}` },
+    {
+      id: 3,
+      text: 'New Customer',
+      url: `/new-customer?agentName=${userInfo.name}&agentId=${userInfo.uid}`,
+    },
+  ]
+
   return (
     <nav className="nav-bar">
       <div className="nav-bar-container">
-        <div className="logo-box testing">
+        <div className="logo-box">
           <Link to="/">
             <Logo className="logo" />
           </Link>
         </div>
-        <div className="nav-signup-div"></div>
+
         <ul className="nav-ul">
           <DarkMode />
-          <Link to="/sign-up-acc" className="sign-up-btn">
-            sign up
-          </Link>
-          <NavItem setToggleNav={setToggleNav} toggleNav={toggleNav} />
+
+          {/* Sign Up Button (only when logged out) */}
+          {!loggedIn && (
+            <Link to="/sign-up-acc" className="sign-up-btn">
+              sign up
+            </Link>
+          )}
+
+          {/* Sign In/Out Button */}
+          <li>
+            {loggedIn ? (
+              <button
+                onClick={handleSignOut}
+                className="nav-button nav-button-agent-sign-out"
+              >
+                sign out
+              </button>
+            ) : (
+              <Link to="/agent-sign-in">
+                <button className="nav-button nav-button-agent-sign-in">sign in</button>
+              </Link>
+            )}
+          </li>
+
+          {/* Only show these buttons when logged in */}
+          {loggedIn && (
+            <>
+              {/* User Profile Dropdown */}
+              <li className="nav-buttons-li-wrap">
+                <div className="testing-nav">
+                  <button
+                    onClick={handleLeftNavToggle}
+                    className="nav-button nav-drop-wrap"
+                  >
+                    {userInfo.initials}
+                  </button>
+
+                  {toggleLeftNav && (
+                    <div className="nav-left">
+                      <ul className="left-nav-ul">
+                        {leftNavItems.map((item) => (
+                          <Link key={item.id} to={item.url}>
+                            <li className="left-nav-li">{item.text.toUpperCase()}</li>
+                          </Link>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </li>
+
+              {/* Add Customer Button */}
+              <li className="nav-buttons-li-wrap">
+                <button className="nav-button">
+                  <Link
+                    to={`/new-customer?agentName=${userInfo.name}&agentId=${userInfo.uid}`}
+                  >
+                    <AddCustomer fill="#fff" />
+                  </Link>
+                </button>
+              </li>
+
+              {/* Main Navigation Toggle */}
+              <li className="nav-buttons-li-wrap">
+                <button
+                  className="nav-button nav-caret-container"
+                  onClick={handleMainNavToggle}
+                >
+                  <CaretIcon
+                    className="caret"
+                    style={{
+                      transform: toggleNav ? 'rotate(180deg)' : 'none',
+                      fill: '#fff',
+                    }}
+                  />
+                </button>
+              </li>
+            </>
+          )}
         </ul>
       </div>
-      {toggleNav && (
+
+      {/* Main Dropdown Menu - only show when logged in and toggle is active */}
+      {loggedIn && toggleNav && (
         <div className="dropdown">
           <div className="profile-info">
             <Profile style={{ width: '60px', height: '60px' }} />
             <div className="nav-header">
-              <span className="nav-name-span">{loggedInUser}</span>
+              <span className="nav-name-span">{userInfo.name}</span>
               <span onClick={handleSignOut} className="nav-sign-out">
                 sign out
               </span>
             </div>
           </div>
           <ul className="toggle-nav-ul">
-            {navButtons.map((item) => (
-              <Link key={item.id} to={`${item.url}`} className="dropdown-text">
-                {/* {console.log(item)}  // for testing */}
+            {mainNavItems.map((item) => (
+              <Link key={item.id} to={item.url} className="dropdown-text">
                 <li className="toggle-nav-list" onClick={() => setToggleNav(false)}>
-                  {item.text.toUpperCase()}{' '}
+                  {item.text.toUpperCase()}
                 </li>
               </Link>
             ))}

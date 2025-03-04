@@ -1042,7 +1042,7 @@ export async function getAgent(id) {
     console.log(error)
   }
 }
-// this is getting a document
+
 export async function getDocument(id, collectionName) {
   const docRef = doc(db, collectionName, id)
   const docSnap = await getDoc(docRef)

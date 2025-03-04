@@ -71,16 +71,17 @@ const ReportsTo = ({ data }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     console.log(formData)
     // return
     try {
       const functions = getFunctions()
       const changeReportsTo = httpsCallable(functions, 'changeReportsTo')
       const data = await changeReportsTo({ formData })
-      console.log(data)
-
       console.log(formData)
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log(error)
     }
   }
@@ -110,7 +111,9 @@ const ReportsTo = ({ data }) => {
         />
 
         <div className="admin-btn-container">
-          <button className="admin-add-agent-btn">change</button>
+          <button disabled={loading} className="admin-add-agent-btn">
+            {loading ? 'changing ...' : 'change'}
+          </button>
         </div>
       </form>
     </div>

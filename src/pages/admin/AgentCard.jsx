@@ -1,12 +1,9 @@
 import React from 'react'
-// const totalLength = agentData.length + claimsData.length
-// const arr = Array.from({ length: totalLength }, (_, i) => {
-//   return i + 1
-// })
 
 const AgentCard = ({ item, i }) => {
   const { data: agent } = item
   const { data } = item
+  console.log(data)
   const { claims } = data
 
   //   console.log(data?.reportsTo)
@@ -15,15 +12,15 @@ const AgentCard = ({ item, i }) => {
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,
-    organization: data.organization,
-    claims: data.claims,
+    organization: data.orgName,
     reportsTo: data?.reportsTo,
+    role: data?.role,
+    roleLevel: data?.roleLevel,
   }
 
-  // console.log(structuredData)
+  console.log(structuredData)
 
   const agentData = Object.entries(structuredData)
-  const claimsData = Object.entries(structuredData.claims)
   const reportsToData = Object.entries(structuredData?.reportsTo ?? [])
 
   function formatField(fieldName) {
@@ -34,7 +31,7 @@ const AgentCard = ({ item, i }) => {
       .replace(findCaps, ' $1')
       .replace(findFirstLetter, (str) => str.toUpperCase())
   }
-
+  console.log(agentData.slice(5))
   return (
     <div className="agent-card">
       <div className="agent-card-inner-div">
@@ -65,41 +62,15 @@ const AgentCard = ({ item, i }) => {
       </div>
       <div>
         <div className="agent-card-inner-div-claims">
-          {claimsData.slice(0, 3).map(([key, value]) => {
+          {agentData.slice(5).map(([key, value]) => {
             return (
               <span key={key} className="card-key-value-pair">
-                <div className="agent-card-name-info key">
-                  <span className="agent-card-claims-key">{formatField(key)}</span>
-                </div>
-                <div className="agent-card-name-info value">
-                  {value ? (
-                    <i className="fa-solid fa-check text-green-500"></i>
-                  ) : (
-                    <i className="fa-solid fa-xmark text-red-500"></i>
-                  )}
-                </div>
+                <div className="agent-card-name-info key">{formatField(key)}:</div>{' '}
+                <div className="agent-card-name-info value">{value}</div>
               </span>
             )
           })}
         </div>
-      </div>
-      <div className="agent-card-inner-div-claims">
-        {claimsData.slice(3, 5).map(([key, value]) => {
-          return (
-            <span key={key} className="card-key-value-pair">
-              <div className="agent-card-name-info key">
-                <span className="agent-card-claims-key">{key}</span>
-              </div>
-              <div className="agent-card-name-info value">
-                {value ? (
-                  <i className="fa-solid fa-check text-green-500"></i>
-                ) : (
-                  <i className="fa-solid fa-xmark text-red-500"></i>
-                )}
-              </div>
-            </span>
-          )
-        })}
       </div>
 
       <div className="agent-card-inner-div-claims">

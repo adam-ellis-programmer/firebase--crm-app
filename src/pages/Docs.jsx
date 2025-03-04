@@ -3,8 +3,11 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/
 import { getFirestore, collection, addDoc } from 'firebase/firestore'
 import { useParams } from 'react-router-dom'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
-import { getDocumentsByCustId } from '../crm context/CrmAction'
-import { faChessKing } from '@fortawesome/free-regular-svg-icons'
+import { getAgent, getDocument, getDocumentsByCustId } from '../crm context/CrmAction'
+import DocInfo from '../components/DocInfo'
+import { canViewpage } from './view data dash/canView'
+import RestricedAccessPage from './view data dash/RestricedAccessPage'
+import Loader from '../assets/Loader'
 
 const Docs = () => {
   const { claims } = useAuthStatusTwo()
@@ -18,12 +21,17 @@ const Docs = () => {
   //
 
   const fileInputRef = useRef(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(null)
+  const [customer, setCustomer] = useState(null)
+  const [documents, setDocuments] = useState(null)
   const [selectedFile, setSelectedFile] = useState(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
   const [uploadedFileURL, setUploadedFileURL] = useState(null)
   const { uid } = useParams()
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -31,13 +39,31 @@ const Docs = () => {
 
     const getDocData = async () => {
       if (!uid) return
-      const data = await getDocumentsByCustId(uid)
-      console.log(data)
+      try {
+        const data = await getDocumentsByCustId(uid)
+        const customer = await getDocument(uid, 'customers')
+        setCustomer(customer)
+        setDocuments(data)
+        setIsLoading(false)
+      } catch (error) {
+        setIsLoading(false)
+      }
     }
 
     getDocData()
     return () => {}
   }, [uid])
+
+  // ==========================
+  // only set authorized when we have all the data
+  // ==========================
+  useEffect(() => {
+    if (claims && documents && customer) {
+      const canView = canViewpage(claims)
+      setIsAuthorized(canView)
+    }
+    return () => {}
+  }, [claims, documents, customer])
 
   const handleButtonClick = () => {
     // Trigger the file input click
@@ -69,8 +95,10 @@ const Docs = () => {
       const fileExtension = selectedFile.name.split('.').pop()
       const fileName = `${timestamp}-${selectedFile.name}`
 
+      const storagePath = `/documents/${customer?.custId}/${fileName}`
+
       // Create storage reference
-      const storageRef = ref(storage, `documents/${fileName}`)
+      const storageRef = ref(storage, storagePath)
 
       // Start upload task
       const uploadTask = uploadBytesResumable(storageRef, selectedFile)
@@ -80,6 +108,8 @@ const Docs = () => {
         'state_changed',
         (snapshot) => {
           // Track upload progress
+          // Dividing these gives you a fraction (e.g., 0.45 for 45% complete)
+          // Multiplying by 100 converts to a percentage value
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           setUploadProgress(progress)
         },
@@ -96,7 +126,12 @@ const Docs = () => {
           setIsUploading(false)
 
           // Store metadata in Firestore
-          await saveDocumentMetadata(downloadURL, selectedFile.name, fileExtension)
+          await saveDocumentMetadata(
+            downloadURL,
+            selectedFile.name,
+            fileExtension,
+            storagePath
+          )
         }
       )
     } catch (error) {
@@ -106,7 +141,7 @@ const Docs = () => {
     }
   }
 
-  const saveDocumentMetadata = async (url, fileName, fileType) => {
+  const saveDocumentMetadata = async (url, fileName, fileType, storagePath) => {
     try {
       const db = getFirestore()
       await addDoc(collection(db, 'documents'), {
@@ -119,6 +154,7 @@ const Docs = () => {
         accessLevel: cachedClaims?.claims?.roleLevel,
         pdfImg:
           'https://firebasestorage.googleapis.com/v0/b/crm---v1.appspot.com/o/misc%2Fsmall-pdf.png?alt=media&token=8fe91137-6c1c-4c37-8171-34fb868eb41e',
+        storagePath,
       })
       console.log('Document metadata saved to Firestore')
     } catch (error) {
@@ -126,6 +162,11 @@ const Docs = () => {
       setUploadError('File uploaded but metadata could not be saved.')
     }
   }
+
+  // display loader to stop flash
+  if (isLoading) return <Loader />
+
+  if (!isAuthorized) return <RestricedAccessPage />
 
   return (
     <div className="page-contaimer docs-page-grid">
@@ -137,10 +178,17 @@ const Docs = () => {
           className="file-input-hidden"
           accept=".pdf,.doc,.docx"
         />
-        <button onClick={handleButtonClick} className="upload-button">
-          <span className="button-icon">+</span>
-          Upload Document
-        </button>
+
+        <p className="document-page-name-p">
+          Documents for <span>{customer?.name}</span>
+        </p>
+
+        <div className="docs-page-btn-wrap">
+          <button onClick={handleButtonClick} className="upload-button">
+            <span className="button-icon">+</span>
+            Upload Document
+          </button>
+        </div>
 
         {selectedFile && (
           <div className="selected-file">
@@ -186,7 +234,9 @@ const Docs = () => {
         )}
       </div>
       <div className="docs-page-grid-item">
-        {/* ... */}
+        {documents?.map((doc, i) => {
+          return <DocInfo key={i} data={doc} />
+        })}
       </div>
     </div>
   )
