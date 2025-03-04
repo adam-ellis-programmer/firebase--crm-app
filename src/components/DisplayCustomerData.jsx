@@ -8,6 +8,7 @@ import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
 import ProfileControlButtons from './ProfileControlButtons'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 function DisplayCustomerData({ customer }) {
+  console.log(customer)
   const { claims } = useAuthStatusTwo()
   const { changeDetails } = useContext(CrmContext)
 
@@ -154,7 +155,7 @@ function DisplayCustomerData({ customer }) {
 
         <ProfileControlButtons />
         <div className="docs-link-contaimer">
-          <Link to="/docs" className="documents-link">
+          <Link to={`/docs/${customer?.custId}`} className="documents-link">
             documents
           </Link>
         </div>

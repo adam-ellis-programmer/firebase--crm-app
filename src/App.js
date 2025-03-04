@@ -68,7 +68,7 @@ function App() {
                 <Route path="/view-agents/:uid" element={<RoleRestrictedAgentList />} />
                 <Route path="/agents-data/:uid" element={<CustomersByAgent />} />
                 <Route path="/change-access" element={<AccessPermissions />} />
-                <Route path="/docs" element={<Docs />} />
+                <Route path="/docs/:uid" element={<Docs />} />
                 <Route
                   path="/single-customer/:agentUid/:uid/:name"
                   element={<SingleCustomer />}

@@ -1151,9 +1151,35 @@ export async function managersWithSubs(orgId, roleLevel) {
 
   return data
 }
-// ==========
-// samw as above but in one function
-// ==========
-async function getManagersAndSubs(params) {
-  //...
+
+/**
+ * Fetches documents from Firestore that belong to a specific customer
+ * @param {string} custId - The customer ID to filter documents by
+ * @returns {Promise<Array>} - A promise that resolves to an array of document objects
+ */
+export const getDocumentsByCustId = async (custId) => {
+  try {
+    // Initialize Firestore
+
+    // Create a reference to the documents collection
+    const documentsRef = collection(db, 'documents')
+
+    // Create a query against the collection
+    const q = query(documentsRef, where('custId', '==', custId))
+
+    // Execute the query
+    const querySnapshot = await getDocs(q)
+
+    // Map the results to an array of document objects
+    const documents = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+
+    console.log(`Retrieved ${documents.length} documents for customer ${custId}`)
+    return documents
+  } catch (error) {
+    console.error('Error fetching documents:', error)
+    throw error // Re-throw to allow handling by the caller
+  }
 }

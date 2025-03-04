@@ -4629,3 +4629,72 @@ h2 {
 .docs-page-grid-item {
   border: 1px solid;
 }
+
+/* ====================================== */
+/* FILE SELECTOR PAGE  */
+/* ====================================== */
+
+/* File input styles */
+.file-input-hidden {
+  display: none;
+}
+
+/* Upload button styles */
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px rgba(74, 108, 247, 0.2);
+}
+
+.upload-button:hover {
+  background-color: #3a5ce5;
+  box-shadow: 0 6px 8px rgba(74, 108, 247, 0.3);
+  transform: translateY(-2px);
+}
+
+.upload-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(74, 108, 247, 0.2);
+}
+
+.button-icon {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Selected file display */
+.selected-file {
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #f5f7ff;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  border-left: 3px solid #4a6cf7;
+}
+
+/* Additional grid styling */
+.docs-page-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.docs-page-grid-item {
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
