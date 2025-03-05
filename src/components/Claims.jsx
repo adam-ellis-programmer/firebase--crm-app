@@ -5,7 +5,7 @@ const Claims = () => {
   const { loggedIn, loggedInUser, claims } = useAuthStatusTwo()
   // make a redirect here if not logged in
   // Add a console.log to debug the claims object
-  console.log('Claims:', claims)
+  // console.log('Claims:', claims)
 
   if (!loggedIn || !claims) {
     return (

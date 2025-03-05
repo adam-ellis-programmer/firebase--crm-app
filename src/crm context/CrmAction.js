@@ -1183,3 +1183,17 @@ export const getDocumentsByCustId = async (custId) => {
     throw error // Re-throw to allow handling by the caller
   }
 }
+
+export async function getAllAgentsForChat(orgId) {
+  const data = []
+  const q = query(collection(db, 'agents'), where('orgId', '==', orgId))
+
+  const querySnapshot = await getDocs(q)
+  querySnapshot.forEach((doc) => {
+    console.log(doc.id, ' => ', doc.data())
+    const dataObj = { id: doc.id, data: doc.data() }
+    data.push(dataObj)
+  })
+
+  return data
+}

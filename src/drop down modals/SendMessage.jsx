@@ -5,118 +5,149 @@ import { ReactComponent as Arrow } from '../icons/selectArrow.svg'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase.config'
-import {
-  getUsersForMessageModalInitialLoad,
-  getUserForSendMessagePush,
-  getAgentForUpdatingMessagesArrayNumber,
-} from '../crm context/CrmAction'
+import { getDatabase, ref, set, push, get } from 'firebase/database'
+import { getAllAgentsForChat } from '../crm context/CrmAction'
+import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 
 function SendMessage() {
+  const [sendingAgent, setSendingAgent] = useState(null)
+  const [message, setMessage] = useState('')
+  const [recipientId, setRecipientId] = useState('')
+  const [recipientName, setRecipientName] = useState('')
+  const { dispatch } = useContext(CrmContext)
+  const params = useParams()
+  const auth = getAuth()
+  const [options, setOptions] = useState(null) // agents names for select tag
+  const { claims } = useAuthStatusTwo()
+
+  // getAllAgentsForChat()
+  console.log(claims)
+
+  useEffect(() => {
+    if (!claims && !claims?.claims) return
+    const getAgentData = async () => {
+      const res = await getAllAgentsForChat(claims?.claims?.orgId)
+      setOptions(res)
+      console.log(res)
+
+      const senderData = {
+        name: claims?.name,
+        id: claims?.user_id,
+      }
+
+      setSendingAgent(senderData)
+    }
+
+    getAgentData()
+    return () => {}
+  }, [claims])
+
   const date = new Date()
   const dateAndTime = date.toLocaleString('en-GB', {
     dateStyle: 'long',
     timeStyle: 'long',
   })
-  const [agentId, setAgentId] = useState('')
-  const { dispatch } = useContext(CrmContext)
-  const params = useParams()
-  const auth = getAuth()
-  const [options, setOptions] = useState(null) // agents names for select tag
-  const [messageFormData, setMessageFormData] = useState({
-    from: '',
-    msg: '',
-    name: '',
-  })
-
-  const { from, msg, name } = messageFormData
 
   const handleCloseModal = () => {
     dispatch({ type: 'TOGGLE_SEND_MSG_MODAL', payload: false })
   }
 
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-      }
-    })
-
-    const getAgents = async () => {
-      const selector = document.querySelector('#agents')
-      console.log(selector)
-      const data = await getUsersForMessageModalInitialLoad('users')
-      setOptions(data)
-    }
-
-    getAgents()
-  }, [setOptions])
-
   const onMutate = (e) => {
-    setMessageFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }))
+    setMessage(e.target.value)
   }
 
-  const handleSelect = (item) => {
-    const itemName = item
-    const selectTagElement = document.querySelectorAll('.testing')
-    selectTagElement.forEach((node) => {
-      // set name of sender programmatically
-      setMessageFormData((prevState) => ({
-        ...prevState,
-        name: node.dataset.name,
-      }))
-      if (node.dataset.name === itemName) {
-        setAgentId(node.dataset.id)
-        console.log(node.dataset.id)
-      }
-    })
+  const handleSelect = (e) => {
+    const agentName = e.target.value
+    const agentId = e.target.selectedOptions[0].dataset.id
+    setRecipientId(agentId)
+    setRecipientName(agentName)
+    console.log({ agentName, agentId })
   }
-
-  // used for Debugging
-  // setTimeout(() => {
-  //   // console.log(agentId);
-  // }, 4000);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // fetch the recipients data and pushing message onto the messages array
-    const initialData = await getUserForSendMessagePush('users', agentId)
-
-    const agentData = initialData[0]?.data
-
-    const newMessageData = {
-      ...agentData,
+    if (!sendingAgent || !recipientId || !message || message.trim() === '') {
+      alert('Please select a recipient and enter a message')
+      return
     }
 
-    //  prettier-ignore
-    newMessageData.messages.push({ from, msg, dateAndTime, id: crypto.randomUUID() })
-    //  prettier-ignore-end
+    const database = getDatabase()
 
-    const washingtonRef = doc(db, 'users', agentId)
-    await updateDoc(washingtonRef, {
-      messages: newMessageData.messages,
+    // Create a unique conversation ID by sorting and combining user IDs
+    const conversationId = [sendingAgent.id, recipientId].sort().join('_')
+
+    // Generate a unique message ID with push()
+    const newMessageRef = push(ref(database, `conversations/${conversationId}/messages`))
+
+    // Set message data
+    await set(newMessageRef, {
+      senderId: sendingAgent.id,
+      senderName: sendingAgent.name,
+      recipientId: recipientId,
+      recipientName: recipientName,
+      message: message,
+      timestamp: Date.now(),
+      read: false,
     })
 
-    // set number of messages in users document
-    const getUpdatedAgentArray = await getAgentForUpdatingMessagesArrayNumber(
-      'users',
-      agentId
+    // Update latest message in conversation metadata
+    await set(ref(database, `conversations/${conversationId}/metadata`), {
+      lastMessage: message,
+      lastMessageTimestamp: Date.now(),
+      participants: {
+        [sendingAgent.id]: sendingAgent.name,
+        [recipientId]: recipientName,
+      },
+    })
+
+    // Add this conversation to each user's conversations list
+    await set(ref(database, `users/${sendingAgent.id}/conversations/${conversationId}`), {
+      with: recipientId,
+      withName: recipientName,
+      lastMessage: message,
+      lastMessageTimestamp: Date.now(),
+      unreadCount: 0,
+    })
+
+    // First, try to get the current unread count
+    const recipientConvoRef = ref(
+      database,
+      `users/${recipientId}/conversations/${conversationId}`
     )
+    try {
+      // Check if the conversation exists for the recipient
+      const currentData = await get(recipientConvoRef)
+      let currentUnreadCount = 0
 
-    const messageLength = getUpdatedAgentArray[0].data.messages.length
+      // If the conversation exists, get the current unread count
+      if (currentData.exists()) {
+        currentUnreadCount = currentData.val().unreadCount || 0
+      }
 
-    const updatedData = {
-      ...getUpdatedAgentArray,
-      msgLength: messageLength,
+      // Now set the data with the incremented unread count
+      await set(recipientConvoRef, {
+        with: sendingAgent.id,
+        withName: sendingAgent.name,
+        lastMessage: message,
+        lastMessageTimestamp: Date.now(),
+        unreadCount: currentUnreadCount + 1,
+      })
+    } catch (error) {
+      console.error('Error updating recipient conversation:', error)
+      // Fallback: just set without incrementing if there's an error
+      await set(recipientConvoRef, {
+        with: sendingAgent.id,
+        withName: sendingAgent.name,
+        lastMessage: message,
+        lastMessageTimestamp: Date.now(),
+        unreadCount: 1,
+      })
     }
 
-    await updateDoc(washingtonRef, {
-      msgLength: updatedData.msgLength,
-    })
-
-    dispatch({ type: 'MESSAGE_COUNTER', payload: updatedData.msgLength })
+    // Clear message input and close modal
+    setMessage('')
+    dispatch({ type: 'TOGGLE_SEND_MSG_MODAL', payload: false })
   }
 
   return (
@@ -126,24 +157,22 @@ function SendMessage() {
         <form onSubmit={handleSubmit}>
           <div className="select-possition-container">
             <select
-              onChange={(e) => handleSelect(e.target.value)}
+              onChange={(e) => handleSelect(e)}
               className="select-agent"
               name="cars"
               id="agents"
             >
               <option>Choose Agent</option>
-              {options &&
-                options.map((item) => (
-                  <option
-                    className="testing"
-                    data-id={item.id}
-                    data-name={item.data.name}
-                    key={item.id}
-                    value={item.data.name}
-                  >
-                    {item.data.name}
+              {options?.map((item) => {
+                const { id, data } = item
+                const agentId = data.docId
+                const name = `${data.firstName} ${data.lastName}`
+                return (
+                  <option data-id={agentId} key={id}>
+                    {name}
                   </option>
-                ))}
+                )
+              })}
             </select>
             <div className="select-arrow">
               <Arrow className="select-arrow" />
@@ -156,7 +185,7 @@ function SendMessage() {
             id="from"
             placeholder="Msg from"
             onChange={onMutate}
-            value={name}
+            value={sendingAgent?.name || ''}
             disabled={true}
           />
 
@@ -165,7 +194,7 @@ function SendMessage() {
             placeholder="Enter Message"
             id="msg"
             onChange={onMutate}
-            value={msg}
+            value={message}
           ></textarea>
           <div className="email-btn-container">
             <button className="send-email-btn">Send Message</button>

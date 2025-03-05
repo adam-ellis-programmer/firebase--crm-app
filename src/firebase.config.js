@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-
+import { getDatabase } from 'firebase/database'
 // const {REACT_APP_TYPE} = process.env
 
 // SDK
@@ -14,10 +14,13 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID,
+  databaseURL: 'https://crm---v1-default-rtdb.europe-west1.firebasedatabase.app/',
 }
 
+// DATABASE_NAME.europe-west1.firebasedatabase.app
 // Initialize Firebase
 // passing the config into the firebase app
 const app = initializeApp(firebaseConfig)
 
 export const db = getFirestore()
+export const database = getDatabase()

@@ -131,6 +131,8 @@ function Navbar() {
     },
   ]
 
+  // nav and firenase functions
+
   return (
     <nav className="nav-bar">
       <div className="nav-bar-container">

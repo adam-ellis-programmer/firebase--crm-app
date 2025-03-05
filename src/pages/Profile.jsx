@@ -116,7 +116,7 @@ function Profile() {
   if (loading) {
     return <Loader />
   }
-  console.log(orders)
+  // console.log(orders)
   return (
     <div className="page-container">
       <DashboardHeader />
