@@ -117,6 +117,16 @@ export const CrmReducer = (state, action) => {
         ...state,
         subscriptionInfo: action.payload,
       }
+    case 'TOGGLE_TEXT_MODAL':
+      return {
+        ...state,
+        sendTextModal: action.payload,
+      }
+    case 'CUST_NUM':
+      return {
+        ...state,
+        custNum: action.payload,
+      }
 
     default:
       return state

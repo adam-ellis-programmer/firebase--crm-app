@@ -1,0 +1,139 @@
+[debug] [2025-03-06T21:54:42.121Z] ----------------------------------------------------------------------
+[debug] [2025-03-06T21:54:42.125Z] Command:       /usr/local/bin/node /Users/adamellis/.npm-global/bin/firebase functions:shell
+[debug] [2025-03-06T21:54:42.125Z] CLI Version:   13.31.1
+[debug] [2025-03-06T21:54:42.125Z] Platform:      darwin
+[debug] [2025-03-06T21:54:42.125Z] Node Version:  v20.13.1
+[debug] [2025-03-06T21:54:42.126Z] Time:          Thu Mar 06 2025 21:54:42 GMT+0000 (Greenwich Mean Time)
+[debug] [2025-03-06T21:54:42.126Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-03-06T21:54:42.346Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-03-06T21:54:42.347Z] > authorizing via signed-in user (ellisadam88@gmail.com)
+[debug] [2025-03-06T21:54:42.347Z] [iam] checking project crm---v1 for permissions ["firebase.projects.get"]
+[debug] [2025-03-06T21:54:42.348Z] Checked if tokens are valid: false, expires at: 1741292604256
+[debug] [2025-03-06T21:54:42.348Z] Checked if tokens are valid: false, expires at: 1741292604256
+[debug] [2025-03-06T21:54:42.348Z] > refreshing access token with scopes: []
+[debug] [2025-03-06T21:54:42.350Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-03-06T21:54:42.350Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-03-06T21:54:43.065Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-03-06T21:54:43.065Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-03-06T21:54:43.156Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm---v1:testIamPermissions [none]
+[debug] [2025-03-06T21:54:43.157Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm---v1:testIamPermissions x-goog-quota-user=projects/crm---v1
+[debug] [2025-03-06T21:54:43.157Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm---v1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-03-06T21:54:44.678Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm---v1:testIamPermissions 200
+[debug] [2025-03-06T21:54:44.678Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm---v1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[warn] ⚠  functions: Functions Emulator unable to start on port 5000, starting on 5001 instead. {"metadata":{"emulator":{"name":"functions"},"message":"Functions Emulator unable to start on port 5000, starting on 5001 instead."}}
+[debug] [2025-03-06T21:54:45.206Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-03-06T21:54:45.208Z] defaultcredentials: writing to file /Users/adamellis/.config/firebase/ellisadam88_gmail_com_application_default_credentials.json
+[debug] [2025-03-06T21:54:45.210Z] DEBUG: Setting GAC to /Users/adamellis/.config/firebase/ellisadam88_gmail_com_application_default_credentials.json
+[debug] [2025-03-06T21:54:45.210Z] Checked if tokens are valid: true, expires at: 1741301682066
+[debug] [2025-03-06T21:54:45.210Z] Checked if tokens are valid: true, expires at: 1741301682066
+[debug] [2025-03-06T21:54:45.210Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/crm---v1/adminSdkConfig [none]
+[debug] [2025-03-06T21:54:46.448Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/crm---v1/adminSdkConfig 200
+[debug] [2025-03-06T21:54:46.448Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/crm---v1/adminSdkConfig {"projectId":"crm---v1","databaseURL":"https://crm---v1-default-rtdb.europe-west1.firebasedatabase.app","storageBucket":"crm---v1.appspot.com","locationId":"europe-west"}
+[debug] [2025-03-06T21:54:46.486Z] [functions] Watching "/Users/adamellis/Desktop/firebase CRM system project copy 3/functions" for Cloud Functions...
+[debug] [2025-03-06T21:54:46.492Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-03-06T21:54:47.513Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^6.3.1",
+    "googleapis": "^146.0.0",
+    "handlebars": "^4.7.8",
+    "nodemailer": "^6.10.0",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2025-03-06T21:54:47.514Z] Building nodejs source
+[debug] [2025-03-06T21:54:47.514Z] Failed to find version of module node: reached end of search path /Users/adamellis/Desktop/firebase CRM system project copy 3/functions/node_modules
+[warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-03-06T21:54:47.520Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-03-06T21:54:47.529Z] Found firebase-functions binary at '/Users/adamellis/Desktop/firebase CRM system project copy 3/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8367
+
+[debug] [2025-03-06T21:54:48.308Z] Got response from /__/functions.yaml {"endpoints":{"authTest":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"authTest"},"adminAddUser":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"adminAddUser"},"singleUpdate":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"singleUpdate"},"newAccSignUp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"newAccSignUp"},"simpleQuery":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"simpleQuery"},"deleteAgent":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"deleteAgent"},"getClaims":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getClaims"},"updateAccess":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"updateAccess"},"changeReportsTo":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"changeReportsTo"},"getRolesData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getRolesData"},"getAgentData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAgentData"},"changePermissons":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"changePermissons"},"getAllAgents":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAllAgents"},"sendEmail":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"sendEmail"},"sendWelcomeEmails":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"sendWelcomeEmails"},"trackEmailOpen":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"trackEmailOpen"},"getAllAgentsByOrg":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAllAgentsByOrg"},"getManagersData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getManagersData"},"listAllUsers":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"listAllUsers"},"createPayPalOrder":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createPayPalOrder"},"capturePayPalPayment":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"capturePayPalPayment"},"handlePayPalWebhook":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"handlePayPalWebhook"},"handleDatabaseSignUp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"handleDatabaseSignUp"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2025-03-06T21:54:53.353Z] [functions] Loaded functions definitions from source: authTest, adminAddUser, singleUpdate, newAccSignUp, simpleQuery, deleteAgent, getClaims, updateAccess, changeReportsTo, getRolesData, getAgentData, changePermissons, getAllAgents, sendEmail, sendWelcomeEmails, trackEmailOpen, getAllAgentsByOrg, getManagersData, listAllUsers, createPayPalOrder, capturePayPalPayment, handlePayPalWebhook, handleDatabaseSignUp.
+[debug] [2025-03-06T21:54:53.354Z] [functions[us-central1-authTest]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/authTest).
+[debug] [2025-03-06T21:54:53.354Z] [functions[us-central1-adminAddUser]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/adminAddUser).
+[debug] [2025-03-06T21:54:53.354Z] [functions[us-central1-singleUpdate]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/singleUpdate).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-newAccSignUp]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/newAccSignUp).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-simpleQuery]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/simpleQuery).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-deleteAgent]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/deleteAgent).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-getClaims]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getClaims).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-updateAccess]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/updateAccess).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-changeReportsTo]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/changeReportsTo).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-getRolesData]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getRolesData).
+[debug] [2025-03-06T21:54:53.355Z] [functions[us-central1-getAgentData]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getAgentData).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-changePermissons]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/changePermissons).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-getAllAgents]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getAllAgents).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-sendEmail]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/sendEmail).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-sendWelcomeEmails]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/sendWelcomeEmails).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-trackEmailOpen]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/trackEmailOpen).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-getAllAgentsByOrg]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getAllAgentsByOrg).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-getManagersData]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/getManagersData).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-listAllUsers]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/listAllUsers).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-createPayPalOrder]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/createPayPalOrder).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-capturePayPalPayment]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/capturePayPalPayment).
+[debug] [2025-03-06T21:54:53.356Z] [functions[us-central1-handlePayPalWebhook]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/handlePayPalWebhook).
+[debug] [2025-03-06T21:54:53.357Z] [functions[us-central1-handleDatabaseSignUp]] http function initialized (http://127.0.0.1:5001/crm---v1/us-central1/handleDatabaseSignUp).
+[info] i  functions: Loaded functions: authTest, adminAddUser, singleUpdate, newAccSignUp, simpleQuery, deleteAgent, getClaims, updateAccess, changeReportsTo, getRolesData, getAgentData, changePermissons, getAllAgents, sendEmail, sendWelcomeEmails, trackEmailOpen, getAllAgentsByOrg, getManagersData, listAllUsers, createPayPalOrder, capturePayPalPayment, handlePayPalWebhook, handleDatabaseSignUp 
+[warn] ⚠  functions: The following emulators are not running, calls to these services will affect production: firestore, database, pubsub, storage, eventarc, tasks 
+[debug] [2025-03-06T21:55:27.909Z] DEBUG: File /Users/adamellis/Desktop/firebase CRM system project copy 3/functions/index.js changed, reloading triggers
+[debug] [2025-03-06T21:55:28.910Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-03-06T21:55:30.143Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^6.3.1",
+    "googleapis": "^146.0.0",
+    "handlebars": "^4.7.8",
+    "nodemailer": "^6.10.0",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2025-03-06T21:55:30.143Z] Building nodejs source
+[debug] [2025-03-06T21:55:30.143Z] Failed to find version of module node: reached end of search path /Users/adamellis/Desktop/firebase CRM system project copy 3/functions/node_modules
+[warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-03-06T21:55:30.146Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-03-06T21:55:30.148Z] Found firebase-functions binary at '/Users/adamellis/Desktop/firebase CRM system project copy 3/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8978
+
+[debug] [2025-03-06T21:55:30.801Z] Got response from /__/functions.yaml {"endpoints":{"authTest":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"authTest"},"adminAddUser":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"adminAddUser"},"singleUpdate":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"singleUpdate"},"newAccSignUp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"newAccSignUp"},"simpleQuery":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"simpleQuery"},"deleteAgent":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"deleteAgent"},"getClaims":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getClaims"},"updateAccess":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"updateAccess"},"changeReportsTo":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"changeReportsTo"},"getRolesData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getRolesData"},"getAgentData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAgentData"},"changePermissons":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"changePermissons"},"getAllAgents":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAllAgents"},"sendEmail":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"sendEmail"},"sendWelcomeEmails":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"sendWelcomeEmails"},"trackEmailOpen":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"trackEmailOpen"},"getAllAgentsByOrg":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getAllAgentsByOrg"},"getManagersData":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"getManagersData"},"listAllUsers":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"listAllUsers"},"createPayPalOrder":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createPayPalOrder"},"capturePayPalPayment":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"capturePayPalPayment"},"handlePayPalWebhook":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"handlePayPalWebhook"},"handleDatabaseSignUp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"handleDatabaseSignUp"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2025-03-06T21:55:35.832Z] [functions] Loaded functions definitions from source: authTest, adminAddUser, singleUpdate, newAccSignUp, simpleQuery, deleteAgent, getClaims, updateAccess, changeReportsTo, getRolesData, getAgentData, changePermissons, getAllAgents, sendEmail, sendWelcomeEmails, trackEmailOpen, getAllAgentsByOrg, getManagersData, listAllUsers, createPayPalOrder, capturePayPalPayment, handlePayPalWebhook, handleDatabaseSignUp.

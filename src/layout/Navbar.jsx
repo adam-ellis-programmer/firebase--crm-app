@@ -17,6 +17,7 @@ function Navbar() {
   const navigate = useNavigate()
   const { loggedIn, claims } = useAuthStatusTwo()
   const { dispatch } = useContext(CrmContext)
+  console.log(loggedIn)
 
   // State management
   const [toggleNav, setToggleNav] = useState(false)
@@ -142,7 +143,7 @@ function Navbar() {
             <img className="logo" src={image} alt="" />
           </Link>
         </div>
-        <ul className="nav-ul">
+        <ul className={`nav-ul ${!loggedIn && 'logged-out-nav'}`}>
           <DarkMode />
 
           {/* Sign Up Button (only when logged out) */}
@@ -183,7 +184,7 @@ function Navbar() {
 
                   {toggleLeftNav && (
                     <div className="nav-left">
-                      <ul className="left-nav-ul">
+                      <ul className={`left-nav-ul `}>
                         {leftNavItems.map((item) => (
                           <Link key={item.id} to={item.url}>
                             <li className="left-nav-li">{item.text.toUpperCase()}</li>

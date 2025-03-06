@@ -4,6 +4,7 @@ import CrmContext from '../crm context/CrmContext'
 import DisplayMessages from '../drop down modals/DisplayMessages'
 import { fetchAgentDataForProfileHeader } from '../crm context/CrmAction'
 import { useParams } from 'react-router-dom'
+import SendText from '../drop down modals/SendText'
 
 function DashboardHeader() {
   const params = useParams()

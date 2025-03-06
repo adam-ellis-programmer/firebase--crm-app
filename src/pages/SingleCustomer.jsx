@@ -18,16 +18,24 @@ import SendEmail from '../drop down modals/SendEmail'
 import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
 import Loader from '../assets/Loader'
-import { AuthorizedView, canViewData } from './view data dash/canView'
+import { canViewData } from './view data dash/canView'
 import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 import { getDocument } from '../crm context/CrmAction'
 import RestricedAccessPage from './view data dash/RestricedAccessPage'
 import useGetAgentDoc from '../hooks/useGetAgentDoc'
+import SendText from '../drop down modals/SendText'
 function SingleCustomer() {
   const { claims } = useAuthStatusTwo()
   const { agentDoc } = useGetAgentDoc(claims?.user_id, 'agents')
-  const { deleteBtn, editPurchase, editNote, toggleEmail, ordersLength, notesLength } =
-    useContext(CrmContext)
+  const {
+    deleteBtn,
+    editPurchase,
+    editNote,
+    toggleEmail,
+    ordersLength,
+    notesLength,
+    sendTextModal,
+  } = useContext(CrmContext)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [customer, setCustomer] = useState(null)
@@ -99,6 +107,8 @@ function SingleCustomer() {
         <div className="customer-box cusomer-info-box">
           {toggleEmail && <SendEmail />}
           {deleteBtn && <DeleteModal />}
+          {sendTextModal && <SendText />}
+
           <div className="customer-page-heading">
             <h2 className="page-heading">Personal Details</h2>
             <div className="profile-pic-container">

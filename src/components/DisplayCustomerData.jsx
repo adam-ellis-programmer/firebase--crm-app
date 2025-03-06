@@ -10,7 +10,7 @@ import { useAuthStatusTwo } from '../hooks/useAuthStatusTwo'
 function DisplayCustomerData({ customer }) {
   console.log(customer)
   const { claims } = useAuthStatusTwo()
-  const { changeDetails } = useContext(CrmContext)
+  const { changeDetails, sendTextModal, dispatch } = useContext(CrmContext)
 
   const permissions = useMemo(() => {
     if (!claims?.claims) return {}
@@ -20,6 +20,7 @@ function DisplayCustomerData({ customer }) {
   const location = useLocation()
   const navigate = useNavigate()
   const auth = getAuth()
+  // const dispatch = useDispatch()
   // *** leave for reference ***
   const [data, setData] = useState({
     name: customer.name,
@@ -62,7 +63,6 @@ function DisplayCustomerData({ customer }) {
     }
     // Remove any non-digit characters first
     const cleaned = phoneNumber.replace(/\D/g, '')
-
     // Split the number into groups
     const areaCode = cleaned.slice(0, 5)
     const middle = cleaned.slice(5, 8)
@@ -82,6 +82,12 @@ function DisplayCustomerData({ customer }) {
         </div>
       </div>
     )
+  }
+
+  const handleOpenTextModal = () => {
+    console.log('opening modal....')
+    dispatch({ type: 'TOGGLE_TEXT_MODAL', payload: !sendTextModal })
+    dispatch({ type: 'CUST_NUM', payload: customer.phone })
   }
 
   return (
@@ -117,7 +123,9 @@ function DisplayCustomerData({ customer }) {
             Cust ID <span>{customer.custId} </span>{' '}
           </p>
 
-          {formatPhoneNumber(customer.phone)}
+          <button onClick={handleOpenTextModal} className="send-text-btn">
+            {formatPhoneNumber(customer.phone)}
+          </button>
 
           <p className="profile-extra-info">
             Email <span>{customer.email} </span>
