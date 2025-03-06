@@ -104,7 +104,7 @@ function SendMessage() {
     // Add this conversation to each user's conversations list
     await set(ref(database, `users/${sendingAgent.id}/conversations/${conversationId}`), {
       with: recipientId,
-      withName: recipientName,
+      withName: recipientName, // convo with
       lastMessage: message,
       lastMessageTimestamp: Date.now(),
       unreadCount: 0,

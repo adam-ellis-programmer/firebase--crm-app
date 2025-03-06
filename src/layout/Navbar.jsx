@@ -120,7 +120,7 @@ function Navbar() {
     { id: 6, text: 'reports to', url: `/rep-to-info/${userInfo.uid}` },
     { id: 7, text: 'my agents', url: `/view-agents/${userInfo.uid}` },
   ]
-
+  // INSTALL  DYNAMIC HEADERS FOR TAB NAME
   const leftNavItems = [
     { id: 1, text: 'Admin', url: `/admin/${userInfo.uid}` },
     { id: 2, text: 'Profile', url: `/profile/${userInfo.uid}` },
